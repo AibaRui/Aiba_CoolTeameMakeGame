@@ -10,7 +10,9 @@ public class StateWallIdle : PlayerStateBase
         _stateMachine.PlayerController.WallRunCheck.CheckHitWall();
         _stateMachine.PlayerController.Rb.velocity = Vector3.zero;
         _stateMachine.PlayerController.Rb.useGravity = false;
-        Debug.Log("Idle");
+
+        //WallRunÇÃAnimatorÇê›íË
+        _stateMachine.PlayerController.AnimControl.WallRunSet(true);
     }
 
     public override void Exit()
@@ -47,6 +49,9 @@ public class StateWallIdle : PlayerStateBase
 
         if (_stateMachine.PlayerController.InputManager.IsJumping)
         {
+            //WallRunÇÃAnimatorÇê›íË
+            _stateMachine.PlayerController.AnimControl.WallRunSet(false);
+
             _stateMachine.TransitionTo(_stateMachine.StateJump);
             _stateMachine.PlayerController.WallRun.LastJump();
             _stateMachine.PlayerController.Rb.useGravity = true;

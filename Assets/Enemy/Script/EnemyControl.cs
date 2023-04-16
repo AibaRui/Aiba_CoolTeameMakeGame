@@ -13,9 +13,10 @@ public class EnemyControl : MonoBehaviour
 
     [SerializeField] private Rigidbody _rb;
 
-    [SerializeField] private EnemyWeakPointHp _enemyHp;
+    [SerializeField] private EnemyHpControl _enemyHp;
 
     [SerializeField] private EnemyMove _move;
+
     [SerializeField] private EnemyAttack _attack;
 
     private bool _isDead;
@@ -27,7 +28,7 @@ public class EnemyControl : MonoBehaviour
     public Animator EnemyAnimator => _anim;
     void Start()
     {
-        
+
     }
 
 
@@ -40,8 +41,9 @@ public class EnemyControl : MonoBehaviour
         }
     }
 
-    public void Damage()
+    public void Dead()
     {
-            _isDead = true;
+        _isDead = true;
+        _anim.Play("Dead");
     }
 }

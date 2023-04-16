@@ -8,6 +8,8 @@ public class SetUpState : PlayerStateBase
     public override void Enter()
     {
         _stateMachine.PlayerController.SetUp.SetUpCamera();
+
+       _stateMachine.PlayerController.CameraControl.SetUpCamera();
     }
 
     public override void Exit()
@@ -29,6 +31,11 @@ public class SetUpState : PlayerStateBase
     {
         //構え状態の
         _stateMachine.PlayerController.SetUp.SetUping();
+
+        if (_stateMachine.PlayerController.InputManager.IsAttack && _stateMachine.PlayerController.Attack.IsCanAttack)
+        {
+            _stateMachine.PlayerController.Attack.AttackEnemy();
+        }   //攻撃
 
         //各動作のクールタイム
         _stateMachine.PlayerController.CoolTimes();

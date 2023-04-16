@@ -3,22 +3,35 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class GroundCheck 
+public class GroundCheck
 {
+    [Header("地面のチェック")]
     [SerializeField]
     private Vector3 _offset;
     [SerializeField]
     private Vector3 _size;
 
 
+    [Header("Swing中の地面のチェック")]
     [SerializeField]
     private Vector3 _offsetBoxSwing;
     [SerializeField]
     private Vector3 _sizeBoxSwing;
 
+    [Header("箱。Swing中の地面までの距離のチェック")]
+    [SerializeField]
+    private Vector3 _offsetBoxSwingToGroundLong;
+    [SerializeField]
+    private Vector3 _sizeBoxSwingToGroundLong;
+
+    [Header("Swing中の地面までの距離のチェック")]
+    [SerializeField] private float _rayLong = 10;
 
     [SerializeField]
     private LayerMask _targetLayer;
+
+    [SerializeField]
+    private LayerMask _targetLayerSwingToGroundLong;
 
     [SerializeField]
     private bool _isDrawGizmo = true;
@@ -49,7 +62,7 @@ public class GroundCheck
         var posY = _playerControl.PlayerT.position.y + _offset.y;
         var posz = _playerControl.PlayerT.position.z + _offset.z;
 
-        return Physics.OverlapBox(new Vector3(posX, posY,posz), _size,Quaternion.identity, _targetLayer);
+        return Physics.OverlapBox(new Vector3(posX, posY, posz), _size, Quaternion.identity, _targetLayer);
     }
 
     /// <summary>
@@ -58,7 +71,7 @@ public class GroundCheck
     /// <returns> 移動方向 :正の値, 負の値 </returns>
     public bool IsHit()
     {
-        if(GetCollider().Length>0)
+        if (GetCollider().Length > 0)
         {
             return true;
         }
@@ -66,6 +79,12 @@ public class GroundCheck
         {
             return false;
         }
+    }
+
+
+    public bool DistancePlayerToGround()
+    {
+        return Physics.Raycast(_playerControl.PlayerT.position, Vector3.down, _rayLong, _targetLayerSwingToGroundLong);
     }
 
     public bool IsHitSwingGround()
@@ -77,6 +96,22 @@ public class GroundCheck
         return Physics.CheckBox(new Vector3(posX, posY, posz), _sizeBoxSwing, Quaternion.identity, _targetLayer);
     }
 
+    /// <summary>地面までの距離とワイヤーの長さを比べる</summary>
+    /// <param name="wireHitPoint"></param>
+    /// <returns></returns>
+    public float IsSwingPlayerToGroundOfLong()
+    {
+        var posX = _playerControl.PlayerT.position.x + _offsetBoxSwingToGroundLong.x;
+        var posY = _playerControl.PlayerT.position.y + _offsetBoxSwingToGroundLong.y;
+        var posz = _playerControl.PlayerT.position.z + _offsetBoxSwingToGroundLong.z;
+
+        RaycastHit hit;
+
+        Physics.BoxCast(new Vector3(posX, posY, posz), _sizeBoxSwingToGroundLong, Vector3.down, out hit, Quaternion.identity, Mathf.Infinity, _targetLayerSwingToGroundLong);
+
+        return hit.point.y;
+    }
+
     /// <summary>
     /// Gizmoに範囲を描画する
     /// </summary>
@@ -85,12 +120,14 @@ public class GroundCheck
     {
         if (_isDrawGizmo)
         {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawRay(origin.position,Vector3.down*_rayLong);
 
-            Gizmos.color = Color.blue;
-            var posXs = origin.position.x + _offsetBoxSwing.x;
-            var posYs = origin.position.y + _offsetBoxSwing.y;
-            var posZs = origin.position.z + _offsetBoxSwing.z;
-            Gizmos.DrawCube(new Vector3(posXs, posYs, posZs), _sizeBoxSwing);
+            //Gizmos.color = Color.blue;
+            //var posXs = origin.position.x + _offsetBoxSwing.x;
+            //var posYs = origin.position.y + _offsetBoxSwing.y;
+            //var posZs = origin.position.z + _offsetBoxSwing.z;
+            //Gizmos.DrawCube(new Vector3(posXs, posYs, posZs), _sizeBoxSwing);
 
 
             Gizmos.color = Color.red;
@@ -101,9 +138,13 @@ public class GroundCheck
             Gizmos.DrawCube(new Vector3(posX, posY, posz), _size);
 
 
+            Gizmos.color = Color.yellow;
+            var posXS = origin.position.x + _offsetBoxSwingToGroundLong.x;
+            var posYS = origin.position.y + _offsetBoxSwingToGroundLong.y;
+            var poszS = origin.position.z + _offsetBoxSwingToGroundLong.z;
 
 
-
+            Gizmos.DrawCube(new Vector3(posXS, posYS, poszS), _size);
 
         }
     }

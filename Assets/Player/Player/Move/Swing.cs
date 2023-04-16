@@ -5,6 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public class Swing : IPlayerAction
 {
+
     [Header("クールタイム")]
     [SerializeField] private float _coolTime = 1f;
 
@@ -17,6 +18,13 @@ public class Swing : IPlayerAction
     [Header("前に加える力")]
     [SerializeField] private float _addFrontPowerMove = 5;
 
+
+    [Header("クールタイム")]
+    [SerializeField] private float _downTime = 2f;
+
+    private float _countDownTime = 0;
+
+    private bool _isDown = false;
 
     [Header("地面に近い際の上に加える力")]
     [SerializeField] private float _addUpPowerNearGround = 5;
@@ -69,6 +77,8 @@ public class Swing : IPlayerAction
 
 
 
+
+
     private bool _isAddEnd = false;
 
     private float _startSwingCount = 0;
@@ -93,11 +103,18 @@ public class Swing : IPlayerAction
 
     private bool _isFirstNearGround = false;
 
+
+    private bool _isEndUpping = false;
+
+    private float _beforSpeedY;
+
     /// <summary>Swingの速度制限</summary>
     public void SetSpeedSwing()
     {
         _playerControl.VelocityLimit.SetLimit(_limitSpeed.x, _limitSpeed.y, _limitSpeed.z);
     }
+
+
 
     /// <summary>スウィングの初期設定</summary>
     public void SwingSetting()
@@ -112,8 +129,6 @@ public class Swing : IPlayerAction
             _isFirstNearGround = true;
             _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, 0, _playerControl.Rb.velocity.z);
         }
-
-
 
         _addUpTimeCount += Time.deltaTime;
         _isSamLine = false;
@@ -141,8 +156,12 @@ public class Swing : IPlayerAction
         //ジョイントの長さを変更(*1だとアンカーを指しても長さが縮まらないため、すぐに浮かない)
         //強制的に短くする事で引っ張られる事になる
 
-        _playerControl.Joint.maxDistance = distanceFromPoint * 0.8f;
-        _playerControl.Joint.minDistance = distanceFromPoint * 0.2f;
+
+        _playerControl.Joint.maxDistance = distanceFromPoint * 1.3f;
+        // _playerControl.Joint.maxDistance = distanceFromPoint * 0.8f;
+
+
+        _playerControl.Joint.minDistance = distanceFromPoint * 0.3f;
 
 
         // _playerControl.Joint.spring = 0;
@@ -202,6 +221,9 @@ public class Swing : IPlayerAction
             _playerControl.VelocityLimit.SetLimit(20, 20, 20);
         }
 
+        _countDownTime = 0;
+        _isDown = false;
+        _isEndUpping = false;
     }
 
 
@@ -221,6 +243,36 @@ public class Swing : IPlayerAction
         }
     }
 
+
+    public void SwingCamera()
+    {
+        //入力を受け取る
+        float h = _playerControl.InputManager.HorizontalInput;
+        float v = _playerControl.InputManager.VerticalInput;
+
+        var horizontalRotation = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up);
+
+        //手動でカメラの角度を動かしていたら動かさない
+        if (_playerControl.InputManager.IsControlCameraValueChange == Vector2.zero)
+        {
+
+            Vector3 velo2 = horizontalRotation * new Vector3(h, 0, v).normalized;
+            var rSpeed = 100 * Time.deltaTime;
+            var rSpeed2 = 300 * Time.deltaTime;
+
+            _targetRotation = Quaternion.LookRotation(velo, Vector3.up);
+
+            Vector3 playerFoward = _playerControl.transform.forward.normalized;
+            playerFoward.y = 0;
+
+            Quaternion _targetRotationC = Quaternion.LookRotation(playerFoward, Vector3.up);
+            //Camera.main.transform.rotation = Quaternion.RotateTowards(Camera.main.transform.rotation, _targetRotationC, rSpeed2);
+            Debug.Log("A");
+
+        }
+    }
+
+
     /// <summary>Swing中の移動</summary>
     public void AddSpeed()
     {
@@ -228,27 +280,30 @@ public class Swing : IPlayerAction
         float h = _playerControl.InputManager.HorizontalInput;
         float v = _playerControl.InputManager.VerticalInput;
 
-        var horizontalRotation2 = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up);
-        velo = horizontalRotation2 * new Vector3(h, 0, v).normalized;
-        var rotationSpeed2 = 100 * Time.deltaTime;
+        var horizontalRotation = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up);
 
-        if (velo.magnitude > 0.5f)
+        //プレイヤーの向き
+        if (true)
         {
-            _targetRotation = Quaternion.LookRotation(velo, Vector3.up);
-            _playerControl.PlayerT.rotation = Quaternion.RotateTowards(_playerControl.PlayerT.rotation, _targetRotation, rotationSpeed2);
+            velo = horizontalRotation * new Vector3(h, 0, v).normalized;
+            var rotationSpeed = 50 * Time.deltaTime;
+
+            if (velo.magnitude > 0.5f)
+            {
+                _targetRotation = Quaternion.LookRotation(velo, Vector3.up);
+            }
+            _playerControl.PlayerT.rotation = Quaternion.RotateTowards(_playerControl.PlayerT.rotation, _targetRotation, rotationSpeed);
+        }
+        else
+        {
         }
 
-        var horizontalRotation = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up);
 
         //速度を加える方向
         Vector3 addDir = default;
 
         //加える速度
         float speed = 0;
-
-        var rotationSpeed = 50 * Time.deltaTime;
-
-        Vector3 r = horizontalRotation * new Vector3(h, 0, v);
 
 
         //地面に近いかどうかを確認
@@ -282,13 +337,30 @@ public class Swing : IPlayerAction
             speed = _addFrontPowerNoMove;
         } //入力なしの場合
 
-        _playerControl.Rb.AddForce(addDir * speed);
+        _playerControl.Rb.AddForce(addDir.normalized * speed);
+
+
+        if (_isDown)
+        {
+            _playerControl.Joint.maxDistance = distanceFromPoint;
+            _playerControl.Joint.minDistance = distanceFromPoint;
+
+            _playerControl.Rb.AddForce(Vector3.up * 10);
+        }
+        else
+        {
+            _countDownTime += Time.deltaTime;
+            if (_downTime < _countDownTime)
+            {
+                _isDown = true;
+            }
+        }
 
     }
 
     public void CheckLine()
     {
-        if (swingPoint.y <= _playerControl.PlayerT.position.y)
+        if (swingPoint.y - 8 <= _playerControl.PlayerT.position.y)
         {
             _isSamLine = true;
         }
@@ -344,12 +416,12 @@ public class Swing : IPlayerAction
         _playerControl.Rb.AddForce(velo * _addJumpFrontPower, ForceMode.Impulse);
 
 
-
+        _playerControl.Rb.useGravity = true;
     }
 
     public void LastJumpUp()
     {
-        _playerControl.Rb.velocity = Vector3.zero;
+        //_playerControl.Rb.velocity = Vector3.zero;
         // Debug.Log("ラスト:上にジャンプ");
         float h = _playerControl.InputManager.HorizontalInput;
         float v = _playerControl.InputManager.VerticalInput;
@@ -358,6 +430,8 @@ public class Swing : IPlayerAction
 
         velo = horizontalRotation * new Vector3(_addJumpUpDir.x, _addJumpUpDir.y, _addJumpUpDir.z).normalized;
 
-        _playerControl.Rb.AddForce(velo * _addJumpUpPower, ForceMode.Impulse);
+        _playerControl.Rb.AddForce(Camera.main.transform.forward * _addJumpUpPower, ForceMode.Impulse);
+
+        _playerControl.Rb.useGravity = true;
     }
 }

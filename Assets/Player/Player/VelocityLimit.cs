@@ -12,6 +12,8 @@ public class VelocityLimit : IPlayerAction
 
     private float _limitZ = 10;
 
+    [SerializeField]
+    private float decelerationRate = 0.4f;
 
     public void SetLimit(float x, float y, float z)
     {
@@ -20,6 +22,16 @@ public class VelocityLimit : IPlayerAction
         _limitZ = z;
     }
 
+    public void LowSpeed()
+    {
+        float currentSpeed = _playerControl.Rb.velocity.magnitude;
+        float newSpeed = currentSpeed - decelerationRate;
+        if (newSpeed < 0)
+        {
+            newSpeed = 0;
+        }
+        _playerControl.Rb.velocity = _playerControl.Rb.velocity.normalized * newSpeed;
+    }
 
     public void LimitSpeed()
     {

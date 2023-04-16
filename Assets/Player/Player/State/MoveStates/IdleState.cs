@@ -8,7 +8,8 @@ public class IdleState : PlayerStateBase
 {
     public override void Enter()
     {
-
+        //カメラを近くする
+        _stateMachine.PlayerController.CameraControl.RsetCamera();
     }
 
     public override void Exit()
@@ -32,21 +33,37 @@ public class IdleState : PlayerStateBase
         _stateMachine.PlayerController.CoolTimes();
 
 
-        if (_stateMachine.PlayerController.InputManager.IsAvoid && _stateMachine.PlayerController.Avoid.IsCanAvoid)
-        {
-            _stateMachine.PlayerController.Avoid.SetAvoidDir();
-            _stateMachine.TransitionTo(_stateMachine.AvoidState);
-        }   //回避
+
 
 
         if (_stateMachine.PlayerController.InputManager.IsSetUp > 0)
         {
             _stateMachine.TransitionTo(_stateMachine.StateGrappleSetUp);
-        }   //Grapple
+        }   //構え
 
         //  地上での移動
         if (_stateMachine.PlayerController.GroundCheck.IsHit())
         {
+
+            if (_stateMachine.PlayerController.InputManager.IsAvoid && _stateMachine.PlayerController.Avoid.IsCanAvoid)
+            {
+                _stateMachine.PlayerController.Avoid.SetAvoidDir();
+                _stateMachine.TransitionTo(_stateMachine.AvoidState);
+            }   //回避
+
+            
+            if(_stateMachine.PlayerController.InputManager.IsAttack && _stateMachine.PlayerController.Attack.IsCanAttack)
+            {
+                _stateMachine.TransitionTo(_stateMachine.AttackState);
+            }   //攻撃
+
+
+            //ジャンプ
+            if (_stateMachine.PlayerController.InputManager.IsJumping && _stateMachine.PlayerController.GroundCheck.IsHit())
+            {
+                _stateMachine.TransitionTo(_stateMachine.StateJump);
+            }
+
             if (_stateMachine.PlayerController.InputManager.HorizontalInput != 0 || _stateMachine.PlayerController.InputManager.VerticalInput != 0)
             {
                 if (_stateMachine.PlayerController.InputManager.IsSwing == 1)
@@ -64,11 +81,6 @@ public class IdleState : PlayerStateBase
 
         if (!_stateMachine.PlayerController.GroundCheck.IsHit())
         {
-            if (_stateMachine.PlayerController.InputManager.IsJumping)
-            {
-                _stateMachine.TransitionTo(_stateMachine.StateJump);
-            }   //ジャンプ
-
             if (_stateMachine.PlayerController.Rb.velocity.y > 0)
             {
                 _stateMachine.TransitionTo(_stateMachine.StateUpAir);

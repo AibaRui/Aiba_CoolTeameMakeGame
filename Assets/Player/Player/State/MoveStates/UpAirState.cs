@@ -7,7 +7,10 @@ public class UpAirState : PlayerStateBase
 {
     public override void Enter()
     {
+        //カメラを遠巻きにする
+        _stateMachine.PlayerController.CameraControl.SwingCamera();
 
+        _stateMachine.PlayerController.VelocityLimit.SetLimit(20, 20, 20);
     }
 
     public override void Exit()
@@ -23,7 +26,8 @@ public class UpAirState : PlayerStateBase
 
     public override void LateUpdate()
     {
-
+        //カメラの傾きを戻す
+        _stateMachine.PlayerController.CameraControl.AirCameraYValue(_stateMachine.PlayerController.Rb.velocity.y);
     }
 
     public override void Update()
@@ -32,6 +36,13 @@ public class UpAirState : PlayerStateBase
         _stateMachine.PlayerController.CoolTimes();
 
         _stateMachine.PlayerController.Move.DownSpeedOfSppedDash();
+
+
+
+        if (_stateMachine.PlayerController.InputManager.IsSetUp > 0)
+        {
+            _stateMachine.TransitionTo(_stateMachine.StateGrappleSetUp);
+        }   //構え
 
         if (_stateMachine.PlayerController.InputManager.IsAvoid && _stateMachine.PlayerController.Avoid.IsCanAvoid)
         {
@@ -42,17 +53,11 @@ public class UpAirState : PlayerStateBase
 
         if (_stateMachine.PlayerController.InputManager.IsAttack)
         {
-            if (_stateMachine.PlayerController.Attack.IsCanAttack && _stateMachine.PlayerController.Attack.SearchEnemy())
+            if (_stateMachine.PlayerController.Attack.IsCanAttack)
             {
                 _stateMachine.TransitionTo(_stateMachine.AttackState);
             }
         }   //攻撃ステート
-
-        //Grapple
-        if (_stateMachine.PlayerController.InputManager.IsSwing < 0)
-        {
-            _stateMachine.TransitionTo(_stateMachine.StateGrappleSetUp);
-        }
 
         ////壁が当たったら、WallRun状態に
         //if (_stateMachine.PlayerController.WallRunCheck.CheckWall())

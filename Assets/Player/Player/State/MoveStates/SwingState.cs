@@ -15,16 +15,23 @@ public class SwingState : PlayerStateBase
     public override void Exit()
     {
         _stateMachine.PlayerController.AnimControl.Swing(false);
+        _stateMachine.PlayerController.CameraControl.SwingEndSetCamera();
     }
 
     public override void FixedUpdate()
     {
         _stateMachine.PlayerController.Swing.AddSpeed();
+
+
     }
 
     public override void LateUpdate()
     {
         _stateMachine.PlayerController.Swing.DrawLope();
+
+        //カメラを傾ける
+        _stateMachine.PlayerController.CameraControl.SwingCameraYValues(_stateMachine.PlayerController.Rb.velocity.y, 20, -20, 20f);
+
     }
 
     public override void Update()
@@ -32,7 +39,10 @@ public class SwingState : PlayerStateBase
         //各動作のクールタイム
         _stateMachine.PlayerController.CoolTimes();
 
+        _stateMachine.PlayerController.CameraControl.CountTime();
+        
         _stateMachine.PlayerController.Swing.SwingStartCount();
+
         _stateMachine.PlayerController.Swing.CheckLine();
 
         //壁が当たったら、WallRun状態に
@@ -96,6 +106,8 @@ public class SwingState : PlayerStateBase
         }
         else if (_stateMachine.PlayerController.InputManager.IsJumping)
         {
+            _stateMachine.PlayerController.CameraControl.SwingEndTranspectorUp();
+
             //ジャンプして終わる
             _stateMachine.PlayerController.Swing.StopSwing(true);
 

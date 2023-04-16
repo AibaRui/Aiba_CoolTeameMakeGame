@@ -65,6 +65,7 @@ public class EnemyWeakPointHp : MonoBehaviour, IDamageble
         if (_nowHp <= 0)
         {
             _enemyHpControl.DeadWealkPoint();
+            Destroy(this.gameObject);
         }
     }
 

@@ -44,6 +44,11 @@ public class InputManager : MonoBehaviour
     private float _isSetUp;
     public float IsSetUp { get => _isSetUp; }
 
+    [Tooltip("カメラの移動")]
+    private Vector2 _isControlCameraValueChange;
+    public Vector2 IsControlCameraValueChange { get => _isControlCameraValueChange; }
+
+
     private float _isMouseScrol = 0;
 
     public float IsMouseScrol => _isMouseScrol;
@@ -83,7 +88,6 @@ public class InputManager : MonoBehaviour
         _horizontalInput = 0;
         _verticalInput = 0;
 
-
         _horizontalInput = Input.GetAxisRaw("Horizontal");
         _verticalInput = Input.GetAxisRaw("Vertical");
 
@@ -100,6 +104,11 @@ public class InputManager : MonoBehaviour
         _isAvoid = Input.GetButtonDown("Avoid");
 
         _isSetUp = Input.GetAxisRaw("SetUp");
+
+       float _horizontalInputCamera = Input.GetAxisRaw("CameraX");
+       float _verticalInputCamera = Input.GetAxisRaw("CameraY");
+
+        _isControlCameraValueChange = new Vector2(_horizontalInputCamera, _verticalInputCamera);
 
         //Ctrlを押したか
         _isCtrlDown = Input.GetKeyDown(KeyCode.LeftControl);

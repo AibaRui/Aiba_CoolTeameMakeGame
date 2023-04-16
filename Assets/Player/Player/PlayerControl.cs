@@ -5,18 +5,11 @@ using Cinemachine;
 
 public class PlayerControl : MonoBehaviour
 {
-    [SerializeField] private PlayerStateMachine _stateMachine = default;
-
-    [SerializeField] private InputManager _inputManager;
-
-    [SerializeField] private PlayerAnimationControl _animControl;
-
-    [SerializeField] private PlayerMove _playerMove;
-
     [SerializeField] private CinemachineBrain _CameraBrain;
-    [SerializeField] private CinemachineVirtualCamera _camera;
-    [SerializeField] private CinemachineVirtualCamera _cameraGrapple;
 
+    [SerializeField] private CinemachineVirtualCamera _camera;
+
+    [SerializeField] private CinemachineVirtualCamera _cameraGrapple;
 
     [SerializeField] private Animator _anim;
 
@@ -26,14 +19,19 @@ public class PlayerControl : MonoBehaviour
 
     [SerializeField] private Transform _hands;
 
+    [SerializeField] private LineRenderer _lineRenderer;
+
     [SerializeField] private Rigidbody _rb;
 
+    [SerializeField] private CameraControl _cameraControl;
+
+    [SerializeField] private PlayerStateMachine _stateMachine = default;
+    [SerializeField] private PlayerMove _playerMove;
+    [SerializeField] private InputManager _inputManager;
+    [SerializeField] private PlayerAnimationControl _animControl;
     [SerializeField] private GroundCheck _groundCheck;
-
     [SerializeField] private Swing _swing;
-
     [SerializeField] private VelocityLimit _velocityLimit;
-
     [SerializeField] private SearchSwingPoint _searchSwingPoint;
     [SerializeField] private ZipMove _zipMove;
     [SerializeField] private WallRun _wallRun;
@@ -43,10 +41,12 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private Avoid _avoid;
     [SerializeField] private SetUp _setUp;
 
-    [SerializeField] private LineRenderer _lineRenderer;
+
 
     private SpringJoint _joint;
 
+
+    public CameraControl CameraControl => _cameraControl;
     public CinemachineBrain CameraBrain => _CameraBrain;
     public InputManager InputManager => _inputManager;
 
@@ -137,6 +137,10 @@ public class PlayerControl : MonoBehaviour
         Destroy(_joint);
     }
 
+    public GameObject InstantiateObject(GameObject obj)
+    {
+        return Instantiate(obj);
+    }
 
     public void CoolTimes()
     {

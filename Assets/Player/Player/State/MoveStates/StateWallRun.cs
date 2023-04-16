@@ -44,6 +44,9 @@ public class StateWallRun : PlayerStateBase
 
         if (_stateMachine.PlayerController.InputManager.IsJumping || !isHit)
         {
+            //WallRun‚ÌAnimator‚ğİ’è
+            _stateMachine.PlayerController.AnimControl.WallRunSet(false);
+
             _stateMachine.TransitionTo(_stateMachine.StateJump);
             _stateMachine.PlayerController.WallRun.LastJump();
             _stateMachine.PlayerController.Rb.useGravity = true;

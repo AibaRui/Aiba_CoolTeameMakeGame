@@ -61,7 +61,6 @@ public class PlayerMove : IPlayerAction
 
         if (_nowTime >= _startTime || ve.magnitude > 25)
         {
-            Debug.Log("fe");
             _playerControl.Rb.useGravity = true;
             //Debug.Log("減速中");
             float yVelo = _playerControl.Rb.velocity.y;

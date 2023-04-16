@@ -6,10 +6,13 @@ using UnityEngine;
 public class Attack : IPlayerAction
 {
     [Header("探知範囲")]
-    [SerializeField] private float _searchAreaRange = 4;
+    [SerializeField] private Transform _muzzlePos;
 
     [Header("クールタイム")]
     [SerializeField] private float _coolTime = 3;
+
+    [Header("弾")]
+    [SerializeField] private GameObject _bullet;
 
     [Header("敵のレイヤー")]
     [SerializeField] private LayerMask _enemyLayer = default;
@@ -22,19 +25,7 @@ public class Attack : IPlayerAction
 
     public bool IsCanAttack => _isCanAttack;
 
-    public bool SearchEnemy()
-    {
-        _enemys = Physics.OverlapSphere(_playerControl.PlayerT.position, _searchAreaRange, _enemyLayer);
 
-        if (_enemys.Length != 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
 
     public void AttackCoolTime()
     {
@@ -52,11 +43,14 @@ public class Attack : IPlayerAction
 
     public void AttackEnemy()
     {
-        foreach (var e in _enemys)
-        {
-            e.TryGetComponent<IDamageble>(out IDamageble enemy);
-            enemy?.Damage();
-        }
+        var bullet = _playerControl.InstantiateObject(_bullet);
+
+        bullet.transform.position = _muzzlePos.position;
+
+        Vector3 dir = Camera.main.transform.forward;
+
+        bullet.GetComponent<BulletControl>().Init(_playerControl.gameObject, dir);
+
         _isCanAttack = false;
         Debug.Log("Attack");
     }

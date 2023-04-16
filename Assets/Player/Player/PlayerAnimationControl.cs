@@ -33,6 +33,11 @@ public class PlayerAnimationControl
         _playerControl.Anim.SetBool("IsSwing",a);
     }
 
+    public void WallRunSet(bool isHit)
+    {
+        _playerControl.Anim.SetBool("IsWallHit", isHit);
+    }
+
 
     public void Jump()
     {

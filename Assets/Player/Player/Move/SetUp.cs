@@ -30,7 +30,6 @@ public class SetUp
     public void SetUpCamera()
     {
         Time.timeScale = 0.3f;
-        _playerControl.CameraGrapple.Priority = _cameraPriority;
         _playerControl.CameraBrain.m_IgnoreTimeScale = true;
     }
 
@@ -57,9 +56,6 @@ public class SetUp
             Time.timeScale = 1f;
 
             _playerControl.CameraBrain.m_IgnoreTimeScale = false;
-
-            //Grapple‚ÌƒJƒƒ‰‚ÌPriorty‚ğ‰º‚°‚é
-            _playerControl.CameraGrapple.Priority = -10;
 
             _playerControl.LineRenderer.positionCount = 0;
 

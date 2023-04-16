@@ -7,7 +7,10 @@ public class DownAirState : PlayerStateBase
 {
     public override void Enter()
     {
+        //ÉJÉÅÉâÇâìä™Ç´Ç…Ç∑ÇÈ
+        _stateMachine.PlayerController.CameraControl.SwingCamera();
 
+        _stateMachine.PlayerController.VelocityLimit.SetLimit(20, 20, 20);
     }
 
     public override void Exit()
@@ -23,7 +26,8 @@ public class DownAirState : PlayerStateBase
 
     public override void LateUpdate()
     {
-
+        //ÉJÉÅÉâÇÃåXÇ´ÇñﬂÇ∑
+        _stateMachine.PlayerController.CameraControl.AirCameraYValue(_stateMachine.PlayerController.Rb.velocity.y);
     }
 
     public override void Update()
@@ -32,6 +36,13 @@ public class DownAirState : PlayerStateBase
         _stateMachine.PlayerController.CoolTimes();
 
         _stateMachine.PlayerController.Move.DownSpeedOfSppedDash();
+
+
+
+        if (_stateMachine.PlayerController.InputManager.IsSetUp > 0)
+        {
+            _stateMachine.TransitionTo(_stateMachine.StateGrappleSetUp);
+        }   //ç\Ç¶
 
         if (_stateMachine.PlayerController.InputManager.IsAvoid && _stateMachine.PlayerController.Avoid.IsCanAvoid)
         {
@@ -42,7 +53,7 @@ public class DownAirState : PlayerStateBase
 
         if (_stateMachine.PlayerController.InputManager.IsAttack)
         {
-            if (_stateMachine.PlayerController.Attack.IsCanAttack && _stateMachine.PlayerController.Attack.SearchEnemy())
+            if (_stateMachine.PlayerController.Attack.IsCanAttack)
             {
                 _stateMachine.TransitionTo(_stateMachine.AttackState);
             }

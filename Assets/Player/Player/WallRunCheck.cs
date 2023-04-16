@@ -143,7 +143,7 @@ public class WallRunCheck : IPlayerAction
 
         RaycastHit raycast;
 
-        bool isHit = Physics.BoxCast(_playerControl.PlayerT.position + addPos, _boxSizeSide, rayDir, out raycast, _playerControl.PlayerT.rotation, 0.5f, _wallLayer);
+        bool isHit = Physics.BoxCast(_playerControl.PlayerT.position + addPos, _boxSizeSide, rayDir, out raycast, _playerControl.PlayerT.rotation, 0.2f, _wallLayer);
 
         if (isHit)
         {
@@ -160,7 +160,7 @@ public class WallRunCheck : IPlayerAction
 
         RaycastHit raycast;
 
-        bool isHit = Physics.BoxCast(_playerControl.PlayerT.position + addPos, _boxSizeFront, _playerControl.PlayerT.transform.forward, out raycast, _playerControl.PlayerT.rotation, 0.5f, _wallLayer);
+        bool isHit = Physics.BoxCast(_playerControl.PlayerT.position + addPos, _boxSizeFront, _playerControl.PlayerT.transform.forward, out raycast, _playerControl.PlayerT.rotation, 0.2f, _wallLayer);
 
         if(isHit)
         {
