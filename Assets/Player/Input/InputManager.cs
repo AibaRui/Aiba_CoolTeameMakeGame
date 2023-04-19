@@ -48,6 +48,9 @@ public class InputManager : MonoBehaviour
     private Vector2 _isControlCameraValueChange;
     public Vector2 IsControlCameraValueChange { get => _isControlCameraValueChange; }
 
+    private float _swingingInputH = 1;
+
+    public float SwingingInputH { get => _swingingInputH; set => _swingingInputH = value; }
 
     private float _isMouseScrol = 0;
 
@@ -129,6 +132,20 @@ public class InputManager : MonoBehaviour
         _isSwing = Input.GetAxisRaw("Swing");
 
         _isMouseScrol = Input.GetAxis("Mouse ScrollWheel");
+    }
+
+    public void SwingIngInputSet()
+    {
+        var h = Input.GetAxisRaw("Horizontal");
+
+        if (h > 0)
+        {
+            _swingingInputH = 1;
+        }
+        else if (h < 0)
+        {
+            _swingingInputH = -1;
+        }
     }
 
     private void Update()

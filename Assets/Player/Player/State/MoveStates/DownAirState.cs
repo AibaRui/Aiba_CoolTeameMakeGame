@@ -10,28 +10,49 @@ public class DownAirState : PlayerStateBase
         //カメラを遠巻きにする
         _stateMachine.PlayerController.CameraControl.SwingCamera();
 
-        _stateMachine.PlayerController.VelocityLimit.SetLimit(20, 20, 20);
+        _stateMachine.PlayerController.VelocityLimit.SetLimit(15, 20, 15);
+
+
     }
 
     public override void Exit()
     {
         _stateMachine.PlayerController.Move.ReSetTime();
+
     }
 
     public override void FixedUpdate()
     {
         if (_stateMachine.PlayerController.InputManager.HorizontalInput != 0 || _stateMachine.PlayerController.InputManager.VerticalInput != 0)
             _stateMachine.PlayerController.Move.AirMove();
+
+        //速度の減衰
+        _stateMachine.PlayerController.VelocityLimit.SlowToSpeedUp();
+
+
+        //カメラの傾きを戻す
+        _stateMachine.PlayerController.CameraControl.AirCameraYValue(_stateMachine.PlayerController.Rb.velocity.y);
+
+        //カメラをプレイヤーの後ろに自動的に向ける。X軸
+        _stateMachine.PlayerController.CameraControl.SwingEndCameraAutoFollow();
+
+        //カメラを傾ける。X軸
+        _stateMachine.PlayerController.CameraControl.SwingCameraValueX(false);
     }
 
     public override void LateUpdate()
     {
-        //カメラの傾きを戻す
-        _stateMachine.PlayerController.CameraControl.AirCameraYValue(_stateMachine.PlayerController.Rb.velocity.y);
+
     }
 
     public override void Update()
-    {
+    {   
+
+
+
+        //カメラの時間
+        _stateMachine.PlayerController.CameraControl.CountTime();
+
         //各動作のクールタイム
         _stateMachine.PlayerController.CoolTimes();
 

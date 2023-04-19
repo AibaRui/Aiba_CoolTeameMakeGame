@@ -76,10 +76,10 @@ public class PlayerMove : IPlayerAction
 
 
             Vector3 ve2 = new Vector3(_playerControl.Rb.velocity.x, 0, _playerControl.Rb.velocity.z);
-           // Debug.Log(ve2.magnitude);
+            // Debug.Log(ve2.magnitude);
             if (ve2.magnitude < 20)
             {
-               // Debug.Log("減速終わり");
+                // Debug.Log("減速終わり");
                 _isSpeedDash = false;
             }
 
@@ -139,8 +139,19 @@ public class PlayerMove : IPlayerAction
         if (velo.magnitude > 0.5f)
         {
             _targetRotation = Quaternion.LookRotation(velo, Vector3.up);
+
         }
+
+        if (_targetRotation.eulerAngles.y > 180)
+        {
+            var angle = _targetRotation.eulerAngles.y - 360;
+            Quaternion rotation = Quaternion.Euler(angle * Vector3.up);
+            _targetRotation = rotation;
+            //    Debug.Log("DAA" + _targetRotation.eulerAngles.y);
+        }
+
         _playerControl.PlayerT.rotation = Quaternion.RotateTowards(_playerControl.PlayerT.rotation, _targetRotation, rotationSpeed);
+
 
         //速度を加える
         _playerControl.Rb.velocity = velo * moveSpeed;
@@ -150,9 +161,14 @@ public class PlayerMove : IPlayerAction
 
     public void AirMove()
     {
-      //  Debug.Log("a");
+        //  Debug.Log("a");
 
         float h = _playerControl.InputManager.HorizontalInput;
+        if (_playerControl.VelocityLimit.IsSpeedUp && h > 0)
+        {
+            h = 0;
+        }
+
         float v = _playerControl.InputManager.VerticalInput;
 
         var horizontalRotation = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up);
@@ -160,19 +176,23 @@ public class PlayerMove : IPlayerAction
         velo = horizontalRotation * new Vector3(h, 0, v).normalized;
 
 
-        var rotationSpeed = 200 * Time.deltaTime;
+        var rotationSpeed = 50 * Time.deltaTime;
 
         if (velo.magnitude > 0.5f)
         {
             _targetRotation = Quaternion.LookRotation(velo, Vector3.up);
         }
-        _playerControl.PlayerT.rotation = Quaternion.RotateTowards(_playerControl.PlayerT.rotation, _targetRotation, rotationSpeed);
+
+        if (!_playerControl.CameraControl.IsEndAutpFollow)
+        {
+            _playerControl.PlayerT.rotation = Quaternion.RotateTowards(_playerControl.PlayerT.rotation, _targetRotation, rotationSpeed);
+        }
 
         _playerControl.Rb.AddForce(velo * _airMoveSpeed);
 
         if (_playerControl.Rb.velocity.y < 6)
         {
-           // _playerControl.Rb.AddForce(-_playerControl.PlayerT.up * _gravity);
+            // _playerControl.Rb.AddForce(-_playerControl.PlayerT.up * _gravity);
         }
 
         Do();

@@ -15,6 +15,10 @@ public class VelocityLimit : IPlayerAction
     [SerializeField]
     private float decelerationRate = 0.4f;
 
+    private bool _isSpeedUp = false;
+
+    public bool IsSpeedUp { get => _isSpeedUp; set => _isSpeedUp = value; }
+
     public void SetLimit(float x, float y, float z)
     {
         _limitX = x;
@@ -33,35 +37,63 @@ public class VelocityLimit : IPlayerAction
         _playerControl.Rb.velocity = _playerControl.Rb.velocity.normalized * newSpeed;
     }
 
+    public void DoSpeedUp()
+    {
+        _isSpeedUp = true;
+    }
+
+    public void SlowToSpeedUp()
+    {
+        if (_isSpeedUp)
+        {
+            Vector3 speed = new Vector3(_playerControl.Rb.velocity.normalized.x, 0, _playerControl.Rb.velocity.normalized.z);
+
+            _playerControl.Rb.AddForce(-speed * 6f);
+            _playerControl.Rb.AddForce(Vector3.down * 4f);
+
+            Vector3 speedRb = new Vector3(_playerControl.Rb.velocity.x, 0, _playerControl.Rb.velocity.z);
+
+            Vector3 limit = new Vector3(15, 0, 15);
+
+            if (Vector3.Magnitude(speedRb) < Vector3.Magnitude(limit))
+            {
+                SetLimit(15, 30, 15);
+                _isSpeedUp = false;
+            }
+        }
+    }
+
     public void LimitSpeed()
     {
-        if (_playerControl.Rb.velocity.x > _limitX)
+        if (!_isSpeedUp)
         {
-            _playerControl.Rb.velocity = new Vector3(_limitX, _playerControl.Rb.velocity.y, _playerControl.Rb.velocity.z);
-        }
-        else if (_playerControl.Rb.velocity.x < -_limitX)
-        {
-            _playerControl.Rb.velocity = new Vector3(-_limitX, _playerControl.Rb.velocity.y, _playerControl.Rb.velocity.z);
-        }
+            if (_playerControl.Rb.velocity.x > _limitX)
+            {
+                _playerControl.Rb.velocity = new Vector3(_limitX, _playerControl.Rb.velocity.y, _playerControl.Rb.velocity.z);
+            }
+            else if (_playerControl.Rb.velocity.x < -_limitX)
+            {
+                _playerControl.Rb.velocity = new Vector3(-_limitX, _playerControl.Rb.velocity.y, _playerControl.Rb.velocity.z);
+            }
 
-        if (_playerControl.Rb.velocity.y > _limitY)
-        {
-            _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, _limitY, _playerControl.Rb.velocity.z);
-        }
-        else if (_playerControl.Rb.velocity.y < -_limitY)
-        {
-            _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, -_limitY, _playerControl.Rb.velocity.z);
-        }
+            if (_playerControl.Rb.velocity.y > _limitY)
+            {
+                _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, _limitY, _playerControl.Rb.velocity.z);
+            }
+            else if (_playerControl.Rb.velocity.y < -_limitY)
+            {
+                _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, -_limitY, _playerControl.Rb.velocity.z);
+            }
 
-        if (_playerControl.Rb.velocity.z > _limitZ)
-        {
-            _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, _playerControl.Rb.velocity.y, _limitZ);
+            if (_playerControl.Rb.velocity.z > _limitZ)
+            {
+                _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, _playerControl.Rb.velocity.y, _limitZ);
+            }
+            else if (_playerControl.Rb.velocity.z < -_limitZ)
+            {
+                _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, _playerControl.Rb.velocity.y, -_limitZ);
+            }
         }
-        else if (_playerControl.Rb.velocity.z < -_limitZ)
-        {
-            _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, _playerControl.Rb.velocity.y, -_limitZ);
-        }
-
     }
 
 }

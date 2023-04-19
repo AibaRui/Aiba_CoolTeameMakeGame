@@ -91,10 +91,12 @@ public class Swing : IPlayerAction
 
     private Vector3 swingPoint;
 
+    private bool _isSwingNow = false;
+
     private float _wireLong;
     public bool IsStartSwing => _isStartSwing;
     public bool IsSamLime => _isSamLine;
-
+    public bool IsSwingNow => _isSwingNow;
     public bool IsCanSwing => _isCanSwing;
 
     float distanceFromPoint;
@@ -104,9 +106,8 @@ public class Swing : IPlayerAction
     private bool _isFirstNearGround = false;
 
 
-    private bool _isEndUpping = false;
+    private bool _isSetEndMaxDis = false;
 
-    private float _beforSpeedY;
 
     /// <summary>Swingの速度制限</summary>
     public void SetSpeedSwing()
@@ -119,6 +120,8 @@ public class Swing : IPlayerAction
     /// <summary>スウィングの初期設定</summary>
     public void SwingSetting()
     {
+        _isSwingNow = true;
+
         //重力を無くす
         _playerControl.Rb.useGravity = false;
         _isAddEnd = false;
@@ -157,7 +160,7 @@ public class Swing : IPlayerAction
         //強制的に短くする事で引っ張られる事になる
 
 
-        _playerControl.Joint.maxDistance = distanceFromPoint * 1.3f;
+        _playerControl.Joint.maxDistance = distanceFromPoint * 1.2f;
         // _playerControl.Joint.maxDistance = distanceFromPoint * 0.8f;
 
 
@@ -207,6 +210,8 @@ public class Swing : IPlayerAction
         //Swing不可
         _isCanSwing = false;
 
+        _isSwingNow = false;
+
         _startSwingCount = 0;
         _isStartSwing = false;
 
@@ -216,14 +221,10 @@ public class Swing : IPlayerAction
         {
             _playerControl.Rb.useGravity = true;
         }
-        else
-        {
-            _playerControl.VelocityLimit.SetLimit(20, 20, 20);
-        }
 
         _countDownTime = 0;
         _isDown = false;
-        _isEndUpping = false;
+        _isSetEndMaxDis = false;
     }
 
 
@@ -283,7 +284,7 @@ public class Swing : IPlayerAction
         var horizontalRotation = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up);
 
         //プレイヤーの向き
-        if (true)
+        if (h!=0 || v!=0)
         {
             velo = horizontalRotation * new Vector3(h, 0, v).normalized;
             var rotationSpeed = 50 * Time.deltaTime;
@@ -296,6 +297,10 @@ public class Swing : IPlayerAction
         }
         else
         {
+            var rotationSpeed = 50 * Time.deltaTime;
+
+            _targetRotation = Quaternion.LookRotation(Camera.main.transform.forward, Vector3.up);
+            _playerControl.PlayerT.rotation = Quaternion.RotateTowards(_playerControl.PlayerT.rotation, _targetRotation, rotationSpeed);
         }
 
 
@@ -340,12 +345,30 @@ public class Swing : IPlayerAction
         _playerControl.Rb.AddForce(addDir.normalized * speed);
 
 
+        if (!_isSetEndMaxDis)
+        {
+            var groundDir = Mathf.Abs(swingPoint.y - _playerControl.GroundCheck.IsSwingPlayerToGroundOfLong());
+            var swingPointDir = Vector3.Distance(_playerControl.transform.position, swingPoint);
+
+            float _maxDistance = 0;
+
+            if (groundDir - 3 <= swingPointDir)
+            {
+                _isSetEndMaxDis = true;
+                _maxDistance = swingPointDir;
+                _playerControl.Joint.maxDistance = _maxDistance;
+                _playerControl.Joint.minDistance = _maxDistance;
+            }
+        }
+
         if (_isDown)
         {
-            _playerControl.Joint.maxDistance = distanceFromPoint;
-            _playerControl.Joint.minDistance = distanceFromPoint;
-
-            _playerControl.Rb.AddForce(Vector3.up * 10);
+            if (!_isSetEndMaxDis)
+            {
+                _playerControl.Joint.maxDistance = distanceFromPoint;
+                _playerControl.Joint.minDistance = distanceFromPoint;
+            }
+            _playerControl.Rb.AddForce(Vector3.up * 20);
         }
         else
         {
@@ -355,7 +378,6 @@ public class Swing : IPlayerAction
                 _isDown = true;
             }
         }
-
     }
 
     public void CheckLine()
@@ -428,9 +450,11 @@ public class Swing : IPlayerAction
 
         var horizontalRotation = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up);
 
-        velo = horizontalRotation * new Vector3(_addJumpUpDir.x, _addJumpUpDir.y, _addJumpUpDir.z).normalized;
+        //velo = horizontalRotation * new Vector3(_addJumpUpDir.x, _addJumpUpDir.y, _addJumpUpDir.z).normalized;
 
-        _playerControl.Rb.AddForce(Camera.main.transform.forward * _addJumpUpPower, ForceMode.Impulse);
+        velo = _playerControl.Rb.velocity.normalized;
+
+        _playerControl.Rb.AddForce(velo * _addJumpUpPower, ForceMode.Impulse);
 
         _playerControl.Rb.useGravity = true;
     }

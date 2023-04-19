@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using Cinemachine;
+using UnityEngine;
 
 public class CameraControl : MonoBehaviour
 {
@@ -70,10 +68,20 @@ public class CameraControl : MonoBehaviour
     private float _countTime = 0;
     private bool _isDontCameraMove = false;
 
-    private float _countCameraMoveX = 0;
+    private float _countCameraMoveSwingingX = 0;
+
+    private float _countCameraMoveAirX = 0;
 
     private float _countCameraMoveY = 0;
 
+    private bool _isEndAutoFollow = false;
+
+    private float _autoFloowCount = 0;
+
+    private float _swingEndPlayerRotateY;
+    public float SwingEndPlayerRotateY { get => _swingEndPlayerRotateY; set => _swingEndPlayerRotateY = value; }
+
+    public bool IsEndAutpFollow => _isEndAutoFollow;
     void Awake()
     {
         UpdateCameraSettings();
@@ -116,6 +124,7 @@ public class CameraControl : MonoBehaviour
     {
         if (_playerControl.InputManager.IsControlCameraValueChange != Vector2.zero)
         {
+            _isEndAutoFollow = false;
             _isDontCameraMove = false;
             _countTime = 0;
         }
@@ -138,25 +147,133 @@ public class CameraControl : MonoBehaviour
 
         if (h == 0)
         {
-            _countCameraMoveX = 0;
+            _countCameraMoveSwingingX = 0;
+            _countCameraMoveAirX = 0;
         }
         else
         {
-            if (_countCameraMoveX != 0.8)
+            if (_playerControl.Swing.IsSwingNow)
             {
-                _countCameraMoveX += Time.deltaTime * 0.5f;
-
-                if (_countCameraMoveX > 0.8f)
+                if (_countCameraMoveSwingingX < 0.5)
                 {
-                    _countCameraMoveX = 0.8f;
+                    _countCameraMoveSwingingX += 0.01f;
                 }
+            }
+
+            if (!_playerControl.VelocityLimit.IsSpeedUp)
+            {
+                if (_countCameraMoveAirX < 0.8f)
+                {
+                    _countCameraMoveAirX += 0.0001f * _playerControl.Rb.velocity.magnitude;
+                }
+            }
+
+            if (_isDontCameraMove)
+            {
+                //if (_countCameraMoveY != 0.2f)
+                //{
+                //    _countCameraMoveY += 0.0005f;
+                //    if (_countCameraMoveY > 0.2f)
+                //    {
+                //        _countCameraMoveY = 0.2f;
+                //    }
+
+                //}
             }
         }
 
-        if (_isDontCameraMove)
+    }
+
+    /// <summary>Swing後にプレイヤーのカメラの回転を補正する</summary>
+    public void SwingEndCameraAutoFollow()
+    {
+        if (_isEndAutoFollow && _isDontCameraMove)
         {
-            _countCameraMoveY += Time.deltaTime * 0.15f;
+            if (_autoFloowCount < 0.8f)
+            {
+                _autoFloowCount += 0.01f;
+            }
+
+            float y = 0;
+            if (_playerControl.PlayerT.eulerAngles.y > 180)
+            {
+                y = _playerControl.PlayerT.eulerAngles.y - 360;
+            }
+            else
+            {
+                y = _playerControl.PlayerT.eulerAngles.y;
+            }
+
+            float angleDiff = Mathf.DeltaAngle(y, _swingCinemachinePOV.m_HorizontalAxis.Value); // 角度差を-180度から180度の範囲に収める
+
+            if (Mathf.Abs(angleDiff) > 90f)
+            {
+                angleDiff -= Mathf.Sign(angleDiff) * 180f;
+            }// 角度差が90度より大きい場合は、逆方向に回転する
+
+            if (angleDiff > 0f)
+            {
+                _swingCinemachinePOV.m_HorizontalAxis.Value -= Mathf.Min(angleDiff, _autoFloowCount);
+            }// プレイヤーの回転角度に近づくようにValueの値を減らす
+            else if (angleDiff < 0f)
+            {
+                _swingCinemachinePOV.m_HorizontalAxis.Value += Mathf.Min(-angleDiff, _autoFloowCount);
+            }// プレイヤーの回転角度に近づくようにValueの値を増やす
+
+            float dis = Mathf.Abs(_swingEndPlayerRotateY - _swingCinemachinePOV.m_HorizontalAxis.Value);
+
+            if (dis < 1f)
+            {
+                _isEndAutoFollow = false;
+                return;
+            }
         }
+    }
+
+    public void SwingCameraValueX(bool isSwing)
+    {
+        if (isSwing)
+        {
+            //移動入力を受け取る
+            float h = _playerControl.InputManager.HorizontalInput;
+
+            ////////////X軸の調整
+            if (h > 0)
+            {
+                _swingCinemachinePOV.m_HorizontalAxis.Value += _countCameraMoveSwingingX;
+            }
+            else if (h < 0)
+            {
+                _swingCinemachinePOV.m_HorizontalAxis.Value -= _countCameraMoveSwingingX;
+            }
+        }
+        else
+        {
+            if (_playerControl.VelocityLimit.IsSpeedUp || _isEndAutoFollow)
+            {
+                _countCameraMoveAirX = 0;
+                return;
+            }
+
+            Debug.Log("Tr");
+
+            //移動入力を受け取る
+            float h = _playerControl.InputManager.HorizontalInput;
+
+            ////////////X軸の調整
+            if (h > 0)
+            {
+                _swingCinemachinePOV.m_HorizontalAxis.Value += _countCameraMoveAirX;
+            }
+            else if (h < 0)
+            {
+                _swingCinemachinePOV.m_HorizontalAxis.Value -= _countCameraMoveAirX;
+            }
+
+            Debug.Log(_countCameraMoveAirX);
+        }
+
+
 
 
     }
@@ -187,35 +304,21 @@ public class CameraControl : MonoBehaviour
         if (_isDontCameraMove)
         {
 
-            //移動入力を受け取る
-            float h = _playerControl.InputManager.HorizontalInput;
 
-            ////////////X軸の調整
-            if (true)
-            {
-                if (h > 0.8)
-                {
-                    _swingCinemachinePOV.m_HorizontalAxis.Value += _countCameraMoveX;
-                }
-                else if (h < -0.8)
-                {
-                    _swingCinemachinePOV.m_HorizontalAxis.Value -= _countCameraMoveX;
-                }
-            }
 
             ////////// //Y軸の調整
             if (velocityY > 0)
             {
-                if (_swingCinemachinePOV.m_VerticalAxis.Value > _firstYvalue - velocityY * 0.7f)
+                if (_swingCinemachinePOV.m_VerticalAxis.Value > -40)
                 {
-                    _swingCinemachinePOV.m_VerticalAxis.Value -= _countCameraMoveY;
+                    _swingCinemachinePOV.m_VerticalAxis.Value -= 0.1f;
                 }
             }
-            else
+            else if (velocityY < 0)
             {
-                if (_swingCinemachinePOV.m_VerticalAxis.Value < _downvalueY)
+                if (_swingCinemachinePOV.m_VerticalAxis.Value <= 20)
                 {
-                    _swingCinemachinePOV.m_VerticalAxis.Value += _countCameraMoveY;
+                    _swingCinemachinePOV.m_VerticalAxis.Value += 0.08f;
                 }
             }
         }
@@ -333,8 +436,15 @@ public class CameraControl : MonoBehaviour
     public void SwingEndSetCamera()
     {
         _countCameraMoveY = 0;
-        _countCameraMoveX = 0;
+        _countCameraMoveSwingingX = 0;
+        _autoFloowCount = 0;
     }
+
+    public void EndFollow()
+    {
+        _isEndAutoFollow = true;
+    }
+
 
 }
 

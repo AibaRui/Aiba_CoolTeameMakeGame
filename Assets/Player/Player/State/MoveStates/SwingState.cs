@@ -16,6 +16,18 @@ public class SwingState : PlayerStateBase
     {
         _stateMachine.PlayerController.AnimControl.Swing(false);
         _stateMachine.PlayerController.CameraControl.SwingEndSetCamera();
+
+
+        if (_stateMachine.PlayerController.PlayerT.eulerAngles.y > 180)
+        {
+            _stateMachine.PlayerController.CameraControl.SwingEndPlayerRotateY = _stateMachine.PlayerController.PlayerT.eulerAngles.y - 360;
+        }
+        else
+        {
+            _stateMachine.PlayerController.CameraControl.SwingEndPlayerRotateY = _stateMachine.PlayerController.PlayerT.eulerAngles.y;
+        }
+
+      //  Debug.Log($"最終は:{_stateMachine.PlayerController.PlayerT.eulerAngles.y}");
     }
 
     public override void FixedUpdate()
@@ -23,24 +35,33 @@ public class SwingState : PlayerStateBase
         _stateMachine.PlayerController.Swing.AddSpeed();
 
 
+
+
+
+        //カメラを傾ける
+        _stateMachine.PlayerController.CameraControl.SwingCameraYValues(_stateMachine.PlayerController.Rb.velocity.y, 20, -20, 20f);
+        //カメラを傾ける。X軸
+        _stateMachine.PlayerController.CameraControl.SwingCameraValueX(true);
     }
 
     public override void LateUpdate()
     {
         _stateMachine.PlayerController.Swing.DrawLope();
 
-        //カメラを傾ける
-        _stateMachine.PlayerController.CameraControl.SwingCameraYValues(_stateMachine.PlayerController.Rb.velocity.y, 20, -20, 20f);
+
 
     }
 
     public override void Update()
     {
+        _stateMachine.PlayerController.InputManager.SwingIngInputSet();
+
+
         //各動作のクールタイム
         _stateMachine.PlayerController.CoolTimes();
 
         _stateMachine.PlayerController.CameraControl.CountTime();
-        
+
         _stateMachine.PlayerController.Swing.SwingStartCount();
 
         _stateMachine.PlayerController.Swing.CheckLine();
@@ -81,6 +102,12 @@ public class SwingState : PlayerStateBase
             }
             _stateMachine.PlayerController.Swing.LastJumpUp();
             _stateMachine.PlayerController.Move.IsUseSpeedDash();
+
+            //スピードの加減の設定
+            _stateMachine.PlayerController.VelocityLimit.DoSpeedUp();
+
+            //カメラの追従を始める
+            _stateMachine.PlayerController.CameraControl.EndFollow();
         }
         else if (_stateMachine.PlayerController.InputManager.IsSwing != 1)
         {
@@ -103,6 +130,12 @@ public class SwingState : PlayerStateBase
                 }
 
             }
+
+            //カメラの追従を始める
+            _stateMachine.PlayerController.CameraControl.EndFollow();
+
+            //スピードの加減の設定
+            _stateMachine.PlayerController.VelocityLimit.DoSpeedUp();
         }
         else if (_stateMachine.PlayerController.InputManager.IsJumping)
         {
@@ -124,7 +157,11 @@ public class SwingState : PlayerStateBase
             {
                 _stateMachine.TransitionTo(_stateMachine.StateDownAir);
             }
+            //スピードの加減の設定
+            _stateMachine.PlayerController.VelocityLimit.DoSpeedUp();
 
+            //カメラの追従を始める
+            _stateMachine.PlayerController.CameraControl.EndFollow();
         }
 
     }
