@@ -21,6 +21,9 @@ public class StateWallIdle : PlayerStateBase
 
         //WallRun直後がは、Swingを不可にする
         _stateMachine.PlayerController.Swing.SetSwingFalse();
+
+        //FrontZipを実行可能にする
+        _stateMachine.PlayerController.ZipMove.SetCanZip();
     }
 
     public override void FixedUpdate()

@@ -160,7 +160,7 @@ public class Swing : IPlayerAction
         //強制的に短くする事で引っ張られる事になる
 
 
-        _playerControl.Joint.maxDistance = distanceFromPoint * 1.2f;
+        _playerControl.Joint.maxDistance = distanceFromPoint * 1f;
         // _playerControl.Joint.maxDistance = distanceFromPoint * 0.8f;
 
 
@@ -284,7 +284,7 @@ public class Swing : IPlayerAction
         var horizontalRotation = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up);
 
         //プレイヤーの向き
-        if (h!=0 || v!=0)
+        if (h != 0 || v != 0)
         {
             velo = horizontalRotation * new Vector3(h, 0, v).normalized;
             var rotationSpeed = 50 * Time.deltaTime;
@@ -302,6 +302,7 @@ public class Swing : IPlayerAction
             _targetRotation = Quaternion.LookRotation(Camera.main.transform.forward, Vector3.up);
             _playerControl.PlayerT.rotation = Quaternion.RotateTowards(_playerControl.PlayerT.rotation, _targetRotation, rotationSpeed);
         }
+
 
 
         //速度を加える方向
@@ -380,12 +381,14 @@ public class Swing : IPlayerAction
         }
     }
 
-    public void CheckLine()
+    public bool CheckLine()
     {
         if (swingPoint.y - 8 <= _playerControl.PlayerT.position.y)
         {
             _isSamLine = true;
+            return true;
         }
+        return false;
     }
 
     /// <summary>Swingのクールタイムを計測</summary>

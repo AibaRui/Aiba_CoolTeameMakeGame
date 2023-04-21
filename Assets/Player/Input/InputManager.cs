@@ -134,19 +134,7 @@ public class InputManager : MonoBehaviour
         _isMouseScrol = Input.GetAxis("Mouse ScrollWheel");
     }
 
-    public void SwingIngInputSet()
-    {
-        var h = Input.GetAxisRaw("Horizontal");
 
-        if (h > 0)
-        {
-            _swingingInputH = 1;
-        }
-        else if (h < 0)
-        {
-            _swingingInputH = -1;
-        }
-    }
 
     private void Update()
     {

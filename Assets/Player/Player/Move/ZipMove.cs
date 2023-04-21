@@ -8,7 +8,6 @@ public class ZipMove : IPlayerAction
     [Header("FrontZipの回数制限")]
     [SerializeField] private float _frontZipDoMaxCount = 2;
 
-
     [Header("FrontZipの実行時間")]
     [SerializeField] private float _frontZipTime = 1;
 
@@ -22,9 +21,13 @@ public class ZipMove : IPlayerAction
     [SerializeField] private float _frontZipSpeedSecond = 2;
 
     [Header("速度制限")]
-    [SerializeField] private Vector3 _limitSpeed = new Vector3(20,20,20);
+    [SerializeField] private Vector3 _limitSpeed = new Vector3(20, 20, 20);
 
+    [Header("1回目のカメラの距離")]
+    [SerializeField] private float _firstCameraDistance = 7;
 
+    [Header("1回目以降のカメラの距離")]
+    [SerializeField] private float _otherCameraDistance = 5.3f;
 
     private float _frontZipTimeCount = 0;
 
@@ -38,13 +41,11 @@ public class ZipMove : IPlayerAction
 
     public bool IsCanZip => _isCanZip;
 
-
+    Quaternion targetRotation;
 
     /// <summary>前方に加速する</summary>
     public void FrontZip()
     {
-
-
         _playerControl.VelocityLimit.SetLimit(_limitSpeed.x, _limitSpeed.y, _limitSpeed.z);
 
         //カメラのY軸の角度
@@ -62,13 +63,10 @@ public class ZipMove : IPlayerAction
             _playerControl.Rb.AddForce(dir * _frontZipSpeedSecond, ForceMode.Impulse);
         }   //2回目移行は遅い
 
-        _frontZipDoCount++;
-        Debug.Log(_frontZipDoCount);
         if (_frontZipDoCount <= _frontZipDoMaxCount)
         {
             _isCanZip = false;
         }
-
     }
 
     public void CountFrotZipTime()
@@ -78,33 +76,60 @@ public class ZipMove : IPlayerAction
         if (_frontZipTimeCount >= _frontZipTime)
         {
             _isEndFrontZip = true;
-        }else if(_frontZipTimeCount<_frontZipTime)
-        { 
-
         }
-
-
     }
 
-    public void ResetFrontZip(bool isResetDoCount)
+    public void ZipSetPlayerRotation()
     {
-        _frontZipTimeCount = 0;
+        var rotationSpeed = 300 * Time.deltaTime;
+
+        if (Mathf.Abs(_playerControl.PlayerT.rotation.y - targetRotation.y) > 0.1f)
+        {
+            _playerControl.PlayerT.rotation = Quaternion.RotateTowards(_playerControl.PlayerT.rotation, targetRotation, rotationSpeed);
+        }
+    }
+
+
+
+    /// <summary>Zipが終わった時の処理</summary>
+    public void EndZip()
+    {
+        //Zip終了のBoolを次のZipの為にリセット
         _isEndFrontZip = false;
 
-        if (isResetDoCount)
+        //Zip実行時間計測用のタイマーをリセット
+        _frontZipTimeCount = 0;
+
+        //回数を増加
+        _frontZipDoCount++;
+    }
+
+
+    /// <summary>Zipの実行を可能にする</summary>
+    public void SetCanZip()
+    {
+        //Zipの実行回数をリセット
+        _frontZipDoCount = 0;
+        //Zipを実行可能にする
+        _isCanZip = true;
+    }
+
+
+    public void SetCameraDistance()
+    {
+        targetRotation = Quaternion.LookRotation(Camera.main.transform.forward, Vector3.up);
+
+        float cameraDistance = 0;
+
+        if (_frontZipDoCount == 0)
         {
-            _frontZipDoCount = 0;
-            _isCanZip = true;
+            cameraDistance = _firstCameraDistance;
         }
-    }
+        else
+        {
+            cameraDistance = _otherCameraDistance;
+        }
 
-    void Start()
-    {
-
-    }
-
-    void Update()
-    {
-
+        _playerControl.CameraControl.ZipMoveCamera(cameraDistance);
     }
 }

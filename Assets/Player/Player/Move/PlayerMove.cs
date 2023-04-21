@@ -161,8 +161,6 @@ public class PlayerMove : IPlayerAction
 
     public void AirMove()
     {
-        //  Debug.Log("a");
-
         float h = _playerControl.InputManager.HorizontalInput;
         if (_playerControl.VelocityLimit.IsSpeedUp && h > 0)
         {
@@ -172,21 +170,24 @@ public class PlayerMove : IPlayerAction
         float v = _playerControl.InputManager.VerticalInput;
 
         var horizontalRotation = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up);
-
         velo = horizontalRotation * new Vector3(h, 0, v).normalized;
-
-
-        var rotationSpeed = 50 * Time.deltaTime;
+        var rotationSpeed = 100 * Time.deltaTime;
 
         if (velo.magnitude > 0.5f)
         {
             _targetRotation = Quaternion.LookRotation(velo, Vector3.up);
         }
 
-        if (!_playerControl.CameraControl.IsEndAutpFollow)
-        {
+        //if (!_playerControl.CameraControl.IsEndAutpFollow)
+        //{
             _playerControl.PlayerT.rotation = Quaternion.RotateTowards(_playerControl.PlayerT.rotation, _targetRotation, rotationSpeed);
-        }
+        // }
+
+
+        //モデルを傾かせる
+        //var rotationSpeed2 = 50 * Time.deltaTime;
+        //Quaternion _targetRotation2 = Quaternion.LookRotation(Camera.main.transform.forward, Vector3.up);
+        //_playerControl.ModelT.rotation = Quaternion.RotateTowards(_playerControl.ModelT.rotation, _targetRotation2, rotationSpeed2);
 
         _playerControl.Rb.AddForce(velo * _airMoveSpeed);
 

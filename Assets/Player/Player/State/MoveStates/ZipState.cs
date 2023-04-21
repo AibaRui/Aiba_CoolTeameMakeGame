@@ -7,20 +7,26 @@ public class ZipState : PlayerStateBase
 {
     public override void Enter()
     {
-        _stateMachine.PlayerController.AnimControl.FrontZip();
         //前方に飛ぶ
         _stateMachine.PlayerController.ZipMove.FrontZip();
+
+        //演出
+        _stateMachine.PlayerController.ZipMove.SetCameraDistance();
+
+        //アニメーションの設定
+        _stateMachine.PlayerController.AnimControl.FrontZip();
     }
 
     public override void Exit()
     {
         //FrontZipのタイマーをリセット
-        _stateMachine.PlayerController.ZipMove.ResetFrontZip(false);
+        _stateMachine.PlayerController.ZipMove.EndZip();
     }
 
     public override void FixedUpdate()
     {
-
+        //プレイヤーの角度を変更
+        _stateMachine.PlayerController.ZipMove.ZipSetPlayerRotation();
     }
 
     public override void LateUpdate()
@@ -35,16 +41,12 @@ public class ZipState : PlayerStateBase
 
         if (_stateMachine.PlayerController.ZipMove.IsEndFrontZip)
         {
-            if (_stateMachine.PlayerController.Rb.velocity.y > 0)
-            {
-                _stateMachine.TransitionTo(_stateMachine.StateUpAir);
-            }
-            else
-            {
-                _stateMachine.TransitionTo(_stateMachine.StateDownAir);
-            }
+            //推移。(Y速度によって水位先を変える)
+            if (_stateMachine.PlayerController.Rb.velocity.y > 0) _stateMachine.TransitionTo(_stateMachine.StateUpAir);
+            else _stateMachine.TransitionTo(_stateMachine.StateDownAir);
+
+            //空中で前方に加速する、ということを伝える
+            _stateMachine.PlayerController.VelocityLimit.DoSpeedUp();
         }
-
-
     }
 }

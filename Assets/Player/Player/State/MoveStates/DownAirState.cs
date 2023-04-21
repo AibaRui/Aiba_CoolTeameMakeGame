@@ -10,15 +10,13 @@ public class DownAirState : PlayerStateBase
         //カメラを遠巻きにする
         _stateMachine.PlayerController.CameraControl.SwingCamera();
 
+        //速度設定
         _stateMachine.PlayerController.VelocityLimit.SetLimit(15, 20, 15);
-
-
     }
 
     public override void Exit()
     {
         _stateMachine.PlayerController.Move.ReSetTime();
-
     }
 
     public override void FixedUpdate()
@@ -28,6 +26,7 @@ public class DownAirState : PlayerStateBase
 
         //速度の減衰
         _stateMachine.PlayerController.VelocityLimit.SlowToSpeedUp();
+
 
 
         //カメラの傾きを戻す
@@ -47,14 +46,12 @@ public class DownAirState : PlayerStateBase
 
     public override void Update()
     {   
-
-
-
         //カメラの時間
         _stateMachine.PlayerController.CameraControl.CountTime();
 
         //各動作のクールタイム
         _stateMachine.PlayerController.CoolTimes();
+
 
         _stateMachine.PlayerController.Move.DownSpeedOfSppedDash();
 
@@ -64,6 +61,7 @@ public class DownAirState : PlayerStateBase
         {
             _stateMachine.TransitionTo(_stateMachine.StateGrappleSetUp);
         }   //構え
+
 
         if (_stateMachine.PlayerController.InputManager.IsAvoid && _stateMachine.PlayerController.Avoid.IsCanAvoid)
         {
@@ -80,11 +78,6 @@ public class DownAirState : PlayerStateBase
             }
         }   //攻撃ステート
 
-        //Grapple
-        if (_stateMachine.PlayerController.InputManager.IsSwing < 0)
-        {
-            _stateMachine.TransitionTo(_stateMachine.StateGrappleSetUp);
-        }
 
         //壁が当たったら、WallRun状態に
         //if (_stateMachine.PlayerController.WallRunCheck.CheckWall())
@@ -120,6 +113,6 @@ public class DownAirState : PlayerStateBase
         {
             _stateMachine.TransitionTo(_stateMachine.StateIdle);
             return;
-        }
+        }   //地面
     }
 }

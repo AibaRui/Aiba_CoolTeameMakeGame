@@ -78,6 +78,8 @@ public class CameraControl : MonoBehaviour
 
     private float _autoFloowCount = 0;
 
+    private bool _isSwingEndCameraDistanceToLong = false;
+
     private float _swingEndPlayerRotateY;
     public float SwingEndPlayerRotateY { get => _swingEndPlayerRotateY; set => _swingEndPlayerRotateY = value; }
 
@@ -154,9 +156,9 @@ public class CameraControl : MonoBehaviour
         {
             if (_playerControl.Swing.IsSwingNow)
             {
-                if (_countCameraMoveSwingingX < 0.5)
+                if (_countCameraMoveSwingingX < 0.7)
                 {
-                    _countCameraMoveSwingingX += 0.01f;
+                    _countCameraMoveSwingingX += 0.02f;
                 }
             }
 
@@ -187,47 +189,60 @@ public class CameraControl : MonoBehaviour
     /// <summary>Swing後にプレイヤーのカメラの回転を補正する</summary>
     public void SwingEndCameraAutoFollow()
     {
-        if (_isEndAutoFollow && _isDontCameraMove)
-        {
-            if (_autoFloowCount < 0.8f)
-            {
-                _autoFloowCount += 0.01f;
-            }
+        //var h = _playerControl.InputManager.HorizontalInput;
+        //var v = _playerControl.InputManager.VerticalInput;
+        //if (h != 0 || v != 0)
+        //{
+        //    //追従を終了
+        //    _isEndAutoFollow = false;
+        //}
 
-            float y = 0;
-            if (_playerControl.PlayerT.eulerAngles.y > 180)
-            {
-                y = _playerControl.PlayerT.eulerAngles.y - 360;
-            }
-            else
-            {
-                y = _playerControl.PlayerT.eulerAngles.y;
-            }
+        //if (_isEndAutoFollow && _isDontCameraMove)
+        //{
+        //    if (_autoFloowCount < 0.8f)
+        //    {
+        //        _autoFloowCount += 0.01f;
+        //    }
 
-            float angleDiff = Mathf.DeltaAngle(y, _swingCinemachinePOV.m_HorizontalAxis.Value); // 角度差を-180度から180度の範囲に収める
+        //    float y = 0;
+        //    if (_playerControl.PlayerT.eulerAngles.y > 180)
+        //    {
+        //        y = _playerControl.PlayerT.eulerAngles.y - 360;
+        //    }
+        //    else
+        //    {
+        //        y = _playerControl.PlayerT.eulerAngles.y;
+        //    }
 
-            if (Mathf.Abs(angleDiff) > 90f)
-            {
-                angleDiff -= Mathf.Sign(angleDiff) * 180f;
-            }// 角度差が90度より大きい場合は、逆方向に回転する
+        //    float angleDiff = Mathf.DeltaAngle(y, _swingCinemachinePOV.m_HorizontalAxis.Value); // 角度差を-180度から180度の範囲に収める
 
-            if (angleDiff > 0f)
-            {
-                _swingCinemachinePOV.m_HorizontalAxis.Value -= Mathf.Min(angleDiff, _autoFloowCount);
-            }// プレイヤーの回転角度に近づくようにValueの値を減らす
-            else if (angleDiff < 0f)
-            {
-                _swingCinemachinePOV.m_HorizontalAxis.Value += Mathf.Min(-angleDiff, _autoFloowCount);
-            }// プレイヤーの回転角度に近づくようにValueの値を増やす
+        //    if (Mathf.Abs(angleDiff) > 90f)
+        //    {
+        //        angleDiff -= Mathf.Sign(angleDiff) * 180f;
+        //    }// 角度差が90度より大きい場合は、逆方向に回転する
 
-            float dis = Mathf.Abs(_swingEndPlayerRotateY - _swingCinemachinePOV.m_HorizontalAxis.Value);
+        //    if (angleDiff > 0f)
+        //    {
+        //        _swingCinemachinePOV.m_HorizontalAxis.Value -= Mathf.Min(angleDiff, _autoFloowCount);
+        //    }// プレイヤーの回転角度に近づくようにValueの値を減らす
+        //    else if (angleDiff < 0f)
+        //    {
+        //        _swingCinemachinePOV.m_HorizontalAxis.Value += Mathf.Min(-angleDiff, _autoFloowCount);
+        //    }// プレイヤーの回転角度に近づくようにValueの値を増やす
 
-            if (dis < 1f)
-            {
-                _isEndAutoFollow = false;
-                return;
-            }
-        }
+        //    float dis = Mathf.Abs(_swingEndPlayerRotateY - _swingCinemachinePOV.m_HorizontalAxis.Value);
+
+        //    if (dis < 1f)
+        //    {
+        //        //追従を終了
+        //        _isEndAutoFollow = false;
+
+        //        //現在のカメラの回転速度を受け継ぐ
+        //        _countCameraMoveAirX = _autoFloowCount;
+
+        //        return;
+        //    }
+        //}
     }
 
     public void SwingCameraValueX(bool isSwing)
@@ -249,13 +264,12 @@ public class CameraControl : MonoBehaviour
         }
         else
         {
-            if (_playerControl.VelocityLimit.IsSpeedUp || _isEndAutoFollow)
-            {
-                _countCameraMoveAirX = 0;
-                return;
-            }
-
-            Debug.Log("Tr");
+            //if (_playerControl.VelocityLimit.IsSpeedUp ||_isEndAutoFollow)
+            //{
+            //    _countCameraMoveAirX = 0;
+            //    return;
+            //}
+            //
 
             //移動入力を受け取る
             float h = _playerControl.InputManager.HorizontalInput;
@@ -269,25 +283,26 @@ public class CameraControl : MonoBehaviour
             {
                 _swingCinemachinePOV.m_HorizontalAxis.Value -= _countCameraMoveAirX;
             }
-
-            Debug.Log(_countCameraMoveAirX);
         }
-
-
-
-
     }
 
     /// <summary>Swing中にスクリーン上でのプレイヤーの位置を変更する</summary>
     /// <param name="velocityY"></param>
-    /// <param name="down"></param>
-    /// <param name="up"></param>
-    /// <param name="changeSpeed"></param>
     public void SwingCameraYValues(float velocityY, float down, float up, float changeSpeed)
     {
         //スクリーン上でのプレイヤーの位置の変更
         if (velocityY > 0)
         {
+            Vector3 v = new Vector3(0, velocityY, 0);
+            if (_swingCameraFraming.m_CameraDistance > _firstSwingCameraDistance + 0.5f)
+                _swingCameraFraming.m_CameraDistance -= 0.005f * v.magnitude;
+
+            if (Mathf.Abs(_swingCameraFraming.m_CameraDistance - (_firstSwingCameraDistance + 0.5f)) < 0.1f)
+            {
+                _swingCameraFraming.m_CameraDistance = _firstSwingCameraDistance + 0.5f;
+            }
+
+
             if (_swingCameraFraming.m_TrackedObjectOffset.y > _maxUpOffSet)
             {
                 _swingCameraFraming.m_TrackedObjectOffset.y -= Time.deltaTime;
@@ -295,52 +310,69 @@ public class CameraControl : MonoBehaviour
         }   //位置を下の方に下げる
         else if (velocityY < 0)
         {
+            //カメラの距離を離す
+            Vector3 v = new Vector3(0, velocityY, 0);
+            if (_swingCameraFraming.m_CameraDistance < _maxSwingCameraDistance)
+                _swingCameraFraming.m_CameraDistance += 0.01f * v.magnitude;
+
+            if (Mathf.Abs(_swingCameraFraming.m_CameraDistance - _maxSwingCameraDistance) < 0.1f)
+            {
+                _swingCameraFraming.m_CameraDistance = _maxSwingCameraDistance;
+            }
+
+
             if (_swingCameraFraming.m_TrackedObjectOffset.y < _maxDownOffSet)
             {
                 _swingCameraFraming.m_TrackedObjectOffset.y += Time.deltaTime;
-            }
-        }   //位置を上の方にする
+            } //位置を上の方にする
+        }
 
         if (_isDontCameraMove)
         {
-
-
-
             ////////// //Y軸の調整
             if (velocityY > 0)
             {
                 if (_swingCinemachinePOV.m_VerticalAxis.Value > -40)
                 {
-                    _swingCinemachinePOV.m_VerticalAxis.Value -= 0.1f;
+                    Vector3 v = new Vector3(0, velocityY, 0);
+                    _swingCinemachinePOV.m_VerticalAxis.Value -= 0.02f * v.magnitude;
+                    Debug.Log("d");
                 }
             }
             else if (velocityY < 0)
             {
                 if (_swingCinemachinePOV.m_VerticalAxis.Value <= 20)
                 {
-                    _swingCinemachinePOV.m_VerticalAxis.Value += 0.08f;
+                    Vector3 v = new Vector3(0, velocityY, 0);
+                    _swingCinemachinePOV.m_VerticalAxis.Value += 0.01f * v.magnitude;
+                    Debug.Log("v");
                 }
             }
         }
     }
 
-    public void SwingX(Vector3 dir)
-    {
-        //手動でカメラの角度を動かしていたら動かさない
-        if (_playerControl.InputManager.IsControlCameraValueChange == Vector2.zero)
-        {
-            return;
-        }
-
-    }
-
     /// <summary>Y軸の角度を直す</summary>
     public void AirCameraYValue(float velocityY)
     {
+        //Swing終わりに、カメラを離すかどうか
+        if (_isSwingEndCameraDistanceToLong)
+        {
+            if (velocityY < 0) _isSwingEndCameraDistanceToLong = false;
+
+            //カメラの距離を離す
+            Vector3 v = new Vector3(0, velocityY, 0);
+            if (_swingCameraFraming.m_CameraDistance < _maxSwingCameraDistance + 1)
+                _swingCameraFraming.m_CameraDistance += 0.01f * v.magnitude;
+
+            if (Mathf.Abs(_swingCameraFraming.m_CameraDistance - _maxSwingCameraDistance + 1) < 0.1f)
+            {
+                _swingCameraFraming.m_CameraDistance = _maxSwingCameraDistance + 1;
+            }
+        }
+
 
         if (_isUpEnd)
         {
-
             //モニター上でのプレイヤーの位置を変える。上の方に
             if (_swingCameraFraming.m_TrackedObjectOffset.y > -2)
             {
@@ -353,10 +385,6 @@ public class CameraControl : MonoBehaviour
             {
                 _isUpEnd = false;
             }
-
-
-
-
         }       //上方向に飛び上がった時
         else
         {
@@ -364,13 +392,19 @@ public class CameraControl : MonoBehaviour
             if (velocityY < 0)
             {
                 if (_swingCameraFraming.m_TrackedObjectOffset.y < _firstOffSet)
-                {
-                    _swingCameraFraming.m_TrackedObjectOffset.y += Time.deltaTime * 2;
-                }
+                    _swingCameraFraming.m_TrackedObjectOffset.y += Time.deltaTime * 0.5f;
+
+                if (_swingCameraFraming.m_TrackedObjectOffset.y > _firstOffSet)
+                    _swingCameraFraming.m_TrackedObjectOffset.y -= Time.deltaTime * 0.5f;
+
+                if (Mathf.Abs(_swingCameraFraming.m_TrackedObjectOffset.y - _firstOffSet) < 0.02f)
+                    _swingCameraFraming.m_TrackedObjectOffset.y = _firstOffSet;
+
 
                 if (_swingCameraFraming.m_CameraDistance > _firstSwingCameraDistance)
                 {
-                    _swingCameraFraming.m_CameraDistance -= Time.deltaTime;
+                    Vector3 v = new Vector3(0, _playerControl.Rb.velocity.y, 0);
+                    _swingCameraFraming.m_CameraDistance -= 0.004f * v.magnitude;
 
                     if (_swingCameraFraming.m_CameraDistance < _firstSwingCameraDistance)
                     {
@@ -378,6 +412,7 @@ public class CameraControl : MonoBehaviour
                     }
                 }
             }
+
             if (_isDontCameraMove)
             {
                 //カメラの角度を元に戻す
@@ -404,8 +439,22 @@ public class CameraControl : MonoBehaviour
                 }
             }
         }
-
     }
+
+
+    /// <summary>Zipをしたときのカメラ</summary>
+    public void ZipMoveCamera(float setDistance)
+    {
+        if (setDistance < _swingCameraFraming.m_CameraDistance)
+        {
+            return;
+        }
+
+        _swingCameraFraming.m_CameraDistance = setDistance;
+    }
+
+
+
     public void SwingCamera()
     {
         controllerCamera.Priority = 0;
@@ -436,6 +485,7 @@ public class CameraControl : MonoBehaviour
     public void SwingEndSetCamera()
     {
         _countCameraMoveY = 0;
+        _countCameraMoveAirX = _countCameraMoveSwingingX;
         _countCameraMoveSwingingX = 0;
         _autoFloowCount = 0;
     }
@@ -443,6 +493,7 @@ public class CameraControl : MonoBehaviour
     public void EndFollow()
     {
         _isEndAutoFollow = true;
+        _isSwingEndCameraDistanceToLong = true;
     }
 
 

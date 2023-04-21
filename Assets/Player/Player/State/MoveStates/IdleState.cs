@@ -14,8 +14,8 @@ public class IdleState : PlayerStateBase
 
     public override void Exit()
     {
-        //FrontZipのタイマーをリセット
-        _stateMachine.PlayerController.ZipMove.ResetFrontZip(true);
+        //FrontZipを実行可能にする
+        _stateMachine.PlayerController.ZipMove.SetCanZip();
     }
 
     public override void FixedUpdate()
