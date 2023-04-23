@@ -72,6 +72,7 @@ public class PlayerControl : MonoBehaviour
     public WallRunCheck WallRunCheck => _wallRunCheck;
     public Avoid Avoid => _avoid;
 
+
     public SetUp SetUp => _setUp;
 
     float h = 0;

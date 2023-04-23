@@ -41,16 +41,19 @@ public class SwingState : PlayerStateBase
         //Swing中の加速
         _stateMachine.PlayerController.Swing.AddSpeed();
 
-        //カメラを傾ける
-        _stateMachine.PlayerController.CameraControl.SwingCameraYValues(_stateMachine.PlayerController.Rb.velocity.y, 20, -20, 20f);
-        //カメラを傾ける。X軸
-        _stateMachine.PlayerController.CameraControl.SwingCameraValueX(true);
+
     }
 
     public override void LateUpdate()
     {
         //ロープを描画する
         _stateMachine.PlayerController.Swing.DrawLope();
+
+        //カメラを傾ける
+        _stateMachine.PlayerController.CameraControl.SwingCameraYValues(_stateMachine.PlayerController.Rb.velocity.y, 20, -20, 20f);
+        //カメラを傾ける。X軸
+        _stateMachine.PlayerController.CameraControl.SwingCameraValueX(true);
+
     }
 
     public override void Update()
@@ -60,9 +63,6 @@ public class SwingState : PlayerStateBase
 
         //カメラの回転速度を計算する
         _stateMachine.PlayerController.CameraControl.CountTime();
-
-        _stateMachine.PlayerController.Swing.SwingStartCount();
-
 
         //壁が当たったら、WallRun状態に
         if (_stateMachine.PlayerController.WallRunCheck.CheckWalAlll())
@@ -81,7 +81,7 @@ public class SwingState : PlayerStateBase
 
 
         //アンカーの着地点より高く上がったら
-        if (_stateMachine.PlayerController.Swing.CheckLine() && _stateMachine.PlayerController.Swing.IsStartSwing)
+        if (_stateMachine.PlayerController.Swing.CheckLine())
         {
             //ジャンプして終わる
             _stateMachine.PlayerController.Swing.StopSwing(true);
@@ -106,7 +106,7 @@ public class SwingState : PlayerStateBase
         }
 
         //Swingのボタンを離したら
-        if (_stateMachine.PlayerController.InputManager.IsSwing != 1)
+        if (_stateMachine.PlayerController.InputManager.IsSwing < 0.6f)
         {
             //ジャンプしないで終わる
             _stateMachine.PlayerController.Swing.StopSwing(false);

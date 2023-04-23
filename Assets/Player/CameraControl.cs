@@ -147,7 +147,7 @@ public class CameraControl : MonoBehaviour
         //ˆÚ“®“ü—Í‚ðŽó‚¯Žæ‚é
         float h = _playerControl.InputManager.HorizontalInput;
 
-        if (h == 0)
+        if (h > -0.8f && h < 0.8f)
         {
             _countCameraMoveSwingingX = 0;
             _countCameraMoveAirX = 0;
@@ -156,15 +156,15 @@ public class CameraControl : MonoBehaviour
         {
             if (_playerControl.Swing.IsSwingNow)
             {
-                if (_countCameraMoveSwingingX < 0.7)
+                if (_countCameraMoveSwingingX < 0.5)
                 {
-                    _countCameraMoveSwingingX += 0.02f;
+                    _countCameraMoveSwingingX += 0.01f;
                 }
             }
 
             if (!_playerControl.VelocityLimit.IsSpeedUp)
             {
-                if (_countCameraMoveAirX < 0.8f)
+                if (_countCameraMoveAirX < 0.3f)
                 {
                     _countCameraMoveAirX += 0.0001f * _playerControl.Rb.velocity.magnitude;
                 }
@@ -253,11 +253,11 @@ public class CameraControl : MonoBehaviour
             float h = _playerControl.InputManager.HorizontalInput;
 
             ////////////XŽ²‚Ì’²®
-            if (h > 0)
+            if (h > 0.8f)
             {
                 _swingCinemachinePOV.m_HorizontalAxis.Value += _countCameraMoveSwingingX;
             }
-            else if (h < 0)
+            else if (h < -0.8f)
             {
                 _swingCinemachinePOV.m_HorizontalAxis.Value -= _countCameraMoveSwingingX;
             }
@@ -275,11 +275,11 @@ public class CameraControl : MonoBehaviour
             float h = _playerControl.InputManager.HorizontalInput;
 
             ////////////XŽ²‚Ì’²®
-            if (h > 0)
+            if (h > 0.8f)
             {
                 _swingCinemachinePOV.m_HorizontalAxis.Value += _countCameraMoveAirX;
             }
-            else if (h < 0)
+            else if (h < -0.8f)
             {
                 _swingCinemachinePOV.m_HorizontalAxis.Value -= _countCameraMoveAirX;
             }
@@ -295,7 +295,7 @@ public class CameraControl : MonoBehaviour
         {
             Vector3 v = new Vector3(0, velocityY, 0);
             if (_swingCameraFraming.m_CameraDistance > _firstSwingCameraDistance + 0.5f)
-                _swingCameraFraming.m_CameraDistance -= 0.005f * v.magnitude;
+                _swingCameraFraming.m_CameraDistance -= 0.002f * v.magnitude;
 
             if (Mathf.Abs(_swingCameraFraming.m_CameraDistance - (_firstSwingCameraDistance + 0.5f)) < 0.1f)
             {
@@ -335,17 +335,16 @@ public class CameraControl : MonoBehaviour
                 if (_swingCinemachinePOV.m_VerticalAxis.Value > -40)
                 {
                     Vector3 v = new Vector3(0, velocityY, 0);
-                    _swingCinemachinePOV.m_VerticalAxis.Value -= 0.02f * v.magnitude;
+                    _swingCinemachinePOV.m_VerticalAxis.Value -= 0.016f * v.magnitude;
                     Debug.Log("d");
                 }
             }
             else if (velocityY < 0)
             {
-                if (_swingCinemachinePOV.m_VerticalAxis.Value <= 20)
+                if (_swingCinemachinePOV.m_VerticalAxis.Value <= 30)
                 {
                     Vector3 v = new Vector3(0, velocityY, 0);
-                    _swingCinemachinePOV.m_VerticalAxis.Value += 0.01f * v.magnitude;
-                    Debug.Log("v");
+                    _swingCinemachinePOV.m_VerticalAxis.Value += 0.008f * v.magnitude;
                 }
             }
         }
@@ -420,7 +419,7 @@ public class CameraControl : MonoBehaviour
                 {
                     if (_swingCinemachinePOV.m_VerticalAxis.Value > _firstYvalue)
                     {
-                        _swingCinemachinePOV.m_VerticalAxis.Value -= Time.deltaTime * 20;
+                        _swingCinemachinePOV.m_VerticalAxis.Value -= Time.deltaTime * 10;
 
                         if (_swingCinemachinePOV.m_VerticalAxis.Value < _firstYvalue)
                         {
@@ -429,7 +428,7 @@ public class CameraControl : MonoBehaviour
                     }
                     else if (_swingCinemachinePOV.m_VerticalAxis.Value < _firstYvalue)
                     {
-                        _swingCinemachinePOV.m_VerticalAxis.Value += Time.deltaTime * 20;
+                        _swingCinemachinePOV.m_VerticalAxis.Value += Time.deltaTime * 10;
 
                         if (_swingCinemachinePOV.m_VerticalAxis.Value > _firstYvalue)
                         {
@@ -485,7 +484,7 @@ public class CameraControl : MonoBehaviour
     public void SwingEndSetCamera()
     {
         _countCameraMoveY = 0;
-        _countCameraMoveAirX = _countCameraMoveSwingingX;
+       // _countCameraMoveAirX = _countCameraMoveSwingingX;
         _countCameraMoveSwingingX = 0;
         _autoFloowCount = 0;
     }

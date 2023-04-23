@@ -59,8 +59,6 @@ public class Swing : IPlayerAction
     [Header("Swing前に地面につきそうになった時に加える力")]
     [SerializeField] private Vector3 _addForceNearGroundNoSwing;
 
-    private bool _isStartSwing = false;
-
     private float _addUpTimeCount = 0;
 
     [Header("Test用、固定")]
@@ -76,12 +74,7 @@ public class Swing : IPlayerAction
     [SerializeField] private float _massScale = 4.5f;
 
 
-
-
-
     private bool _isAddEnd = false;
-
-    private float _startSwingCount = 0;
 
     private float _countCoolTime = 0;
 
@@ -94,7 +87,6 @@ public class Swing : IPlayerAction
     private bool _isSwingNow = false;
 
     private float _wireLong;
-    public bool IsStartSwing => _isStartSwing;
     public bool IsSamLime => _isSamLine;
     public bool IsSwingNow => _isSwingNow;
     public bool IsCanSwing => _isCanSwing;
@@ -107,6 +99,9 @@ public class Swing : IPlayerAction
 
 
     private bool _isSetEndMaxDis = false;
+
+
+    private Vector3 _loapPoint;
 
 
     /// <summary>Swingの速度制限</summary>
@@ -130,6 +125,7 @@ public class Swing : IPlayerAction
         if (_playerControl.GroundCheck.IsHitSwingGround())
         {
             _isFirstNearGround = true;
+            _isDown = true;
             _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, 0, _playerControl.Rb.velocity.z);
         }
 
@@ -142,7 +138,9 @@ public class Swing : IPlayerAction
         //アンカーの着地点。
         // var r = Camera.main.transform.TransformDirection(_swingHitPos);
         // swingPoint = r + _playerControl.PlayerT.position;
-        swingPoint = _playerControl.SearchSwingPoint.SwingPos;
+        swingPoint = _playerControl.SearchSwingPoint.RealSwingPoint;
+
+        _loapPoint = _playerControl.SearchSwingPoint.SwingPos;
 
         //Anchor(jointをつけているオブジェクトのローカル座標  ////例)自分についてる命綱の位置)
         //connectedAnchor(アンカーのついてる点のワールド座標　////例)アンカーの先。バンジージャンプの橋の、支えているところ)
@@ -156,18 +154,13 @@ public class Swing : IPlayerAction
         //自分とアンカーの位置の間(ジョイント)の長さ。
         distanceFromPoint = Vector3.Distance(_playerControl.transform.position, swingPoint);
 
-        //ジョイントの長さを変更(*1だとアンカーを指しても長さが縮まらないため、すぐに浮かない)
-        //強制的に短くする事で引っ張られる事になる
+        float anckerToPlayer = Vector3.Distance(_playerControl.transform.position, swingPoint);
+        float anckerToGround = swingPoint.y - _playerControl.GroundCheck.IsSwingPlayerToGroundOfLong();
 
 
         _playerControl.Joint.maxDistance = distanceFromPoint * 1f;
-        // _playerControl.Joint.maxDistance = distanceFromPoint * 0.8f;
+        _playerControl.Joint.minDistance = distanceFromPoint * 0.6f;
 
-
-        _playerControl.Joint.minDistance = distanceFromPoint * 0.3f;
-
-
-        // _playerControl.Joint.spring = 0;
 
         _wireLong = distanceFromPoint;
 
@@ -199,7 +192,7 @@ public class Swing : IPlayerAction
 
 
         _playerControl.LineRenderer.SetPosition(0, _playerControl.Hads.position);
-        _playerControl.LineRenderer.SetPosition(1, swingPoint);
+        _playerControl.LineRenderer.SetPosition(1, _loapPoint);
     }
 
     /// <summary>スウィング中止</summary>
@@ -212,65 +205,14 @@ public class Swing : IPlayerAction
 
         _isSwingNow = false;
 
-        _startSwingCount = 0;
-        _isStartSwing = false;
-
         _isFirstNearGround = false;
 
-        if (!isJump)
-        {
-            _playerControl.Rb.useGravity = true;
-        }
+
+        _playerControl.Rb.useGravity = true;
 
         _countDownTime = 0;
         _isDown = false;
         _isSetEndMaxDis = false;
-    }
-
-
-
-    public void SwingStartCount()
-    {
-        if (!_isStartSwing)
-        {
-            _startSwingCount += Time.deltaTime;
-
-
-            if ((_startSwingCount > 0.2f) && !_playerControl.GroundCheck.IsHitSwingGround())
-            {
-                _isStartSwing = true;
-            }
-
-        }
-    }
-
-
-    public void SwingCamera()
-    {
-        //入力を受け取る
-        float h = _playerControl.InputManager.HorizontalInput;
-        float v = _playerControl.InputManager.VerticalInput;
-
-        var horizontalRotation = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up);
-
-        //手動でカメラの角度を動かしていたら動かさない
-        if (_playerControl.InputManager.IsControlCameraValueChange == Vector2.zero)
-        {
-
-            Vector3 velo2 = horizontalRotation * new Vector3(h, 0, v).normalized;
-            var rSpeed = 100 * Time.deltaTime;
-            var rSpeed2 = 300 * Time.deltaTime;
-
-            _targetRotation = Quaternion.LookRotation(velo, Vector3.up);
-
-            Vector3 playerFoward = _playerControl.transform.forward.normalized;
-            playerFoward.y = 0;
-
-            Quaternion _targetRotationC = Quaternion.LookRotation(playerFoward, Vector3.up);
-            //Camera.main.transform.rotation = Quaternion.RotateTowards(Camera.main.transform.rotation, _targetRotationC, rSpeed2);
-            Debug.Log("A");
-
-        }
     }
 
 
@@ -303,8 +245,6 @@ public class Swing : IPlayerAction
             _playerControl.PlayerT.rotation = Quaternion.RotateTowards(_playerControl.PlayerT.rotation, _targetRotation, rotationSpeed);
         }
 
-
-
         //速度を加える方向
         Vector3 addDir = default;
 
@@ -321,18 +261,20 @@ public class Swing : IPlayerAction
                 {
                     _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, 0, _playerControl.Rb.velocity.z);
                 }
+                _playerControl.Rb.useGravity = false;
+
+                _isDown = true;
                 _isFirstNearGround = true;
             }
         }
 
-        //地面に近いときは、上方向に力を加える
-        if (_isFirstNearGround)
-        {
-            _playerControl.Rb.AddForce(new Vector3(0, 1, 0) * _addUpPowerNearGround);
-        }
-
         if (v != 0 || h != 0)
         {
+            //地面に近いかどうかを確認
+            if (_playerControl.GroundCheck.IsHitSwingGround())
+            {
+                v = v * 0.5f;
+            }
             addDir = horizontalRotation * new Vector3(h, 0, v).normalized;
             speed = _addFrontPowerMove;
 
@@ -340,36 +282,15 @@ public class Swing : IPlayerAction
         else
         {
             addDir = Camera.main.transform.forward;
+            addDir.y = 0;
+
             speed = _addFrontPowerNoMove;
         } //入力なしの場合
 
-        _playerControl.Rb.AddForce(addDir.normalized * speed);
-
-
-        if (!_isSetEndMaxDis)
-        {
-            var groundDir = Mathf.Abs(swingPoint.y - _playerControl.GroundCheck.IsSwingPlayerToGroundOfLong());
-            var swingPointDir = Vector3.Distance(_playerControl.transform.position, swingPoint);
-
-            float _maxDistance = 0;
-
-            if (groundDir - 3 <= swingPointDir)
-            {
-                _isSetEndMaxDis = true;
-                _maxDistance = swingPointDir;
-                _playerControl.Joint.maxDistance = _maxDistance;
-                _playerControl.Joint.minDistance = _maxDistance;
-            }
-        }
-
         if (_isDown)
         {
-            if (!_isSetEndMaxDis)
-            {
-                _playerControl.Joint.maxDistance = distanceFromPoint;
-                _playerControl.Joint.minDistance = distanceFromPoint;
-            }
-            _playerControl.Rb.AddForce(Vector3.up * 20);
+            speed += 10;
+            _playerControl.Rb.AddForce(Vector3.up * 30);
         }
         else
         {
@@ -379,6 +300,8 @@ public class Swing : IPlayerAction
                 _isDown = true;
             }
         }
+
+        _playerControl.Rb.AddForce(addDir.normalized * speed);
     }
 
     public bool CheckLine()
@@ -430,35 +353,11 @@ public class Swing : IPlayerAction
 
     public void LastJumpFront()
     {
-
-        //   Debug.Log("ラスト:前にジャンプ");
-        float h = _playerControl.InputManager.HorizontalInput;
-        float v = _playerControl.InputManager.VerticalInput;
-
-        var horizontalRotation = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up);
-
-        velo = horizontalRotation * new Vector3(_addJumpFrontDir.x, _addJumpFrontDir.y, _addJumpFrontDir.z).normalized;
-        _playerControl.Rb.AddForce(velo * _addJumpFrontPower, ForceMode.Impulse);
-
-
-        _playerControl.Rb.useGravity = true;
+        _playerControl.Rb.AddForce(_playerControl.PlayerT.forward.normalized * _addJumpFrontPower, ForceMode.Impulse);
     }
 
     public void LastJumpUp()
     {
-        //_playerControl.Rb.velocity = Vector3.zero;
-        // Debug.Log("ラスト:上にジャンプ");
-        float h = _playerControl.InputManager.HorizontalInput;
-        float v = _playerControl.InputManager.VerticalInput;
-
-        var horizontalRotation = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up);
-
-        //velo = horizontalRotation * new Vector3(_addJumpUpDir.x, _addJumpUpDir.y, _addJumpUpDir.z).normalized;
-
-        velo = _playerControl.Rb.velocity.normalized;
-
-        _playerControl.Rb.AddForce(velo * _addJumpUpPower, ForceMode.Impulse);
-
-        _playerControl.Rb.useGravity = true;
+        _playerControl.Rb.AddForce(_playerControl.PlayerT.forward.normalized + Vector3.up * _addJumpUpPower, ForceMode.Impulse);
     }
 }

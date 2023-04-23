@@ -25,6 +25,7 @@ public class PlayerAnimationControl
 
     public void FrontZip()
     {
+
         _playerControl.Anim.SetTrigger("FrontZip");
     }
 

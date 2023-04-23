@@ -71,7 +71,7 @@ public class PlayerMove : IPlayerAction
 
             Vector3 vea = new Vector3(_playerControl.Rb.velocity.x, 0, _playerControl.Rb.velocity.z);
 
-            _playerControl.Rb.AddForce(-dir * 15);
+          //  _playerControl.Rb.AddForce(-dir * 15);
 
 
 

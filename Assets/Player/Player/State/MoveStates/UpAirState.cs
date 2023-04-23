@@ -11,7 +11,7 @@ public class UpAirState : PlayerStateBase
         _stateMachine.PlayerController.CameraControl.SwingCamera();
 
 
-        _stateMachine.PlayerController.VelocityLimit.SetLimit(15, 20, 15);
+        _stateMachine.PlayerController.VelocityLimit.SetLimit(25, 20, 25);
 
 
     }
@@ -33,6 +33,11 @@ public class UpAirState : PlayerStateBase
 
 
 
+    }
+
+    public override void LateUpdate()
+    {
+
         //ƒJƒƒ‰‚ÌŒX‚«‚ğ–ß‚·
         _stateMachine.PlayerController.CameraControl.AirCameraYValue(_stateMachine.PlayerController.Rb.velocity.y);
 
@@ -41,11 +46,6 @@ public class UpAirState : PlayerStateBase
 
         //ƒJƒƒ‰‚ğŒX‚¯‚éBX²
         _stateMachine.PlayerController.CameraControl.SwingCameraValueX(false);
-    }
-
-    public override void LateUpdate()
-    {
-
     }
 
     public override void Update()

@@ -27,6 +27,7 @@ public class SearchSwingPoint : IPlayerAction
     [Header("ワイヤーの最短の長さ")]
     [SerializeField] private float _minWireLong = 15;
 
+    [SerializeField] private Transform _Cpos;
 
     [SerializeField] private LayerMask _layer;
 
@@ -34,6 +35,9 @@ public class SearchSwingPoint : IPlayerAction
     private bool _isCanHit;
     /// <summary>Swingのワイヤーを刺す位置</summary>
     private Vector3 _swingPosition;
+    private Vector3 _realSwingPoint;
+    public Vector3 RealSwingPoint { get => _realSwingPoint; set => _realSwingPoint = value; }
+
 
     public Vector3 SwingPos => _swingPosition;
     public bool IsCanHit => _isCanHit;
@@ -149,6 +153,16 @@ public class SearchSwingPoint : IPlayerAction
                     // {
                     _isCanHit = true;
                     _swingPosition = hit.point;
+
+                    Vector3 d = new Vector3(_playerControl.PlayerT.position.x, _swingPosition.y, _playerControl.PlayerT.position.z);
+
+                    Vector3 f = Camera.main.transform.forward;
+                    f.y = 0;
+
+                    Vector3 dirPlayer = d + f * 20;
+
+                    _realSwingPoint = dirPlayer;
+
                     return _swingPosition;
                     //  }
                 }

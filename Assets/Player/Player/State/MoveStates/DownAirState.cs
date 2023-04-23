@@ -11,7 +11,7 @@ public class DownAirState : PlayerStateBase
         _stateMachine.PlayerController.CameraControl.SwingCamera();
 
         //速度設定
-        _stateMachine.PlayerController.VelocityLimit.SetLimit(15, 20, 15);
+        _stateMachine.PlayerController.VelocityLimit.SetLimit(25, 20, 25);
     }
 
     public override void Exit()
@@ -29,6 +29,11 @@ public class DownAirState : PlayerStateBase
 
 
 
+
+    }
+
+    public override void LateUpdate()
+    {
         //カメラの傾きを戻す
         _stateMachine.PlayerController.CameraControl.AirCameraYValue(_stateMachine.PlayerController.Rb.velocity.y);
 
@@ -37,11 +42,6 @@ public class DownAirState : PlayerStateBase
 
         //カメラを傾ける。X軸
         _stateMachine.PlayerController.CameraControl.SwingCameraValueX(false);
-    }
-
-    public override void LateUpdate()
-    {
-
     }
 
     public override void Update()

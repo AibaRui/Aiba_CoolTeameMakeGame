@@ -9,6 +9,13 @@ public class WallRun : IPlayerAction
     [SerializeField] private float _moveSpeed = 4;
 
 
+    [Header("プレイヤーの回転の速さ")]
+    [SerializeField] private float _rotateSpeed = 200;
+
+    /// <summary>外積を求める関数</summary>
+    /// <param name="nomal"></param>
+    /// <param name="foward"></param>
+    /// <returns></returns>
     public Vector3 GetCross(Vector3 nomal, Vector3 foward)
     {
         //法線を取る
@@ -26,7 +33,7 @@ public class WallRun : IPlayerAction
     }
 
 
-    /// <summary>壁を背にする形のベクトルを求め,モデルの方向を決める</summary>
+    /// <summary>止まっている際のプレイヤーの向きを決める</summary>
     public void MidleDir()
     {
         //壁の外積を取る
@@ -35,35 +42,49 @@ public class WallRun : IPlayerAction
         //壁と垂直のベクトルをとる
         Vector3 dir = GetCross(wallForward, _playerControl.WallRunCheck.Hit.normal);
 
-        var rotationSpeed = 400 * Time.deltaTime;
+        //プレイヤーの向く方向
+        Quaternion _targetRotation = Quaternion.LookRotation(dir, Vector3.up);
 
-        Quaternion _targetRotation = Quaternion.LookRotation(-dir, Vector3.up);
+        //向くべき方向とプレイヤーの差を求める
+        float rotateDiff = Vector3.Angle(_playerControl.PlayerT.transform.forward, dir);
 
-        float y = Quaternion.Angle(_targetRotation, _playerControl.ModelT.rotation);
+        //誤差が1度以下で回転補正は終了
+        if (rotateDiff < 1) return;
 
-        if (y < 1) return;
+        //回転の速さ
+        float rotationSpeed = _rotateSpeed * Time.deltaTime;
 
-        _playerControl.ModelT.rotation = Quaternion.RotateTowards(_playerControl.ModelT.rotation, _targetRotation, -rotationSpeed);
+        //回転処理
+        Quaternion setRotation = Quaternion.RotateTowards(_playerControl.PlayerT.rotation, _targetRotation, rotationSpeed);
+        setRotation.x = 0;
+        setRotation.z = 0;
+        _playerControl.PlayerT.rotation = setRotation;
+
     }
 
     /// <summary>壁の方向に力を加える</summary>
     public void AddWall()
     {
-        if (_playerControl.WallRunCheck.Hit.collider!=null)
+        if (_playerControl.WallRunCheck.Hit.collider == null)
         {
-            //壁と平衡のベクトル。外積で求める
-            Vector3 wallForward = GetCross(_playerControl.WallRunCheck.Hit.normal, Camera.main.transform.forward);
+            return;
+        }   //nullチェック
 
-            //壁と垂直のベクトルをとる
-            Vector3 dir = Vector3.Cross(wallForward, _playerControl.PlayerT.up);
+        //壁と平衡のベクトル。外積で求める
+        Vector3 wallForward = GetCross(_playerControl.WallRunCheck.Hit.normal, Camera.main.transform.forward);
 
-            if ((_playerControl.WallRunCheck.Hit.normal - dir).magnitude > (_playerControl.WallRunCheck.Hit.normal - -dir).magnitude)
-            {
-                dir = -dir;
-            }
+        //壁と垂直のベクトルをとる
+        Vector3 dir = Vector3.Cross(wallForward, Vector3.up);
 
-            _playerControl.Rb.AddForce(-dir * 5);
+        //dirの向きが壁と反対の方向だった際には、反転させる。
+        if ((_playerControl.WallRunCheck.Hit.normal - dir).magnitude > (_playerControl.WallRunCheck.Hit.normal - -dir).magnitude)
+        {
+            dir = -dir;
         }
+
+        Debug.DrawRay(_playerControl.PlayerT.position, dir, Color.blue);
+
+        _playerControl.Rb.AddForce(-dir * 5);
     }
 
 
@@ -79,10 +100,10 @@ public class WallRun : IPlayerAction
         //回転したい方向
         Quaternion _targetRotation = Quaternion.LookRotation(_wallForward, Vector3.up);
         //回転させる
-        _playerControl.ModelT.rotation = Quaternion.RotateTowards(_playerControl.ModelT.rotation, _targetRotation, rotationSpeed);
+        _playerControl.PlayerT.rotation = Quaternion.RotateTowards(_playerControl.PlayerT.rotation, _targetRotation, rotationSpeed);
 
         //現在の回転と、回転終了との角度を比べる
-        float y = Quaternion.Angle(_targetRotation, _playerControl.ModelT.rotation);
+        float y = Quaternion.Angle(_targetRotation, _playerControl.PlayerT.rotation);
 
         if (y < 1)
         {
@@ -118,12 +139,12 @@ public class WallRun : IPlayerAction
             {
                 _playerControl.Rb.AddForce(-dir * 1);
                 _playerControl.Rb.AddForce(_wallForward * _moveSpeed);
-                _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x,0, _playerControl.Rb.velocity.z);
+                _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, 0, _playerControl.Rb.velocity.z);
             }
         }
         else
         {
-            _playerControl.Rb.velocity = Vector3.zero;
+            // _playerControl.Rb.velocity = Vector3.zero;
         }
     }
 
@@ -131,15 +152,15 @@ public class WallRun : IPlayerAction
     {
         if (_playerControl.WallRunCheck.TatchingWall == WallRunCheck.TatchWall.Forward)
         {
-            _playerControl.Rb.AddForce(-_playerControl.PlayerT.forward * 5);
+            _playerControl.Rb.AddForce(-_playerControl.WallRunCheck.Hit.normal * 5);
         }
         else if (_playerControl.WallRunCheck.TatchingWall == WallRunCheck.TatchWall.Right)
         {
-            _playerControl.Rb.AddForce(-_playerControl.PlayerT.right * 5);
+            _playerControl.Rb.AddForce(-_playerControl.WallRunCheck.Hit.normal * 5);
         }
         else
         {
-            _playerControl.Rb.AddForce(_playerControl.PlayerT.right * 5);
+            _playerControl.Rb.AddForce(-_playerControl.WallRunCheck.Hit.normal * 5);
         }
 
         _playerControl.ModelT.rotation = _playerControl.PlayerT.rotation;
