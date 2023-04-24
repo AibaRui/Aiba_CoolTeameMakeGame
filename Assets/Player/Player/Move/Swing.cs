@@ -138,8 +138,11 @@ public class Swing : IPlayerAction
         //アンカーの着地点。
         // var r = Camera.main.transform.TransformDirection(_swingHitPos);
         // swingPoint = r + _playerControl.PlayerT.position;
+
+
         swingPoint = _playerControl.SearchSwingPoint.RealSwingPoint;
 
+       // _loapPoint = _playerControl.SearchSwingPoint.RealSwingPoint;
         _loapPoint = _playerControl.SearchSwingPoint.SwingPos;
 
         //Anchor(jointをつけているオブジェクトのローカル座標  ////例)自分についてる命綱の位置)
@@ -263,6 +266,9 @@ public class Swing : IPlayerAction
                 }
                 _playerControl.Rb.useGravity = false;
 
+                _playerControl.Joint.maxDistance = distanceFromPoint * 1f;
+                _playerControl.Joint.minDistance = distanceFromPoint * 1f;
+
                 _isDown = true;
                 _isFirstNearGround = true;
             }
@@ -298,6 +304,9 @@ public class Swing : IPlayerAction
             if (_downTime < _countDownTime)
             {
                 _isDown = true;
+
+                _playerControl.Joint.maxDistance = distanceFromPoint * 1f;
+                _playerControl.Joint.minDistance = distanceFromPoint * 1f;
             }
         }
 

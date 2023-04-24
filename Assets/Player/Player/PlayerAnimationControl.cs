@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class PlayerAnimationControl 
+public class PlayerAnimationControl
 {
 
 
@@ -13,8 +13,8 @@ public class PlayerAnimationControl
     {
         _playerControl = playerControl;
     }
-        
-   public void AnimSet()
+
+    public void AnimSet()
     {
         _playerControl.Anim.SetFloat("Speed", _playerControl.Rb.velocity.magnitude);
         _playerControl.Anim.SetFloat("SpeedY", _playerControl.Rb.velocity.y);
@@ -22,6 +22,11 @@ public class PlayerAnimationControl
         _playerControl.Anim.SetFloat("PosY", _playerControl.PlayerT.position.y);
     }
 
+
+    public void Avoid()
+    {
+        _playerControl.Anim.Play("AvoidGroundFront");
+    }
 
     public void FrontZip()
     {
@@ -31,12 +36,25 @@ public class PlayerAnimationControl
 
     public void Swing(bool a)
     {
-        _playerControl.Anim.SetBool("IsSwing",a);
+        _playerControl.Anim.SetBool("IsSwing", a);
     }
 
     public void WallRunSet(bool isHit)
     {
         _playerControl.Anim.SetBool("IsWallHit", isHit);
+    }
+
+    public void WallRunTransition()
+    {
+        if (_playerControl.WallRunCheck.IsWallRightHit)
+        {
+            _playerControl.Anim.Play("WallHitRight");
+        }
+        else
+        {
+            _playerControl.Anim.Play("WallHitLeft");
+        }
+
     }
 
 

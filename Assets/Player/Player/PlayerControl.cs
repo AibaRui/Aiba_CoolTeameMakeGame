@@ -40,7 +40,7 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private Attack _attack;
     [SerializeField] private Avoid _avoid;
     [SerializeField] private SetUp _setUp;
-
+    [SerializeField] private PlayerEffectControl _effectControl;
 
 
     private SpringJoint _joint;
@@ -71,6 +71,7 @@ public class PlayerControl : MonoBehaviour
     public Attack Attack => _attack;
     public WallRunCheck WallRunCheck => _wallRunCheck;
     public Avoid Avoid => _avoid;
+    public PlayerEffectControl EffectControl => _effectControl;
 
 
     public SetUp SetUp => _setUp;
@@ -96,6 +97,7 @@ public class PlayerControl : MonoBehaviour
         _attack.Init(this);
         _avoid.Init(this);
         _setUp.Init(this);
+        _effectControl.Init(this);
     }
 
     void Start()
@@ -121,6 +123,8 @@ public class PlayerControl : MonoBehaviour
         _searchSwingPoint.Search(PlayerT);
 
         _wallRunCheck.CheckWallFront();
+
+        _effectControl.ConcentrationLineEffect();
     }
 
     private void FixedUpdate()

@@ -45,20 +45,26 @@ public class StateWallIdle : PlayerStateBase
         //各動作のクールタイム
         _stateMachine.PlayerController.CoolTimes();
 
-        if (_stateMachine.PlayerController.InputManager.IsSwing>0)
+        if (_stateMachine.PlayerController.InputManager.IsSwing > 0)
         {
             _stateMachine.TransitionTo(_stateMachine.StateWallRun);
         }    //WallRunへ移行
 
         if (_stateMachine.PlayerController.InputManager.IsJumping)
         {
+            //重力をオン
+            _stateMachine.PlayerController.Rb.useGravity = true;
+
             //WallRunのAnimatorを設定
             _stateMachine.PlayerController.AnimControl.WallRunSet(false);
 
+            //ジャンプ処理
+            _stateMachine.PlayerController.WallRun.LastJump(false);
+
+            //WallRunへ移行
             _stateMachine.TransitionTo(_stateMachine.StateJump);
-            _stateMachine.PlayerController.WallRun.LastJump();
-            _stateMachine.PlayerController.Rb.useGravity = true;
-        }    //WallRunへ移行
+
+        }
 
     }
 }

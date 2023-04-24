@@ -8,7 +8,8 @@ public class AvoidState : PlayerStateBase
     public override void Enter()
     {
         _stateMachine.PlayerController.Avoid.SetSpeedLimit();
-        Debug.Log("Avoid");
+
+        _stateMachine.PlayerController.AnimControl.Avoid();
     }
 
     public override void Exit()

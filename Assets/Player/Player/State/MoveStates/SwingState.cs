@@ -75,6 +75,9 @@ public class SwingState : PlayerStateBase
             {
                 _stateMachine.TransitionTo(_stateMachine.StateWallIdle);
             }
+
+            _stateMachine.PlayerController.AnimControl.WallRunTransition();
+
             _stateMachine.PlayerController.Swing.StopSwing(false);
             return;
         }

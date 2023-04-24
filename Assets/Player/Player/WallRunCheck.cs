@@ -38,6 +38,10 @@ public class WallRunCheck : IPlayerAction
 
     public RaycastHit Hit => _hit;
 
+    private bool _isWallHitRight = false;
+
+    public bool IsWallRightHit => _isWallHitRight;
+
     /// <summary>接触している壁の方向</summary>
     public enum TatchWall
     {
@@ -81,12 +85,14 @@ public class WallRunCheck : IPlayerAction
         if (right)
         {
             _tatchWall = TatchWall.Right;
+            _isWallHitRight = true;
             return true;
         }
 
         if (left)
         {
             _tatchWall = TatchWall.Left;
+            _isWallHitRight = false;
             return true;
         }
 

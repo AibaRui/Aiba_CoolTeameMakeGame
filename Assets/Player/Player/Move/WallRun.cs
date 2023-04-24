@@ -148,23 +148,19 @@ public class WallRun : IPlayerAction
         }
     }
 
-    public void LastJump()
+    public void LastJump(bool isMove)
     {
-        if (_playerControl.WallRunCheck.TatchingWall == WallRunCheck.TatchWall.Forward)
+        if (isMove)
         {
-            _playerControl.Rb.AddForce(-_playerControl.WallRunCheck.Hit.normal * 5);
-        }
-        else if (_playerControl.WallRunCheck.TatchingWall == WallRunCheck.TatchWall.Right)
-        {
-            _playerControl.Rb.AddForce(-_playerControl.WallRunCheck.Hit.normal * 5);
+            Vector3 dir = _playerControl.Rb.velocity.normalized + _playerControl.WallRunCheck.Hit.normal;
+            _playerControl.Rb.AddForce(dir * 15, ForceMode.Impulse);
         }
         else
         {
-            _playerControl.Rb.AddForce(-_playerControl.WallRunCheck.Hit.normal * 5);
+            _playerControl.Rb.AddForce(_playerControl.WallRunCheck.Hit.normal * 15, ForceMode.Impulse);
         }
 
         _playerControl.ModelT.rotation = _playerControl.PlayerT.rotation;
-
     }
 
 }

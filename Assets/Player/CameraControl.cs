@@ -156,7 +156,7 @@ public class CameraControl : MonoBehaviour
         {
             if (_playerControl.Swing.IsSwingNow)
             {
-                if (_countCameraMoveSwingingX < 0.5)
+                if (_countCameraMoveSwingingX < 0.4)
                 {
                     _countCameraMoveSwingingX += 0.01f;
                 }
@@ -164,7 +164,7 @@ public class CameraControl : MonoBehaviour
 
             if (!_playerControl.VelocityLimit.IsSpeedUp)
             {
-                if (_countCameraMoveAirX < 0.3f)
+                if (_countCameraMoveAirX < 0.2f)
                 {
                     _countCameraMoveAirX += 0.0001f * _playerControl.Rb.velocity.magnitude;
                 }

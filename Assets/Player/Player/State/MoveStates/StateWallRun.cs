@@ -9,6 +9,9 @@ public class StateWallRun : PlayerStateBase
     {
         _stateMachine.PlayerController.WallRunCheck.CheckHitWall();
         _stateMachine.PlayerController.Rb.useGravity = false;
+
+        //WallRunのAnimatorを設定
+        _stateMachine.PlayerController.AnimControl.WallRunSet(true);
     }
 
     public override void Exit()
@@ -44,12 +47,17 @@ public class StateWallRun : PlayerStateBase
 
         if (_stateMachine.PlayerController.InputManager.IsJumping || !isHit)
         {
+            //重力をオン
+            _stateMachine.PlayerController.Rb.useGravity = true;
+
             //WallRunのAnimatorを設定
             _stateMachine.PlayerController.AnimControl.WallRunSet(false);
+            
+            //ジャンプ処理
+            _stateMachine.PlayerController.WallRun.LastJump(true);
 
+            //移行
             _stateMachine.TransitionTo(_stateMachine.StateJump);
-            _stateMachine.PlayerController.WallRun.LastJump();
-            _stateMachine.PlayerController.Rb.useGravity = true;
         }    //WallRunへ移行
     }
 }

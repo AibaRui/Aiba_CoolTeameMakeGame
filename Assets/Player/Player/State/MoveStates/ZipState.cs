@@ -15,12 +15,16 @@ public class ZipState : PlayerStateBase
 
         //アニメーションの設定
         _stateMachine.PlayerController.AnimControl.FrontZip();
+
+        _stateMachine.PlayerController.EffectControl.ZipSet(true);
     }
 
     public override void Exit()
     {
         //FrontZipのタイマーをリセット
         _stateMachine.PlayerController.ZipMove.EndZip();
+
+        _stateMachine.PlayerController.EffectControl.ZipSet(false);
     }
 
     public override void FixedUpdate()
