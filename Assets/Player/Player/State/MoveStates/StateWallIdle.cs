@@ -7,9 +7,14 @@ public class StateWallIdle : PlayerStateBase
 {
     public override void Enter()
     {
+        _stateMachine.PlayerController.CameraControl.UseWallRunCamera();
+
         _stateMachine.PlayerController.WallRunCheck.CheckHitWall();
         _stateMachine.PlayerController.Rb.velocity = Vector3.zero;
         _stateMachine.PlayerController.Rb.useGravity = false;
+
+
+        _stateMachine.PlayerController.WallRun.SetMoveDir(WallRun.MoveDirection.Up);
 
         //WallRunのAnimatorを設定
         _stateMachine.PlayerController.AnimControl.WallRunSet(true);
@@ -38,6 +43,8 @@ public class StateWallIdle : PlayerStateBase
 
     public override void Update()
     {
+        float h = _stateMachine.PlayerController.InputManager.HorizontalInput;
+        float v = _stateMachine.PlayerController.InputManager.VerticalInput;
 
         _stateMachine.PlayerController.WallRunCheck.CheckHitWall();
         _stateMachine.PlayerController.WallRun.MidleDir();
@@ -45,7 +52,7 @@ public class StateWallIdle : PlayerStateBase
         //各動作のクールタイム
         _stateMachine.PlayerController.CoolTimes();
 
-        if (_stateMachine.PlayerController.InputManager.IsSwing > 0)
+        if (h!=0 || h>0)
         {
             _stateMachine.TransitionTo(_stateMachine.StateWallRun);
         }    //WallRunへ移行

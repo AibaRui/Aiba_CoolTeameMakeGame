@@ -49,6 +49,10 @@ public class SwingState : PlayerStateBase
         //ロープを描画する
         _stateMachine.PlayerController.Swing.DrawLope();
 
+
+        //カメラの回転速度を計算する
+        _stateMachine.PlayerController.CameraControl.CountTime();
+
         //カメラを傾ける
         _stateMachine.PlayerController.CameraControl.SwingCameraYValues(_stateMachine.PlayerController.Rb.velocity.y, 20, -20, 20f);
         //カメラを傾ける。X軸
@@ -61,8 +65,7 @@ public class SwingState : PlayerStateBase
         //各動作のクールタイムを計測
         _stateMachine.PlayerController.CoolTimes();
 
-        //カメラの回転速度を計算する
-        _stateMachine.PlayerController.CameraControl.CountTime();
+
 
         //壁が当たったら、WallRun状態に
         if (_stateMachine.PlayerController.WallRunCheck.CheckWalAlll())

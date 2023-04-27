@@ -12,6 +12,40 @@ public class WallRun : IPlayerAction
     [Header("プレイヤーの回転の速さ")]
     [SerializeField] private float _rotateSpeed = 200;
 
+    private Vector3 _useMoveDir;
+
+    private MoveDirection _moveDirection = MoveDirection.Up;
+
+    public MoveDirection MoveDir => _moveDirection;
+
+    public enum MoveDirection
+    {
+        Up,
+        Right,
+        Left,
+    }
+
+    public void SetMoveDir(MoveDirection moveDirection)
+    {
+        _moveDirection = moveDirection;
+
+        //外積を使い、進行方向を取る
+        Vector3 wallForward = Vector3.Cross(_playerControl.WallRunCheck.Hit.normal, Vector3.up);
+
+        if (moveDirection == MoveDirection.Up)
+        {
+            _useMoveDir = _playerControl.PlayerT.up;
+        }
+        else if (moveDirection == MoveDirection.Right)
+        {
+            _useMoveDir = wallForward;
+        }
+        else
+        {
+            _useMoveDir = -wallForward;
+        }
+    }
+
     /// <summary>外積を求める関数</summary>
     /// <param name="nomal"></param>
     /// <param name="foward"></param>
@@ -36,13 +70,8 @@ public class WallRun : IPlayerAction
     /// <summary>止まっている際のプレイヤーの向きを決める</summary>
     public void MidleDir()
     {
-        //壁の外積を取る
-        Vector3 wallForward = GetCross(_playerControl.WallRunCheck.Hit.normal, Camera.main.transform.forward);
+        Vector3 dir = -_playerControl.WallRunCheck.WallDir;
 
-        //壁と垂直のベクトルをとる
-        Vector3 dir = GetCross(wallForward, _playerControl.WallRunCheck.Hit.normal);
-
-        //プレイヤーの向く方向
         Quaternion _targetRotation = Quaternion.LookRotation(dir, Vector3.up);
 
         //向くべき方向とプレイヤーの差を求める
@@ -84,68 +113,188 @@ public class WallRun : IPlayerAction
 
         Debug.DrawRay(_playerControl.PlayerT.position, dir, Color.blue);
 
+
         _playerControl.Rb.AddForce(-dir * 5);
     }
 
 
     /// <summary>移動方向にキャラを回転させる</summary>
     /// <returns>回転が終えたかどうか</returns>
-    public bool CharactorRotateToMoveDirection()
+    public void CharactorRotateToMoveDirection(float hInput)
     {
         //外積を使い、進行方向を取る
-        Vector3 _wallForward = GetCross(_playerControl.WallRunCheck.Hit.normal, Camera.main.transform.forward);
+        Vector3 wallCrossRight = _playerControl.WallRunCheck.WallCrossRight;
 
         //回転速度
-        var rotationSpeed = 400 * Time.deltaTime;
+        var rotationSpeed = 1;
+
         //回転したい方向
-        Quaternion _targetRotation = Quaternion.LookRotation(_wallForward, Vector3.up);
+        Quaternion _targetRotation = default;
+
+        if (_moveDirection == MoveDirection.Up)
+        {
+            if (hInput > 0.5f)
+            {
+                _targetRotation = Quaternion.LookRotation(wallCrossRight, Vector3.up);
+            }
+            else if (hInput < -0.5f)
+            {
+                _targetRotation = Quaternion.LookRotation(-wallCrossRight, Vector3.up);
+            }
+            else
+            {
+                Vector3 dir = _playerControl.WallRunCheck.WallDir;
+                _targetRotation = Quaternion.LookRotation(-dir, Vector3.up);
+            }
+
+        }
+        else if (_moveDirection == MoveDirection.Right)
+        {
+            if (hInput < -0.5f)
+            {
+                Vector3 dir = -_playerControl.WallRunCheck.WallDir;
+                _targetRotation = Quaternion.LookRotation(dir, Vector3.up);
+            }
+            else
+            {
+                _targetRotation = Quaternion.LookRotation(wallCrossRight, Vector3.up);
+            }
+        }
+        else if (_moveDirection == MoveDirection.Left)
+        {
+            if (hInput > 0.5f)
+            {
+                Vector3 dir = -_playerControl.WallRunCheck.WallDir;
+                _targetRotation = Quaternion.LookRotation(dir, Vector3.up);
+            }
+            else
+            {
+                _targetRotation = Quaternion.LookRotation(-wallCrossRight, Vector3.up);
+            }
+        }
+
         //回転させる
-        _playerControl.PlayerT.rotation = Quaternion.RotateTowards(_playerControl.PlayerT.rotation, _targetRotation, rotationSpeed);
+        Quaternion toAngle = Quaternion.RotateTowards(_playerControl.PlayerT.rotation, _targetRotation, rotationSpeed);
+        toAngle.x = 0;
+        toAngle.z = 0;
+
 
         //現在の回転と、回転終了との角度を比べる
         float y = Quaternion.Angle(_targetRotation, _playerControl.PlayerT.rotation);
 
-        if (y < 1)
+        if (y > 1)
         {
-            return true;
+            _playerControl.PlayerT.rotation = toAngle;
         }   //角度が1度以内にまで収まったら終了
-        else
+
+
+
+        Quaternion upRotation = Quaternion.LookRotation(-_playerControl.WallRunCheck.WallDir, Vector3.up);
+        Quaternion rightRotation = Quaternion.LookRotation(wallCrossRight, Vector3.up);
+        Quaternion leftRotation = Quaternion.LookRotation(-wallCrossRight, Vector3.up);
+
+        float angleUp = Quaternion.Angle(_playerControl.PlayerT.rotation, upRotation);
+        float angleRight = Quaternion.Angle(_playerControl.PlayerT.rotation, rightRotation);
+        float angleLeft = Quaternion.Angle(_playerControl.PlayerT.rotation, leftRotation);
+
+        if (angleUp <= 60)
         {
-            return false;
-        }   //収まっていなかったら、続行
+            _moveDirection = MoveDirection.Up;
+        }
+        else if (angleRight <= 60)
+        {
+            _moveDirection = MoveDirection.Right;
+        }
+        else if (angleLeft <= 60)
+        {
+            _moveDirection = MoveDirection.Left;
+        }
+
+        Debug.Log(_moveDirection);
+
     }
 
 
     public void WallMove()
     {
         //壁と平衡のベクトル。外積で求める
-        Vector3 wallForward = GetCross(_playerControl.WallRunCheck.Hit.normal, Camera.main.transform.forward);
+        Vector3 wallForward = Vector3.Cross(_playerControl.WallRunCheck.Hit.normal, Vector3.up);
 
         //壁と垂直のベクトルをとる
-        Vector3 dir = Vector3.Cross(wallForward, _playerControl.PlayerT.up);
+        Vector3 dir = Vector3.Cross(wallForward, Vector3.up);
 
         if ((_playerControl.WallRunCheck.Hit.normal - dir).magnitude > (_playerControl.WallRunCheck.Hit.normal - -dir).magnitude)
         {
             dir = -dir;
         }
 
+        float h = _playerControl.InputManager.HorizontalInput;
+        float v = _playerControl.InputManager.VerticalInput;
 
-        //外積を使い、進行方向を取る
-        Vector3 _wallForward = GetCross(_playerControl.WallRunCheck.Hit.normal, Camera.main.transform.forward);
 
-        if (CharactorRotateToMoveDirection())
+        Vector3 moveDir = default;
+
+        if (_moveDirection == MoveDirection.Up)
         {
-            if (_wallForward != null)
+            if (h > 0)
             {
-                _playerControl.Rb.AddForce(-dir * 1);
-                _playerControl.Rb.AddForce(_wallForward * _moveSpeed);
-                _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, 0, _playerControl.Rb.velocity.z);
+                moveDir = wallForward;
+            }
+            else if (h < 0)
+            {
+                moveDir = -wallForward;
+            }
+            else
+            {
+                moveDir = _playerControl.PlayerT.up;
             }
         }
-        else
+        else if (_moveDirection == MoveDirection.Right)
         {
-            // _playerControl.Rb.velocity = Vector3.zero;
+            if (h < 0)
+            {
+                moveDir = _playerControl.PlayerT.up;
+            }
+            else
+            {
+                moveDir = wallForward;
+            }
         }
+        else if (_moveDirection == MoveDirection.Left)
+        {
+            if (h > 0f)
+            {
+                moveDir = _playerControl.PlayerT.up;
+            }
+            else
+            {
+                moveDir = -wallForward;
+            }
+        }
+
+        //壁にくっつけるため
+
+        _playerControl.Rb.AddForce(-dir * 1);
+
+
+        //Playerの回転
+        CharactorRotateToMoveDirection(h);
+
+        float angle = Vector3.Angle(_useMoveDir, moveDir);
+
+        float maxRotationAnglePerFrame = 2f; // 1フレームあたりの最大回転角度
+        float rotationAngle = Mathf.Min(angle, maxRotationAnglePerFrame);
+
+        if ((_useMoveDir != moveDir))
+        {
+            Quaternion rotation = Quaternion.FromToRotation(_useMoveDir, moveDir);
+            _useMoveDir = Quaternion.RotateTowards(Quaternion.identity, rotation, rotationAngle) * _useMoveDir;
+        }
+
+        Debug.DrawRay(_playerControl.PlayerT.position, _useMoveDir.normalized * 50, Color.green);
+
+        _playerControl.Rb.AddForce(_useMoveDir.normalized * _moveSpeed);
+        // _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, 0, _playerControl.Rb.velocity.z);
     }
 
     public void LastJump(bool isMove)

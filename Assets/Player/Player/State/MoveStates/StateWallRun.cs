@@ -7,6 +7,8 @@ public class StateWallRun : PlayerStateBase
 {
     public override void Enter()
     {
+        _stateMachine.PlayerController.CameraControl.UseWallRunCamera();
+
         _stateMachine.PlayerController.WallRunCheck.CheckHitWall();
         _stateMachine.PlayerController.Rb.useGravity = false;
 
@@ -30,18 +32,34 @@ public class StateWallRun : PlayerStateBase
 
     public override void LateUpdate()
     {
-
+        _stateMachine.PlayerController.CameraControl.WallRunCameraControl.WallRunCameraFollow();
     }
 
     public override void Update()
     {
         bool isHit = _stateMachine.PlayerController.WallRunCheck.CheckHitWall();
 
+        float h = _stateMachine.PlayerController.InputManager.HorizontalInput;
+        float v = _stateMachine.PlayerController.InputManager.VerticalInput;
+
         //各動作のクールタイム
         _stateMachine.PlayerController.CoolTimes();
 
-        if (_stateMachine.PlayerController.InputManager.IsSwing <= 0 )
+        if (h==0 && v<=0)
         {
+            if(h>0)
+            {
+                _stateMachine.PlayerController.WallRun.SetMoveDir(WallRun.MoveDirection.Right);
+            }
+            else if(h<0)
+            {
+                _stateMachine.PlayerController.WallRun.SetMoveDir(WallRun.MoveDirection.Left);
+            }
+            else
+            {
+                _stateMachine.PlayerController.WallRun.SetMoveDir(WallRun.MoveDirection.Up);
+            }
+
             _stateMachine.TransitionTo(_stateMachine.StateWallIdle);
         }    //WallRunへ移行
 

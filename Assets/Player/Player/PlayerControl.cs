@@ -120,9 +120,6 @@ public class PlayerControl : MonoBehaviour
 
         _animControl.AnimSet();
 
-        _searchSwingPoint.Search(PlayerT);
-
-        _wallRunCheck.CheckWallFront();
 
         _effectControl.ConcentrationLineEffect();
     }

@@ -142,7 +142,7 @@ public class Swing : IPlayerAction
 
         swingPoint = _playerControl.SearchSwingPoint.RealSwingPoint;
 
-       // _loapPoint = _playerControl.SearchSwingPoint.RealSwingPoint;
+        // _loapPoint = _playerControl.SearchSwingPoint.RealSwingPoint;
         _loapPoint = _playerControl.SearchSwingPoint.SwingPos;
 
         //Anchor(jointをつけているオブジェクトのローカル座標  ////例)自分についてる命綱の位置)
@@ -254,7 +254,6 @@ public class Swing : IPlayerAction
         //加える速度
         float speed = 0;
 
-
         //地面に近いかどうかを確認
         if (_playerControl.GroundCheck.IsHitSwingGround())
         {
@@ -273,6 +272,7 @@ public class Swing : IPlayerAction
                 _isFirstNearGround = true;
             }
         }
+
 
         if (v != 0 || h != 0)
         {
@@ -293,10 +293,12 @@ public class Swing : IPlayerAction
             speed = _addFrontPowerNoMove;
         } //入力なしの場合
 
+
+
         if (_isDown)
         {
-            speed += 10;
             _playerControl.Rb.AddForce(Vector3.up * 30);
+            speed += 20;
         }
         else
         {
@@ -304,7 +306,6 @@ public class Swing : IPlayerAction
             if (_downTime < _countDownTime)
             {
                 _isDown = true;
-
                 _playerControl.Joint.maxDistance = distanceFromPoint * 1f;
                 _playerControl.Joint.minDistance = distanceFromPoint * 1f;
             }

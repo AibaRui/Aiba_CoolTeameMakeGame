@@ -8,7 +8,6 @@ public class WallRunCheck : IPlayerAction
     [Header("壁のレイヤー")]
     [SerializeField] private bool _isGizmo = true;
 
-
     [Header("壁のレイヤー")]
     [SerializeField]
     private LayerMask _wallLayer = default;
@@ -32,9 +31,20 @@ public class WallRunCheck : IPlayerAction
 
     public TatchWall TatchingWall => _tatchWall;
 
+    /// <summary>壁のある方向</summary>
+    private Vector3 _wallDir = Vector3.zero;
+
+    private Vector3 _wallCrossRight = Vector3.zero;
+
+    public Vector3 WallCrossRight => _wallCrossRight;
+
+    public Vector3 WallDir => _wallDir;
+
     private RaycastHit _hit;
 
     private RaycastHit _beforHit;
+
+
 
     public RaycastHit Hit => _hit;
 
@@ -55,15 +65,15 @@ public class WallRunCheck : IPlayerAction
 
     public bool CheckWall()
     {
-        if(_tatchWall ==TatchWall.Forward)
+        if (_tatchWall == TatchWall.Forward)
         {
-           return CheckWallFront();
+            return CheckWallFront();
         }
         else if (_tatchWall == TatchWall.Left)
         {
             return CheckWallSide(false);
         }
-        else 
+        else
         {
             return CheckWallSide(true);
         }
@@ -79,11 +89,16 @@ public class WallRunCheck : IPlayerAction
         if (foward)
         {
             _tatchWall = TatchWall.Forward;
+
+            _playerControl.WallRun.SetMoveDir(WallRun.MoveDirection.Up);
+
             return true;
         }
 
         if (right)
         {
+            _playerControl.WallRun.SetMoveDir(WallRun.MoveDirection.Right);
+
             _tatchWall = TatchWall.Right;
             _isWallHitRight = true;
             return true;
@@ -91,6 +106,7 @@ public class WallRunCheck : IPlayerAction
 
         if (left)
         {
+            _playerControl.WallRun.SetMoveDir(WallRun.MoveDirection.Left);
             _tatchWall = TatchWall.Left;
             _isWallHitRight = false;
             return true;
@@ -105,18 +121,27 @@ public class WallRunCheck : IPlayerAction
         //法線を取る
         Vector3 wallNomal = _hit.normal;
         //外積を使い、進行方向を取る
-        Vector3 wallForward = Vector3.Cross(wallNomal, _playerControl.PlayerT.up);
+        Vector3 wallForward = Vector3.Cross(wallNomal, Vector3.up);
 
         //壁と垂直のベクトルをとる
-        Vector3 dir = Vector3.Cross(wallForward, _playerControl.PlayerT.up);
+        Vector3 wallDir = Vector3.Cross(wallForward.normalized, Vector3.up);
 
-        if ((_playerControl.WallRunCheck.Hit.normal - dir).magnitude > (_playerControl.WallRunCheck.Hit.normal - -dir).magnitude)
+        if ((_playerControl.WallRunCheck.Hit.normal - wallDir).magnitude > (_playerControl.WallRunCheck.Hit.normal - -wallDir).magnitude)
         {
-            dir = -dir;
+            wallDir = -wallDir;
         }
 
-        bool isHit = Physics.Raycast(_playerControl.PlayerT.position, -dir, out _hit, 2, _wallLayer);
-        Debug.DrawRay(_playerControl.PlayerT.position,-dir*10,Color.red);
+
+
+        _wallDir = wallDir;
+
+        bool isHit = Physics.Raycast(_playerControl.PlayerT.position, -_wallDir, out _hit, 10, _wallLayer);
+
+
+        _wallCrossRight = Vector3.Cross(_hit.normal, Vector3.up);
+
+
+        Debug.DrawRay(_playerControl.PlayerT.position, -wallNomal * 10, Color.red);
         return isHit;
     }
 
@@ -149,7 +174,9 @@ public class WallRunCheck : IPlayerAction
 
         RaycastHit raycast;
 
-        bool isHit = Physics.BoxCast(_playerControl.PlayerT.position + addPos, _boxSizeSide, rayDir, out raycast, _playerControl.PlayerT.rotation, 0.2f, _wallLayer);
+        // bool isHit = Physics.BoxCast(_playerControl.PlayerT.position + addPos, _boxSizeSide, rayDir, out raycast, _playerControl.PlayerT.rotation, 0.2f, _wallLayer);
+
+        bool isHit = Physics.Raycast(_playerControl.PlayerT.position, rayDir, out raycast, 2, _wallLayer);
 
         if (isHit)
         {
@@ -166,9 +193,11 @@ public class WallRunCheck : IPlayerAction
 
         RaycastHit raycast;
 
-        bool isHit = Physics.BoxCast(_playerControl.PlayerT.position + addPos, _boxSizeFront, _playerControl.PlayerT.transform.forward, out raycast, _playerControl.PlayerT.rotation, 0.2f, _wallLayer);
+        //bool isHit = Physics.BoxCast(_playerControl.PlayerT.position + addPos, _boxSizeFront, _playerControl.PlayerT.transform.forward, out raycast, _playerControl.PlayerT.rotation, 0.2f, _wallLayer);
 
-        if(isHit)
+        bool isHit = Physics.Raycast(_playerControl.PlayerT.position, _playerControl.PlayerT.transform.forward, out raycast, 2, _wallLayer);
+
+        if (isHit)
         {
             _hit = raycast;
         }
