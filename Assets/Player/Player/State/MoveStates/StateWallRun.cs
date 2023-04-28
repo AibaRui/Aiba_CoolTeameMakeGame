@@ -7,13 +7,17 @@ public class StateWallRun : PlayerStateBase
 {
     public override void Enter()
     {
+        //カメラをWallRun用に変更
         _stateMachine.PlayerController.CameraControl.UseWallRunCamera();
 
         _stateMachine.PlayerController.WallRunCheck.CheckHitWall();
+
         _stateMachine.PlayerController.Rb.useGravity = false;
 
         //WallRunのAnimatorを設定
         _stateMachine.PlayerController.AnimControl.WallRunSet(true);
+
+
     }
 
     public override void Exit()
@@ -22,12 +26,13 @@ public class StateWallRun : PlayerStateBase
 
         //WallRun直後がは、Swingを不可にする
         _stateMachine.PlayerController.Swing.SetSwingFalse();
+
+        _stateMachine.PlayerController.WallRun.SetNoMove(false);
     }
 
     public override void FixedUpdate()
     {
         _stateMachine.PlayerController.WallRun.WallMove();
-        Debug.Log("WallRun");
     }
 
     public override void LateUpdate()
@@ -37,6 +42,8 @@ public class StateWallRun : PlayerStateBase
 
     public override void Update()
     {
+        _stateMachine.PlayerController.WallRun.CountNoMove();
+
         bool isHit = _stateMachine.PlayerController.WallRunCheck.CheckHitWall();
 
         float h = _stateMachine.PlayerController.InputManager.HorizontalInput;
@@ -45,21 +52,8 @@ public class StateWallRun : PlayerStateBase
         //各動作のクールタイム
         _stateMachine.PlayerController.CoolTimes();
 
-        if (h==0 && v<=0)
+        if (h==0 && v<=0 && !_stateMachine.PlayerController.WallRun.IsEndNoMove)
         {
-            if(h>0)
-            {
-                _stateMachine.PlayerController.WallRun.SetMoveDir(WallRun.MoveDirection.Right);
-            }
-            else if(h<0)
-            {
-                _stateMachine.PlayerController.WallRun.SetMoveDir(WallRun.MoveDirection.Left);
-            }
-            else
-            {
-                _stateMachine.PlayerController.WallRun.SetMoveDir(WallRun.MoveDirection.Up);
-            }
-
             _stateMachine.TransitionTo(_stateMachine.StateWallIdle);
         }    //WallRunへ移行
 

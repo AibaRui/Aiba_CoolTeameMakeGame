@@ -97,7 +97,7 @@ public class WallRunCheck : IPlayerAction
 
         if (right)
         {
-            _playerControl.WallRun.SetMoveDir(WallRun.MoveDirection.Right);
+            _playerControl.WallRun.SetMoveDir(WallRun.MoveDirection.Left);
 
             _tatchWall = TatchWall.Right;
             _isWallHitRight = true;
@@ -106,7 +106,7 @@ public class WallRunCheck : IPlayerAction
 
         if (left)
         {
-            _playerControl.WallRun.SetMoveDir(WallRun.MoveDirection.Left);
+            _playerControl.WallRun.SetMoveDir(WallRun.MoveDirection.Right);
             _tatchWall = TatchWall.Left;
             _isWallHitRight = false;
             return true;
@@ -131,17 +131,13 @@ public class WallRunCheck : IPlayerAction
             wallDir = -wallDir;
         }
 
-
-
         _wallDir = wallDir;
 
         bool isHit = Physics.Raycast(_playerControl.PlayerT.position, -_wallDir, out _hit, 10, _wallLayer);
 
-
         _wallCrossRight = Vector3.Cross(_hit.normal, Vector3.up);
 
-
-        Debug.DrawRay(_playerControl.PlayerT.position, -wallNomal * 10, Color.red);
+       Debug.DrawRay(_playerControl.PlayerT.position, -wallNomal * 10, Color.red);
         return isHit;
     }
 
@@ -181,6 +177,7 @@ public class WallRunCheck : IPlayerAction
         if (isHit)
         {
             _hit = raycast;
+            _wallCrossRight = Vector3.Cross(_hit.normal, Vector3.up);
         }
 
         return isHit;
@@ -200,6 +197,7 @@ public class WallRunCheck : IPlayerAction
         if (isHit)
         {
             _hit = raycast;
+            _wallCrossRight = Vector3.Cross(_hit.normal, Vector3.up);
         }
 
         return isHit;

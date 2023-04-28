@@ -7,14 +7,14 @@ public class StateWallIdle : PlayerStateBase
 {
     public override void Enter()
     {
+        //カメラをWallRun用に変更
         _stateMachine.PlayerController.CameraControl.UseWallRunCamera();
 
         _stateMachine.PlayerController.WallRunCheck.CheckHitWall();
         _stateMachine.PlayerController.Rb.velocity = Vector3.zero;
         _stateMachine.PlayerController.Rb.useGravity = false;
-
-
-        _stateMachine.PlayerController.WallRun.SetMoveDir(WallRun.MoveDirection.Up);
+ 
+       // _stateMachine.PlayerController.WallRun.SetMoveDir(WallRun.MoveDirection.Up);
 
         //WallRunのAnimatorを設定
         _stateMachine.PlayerController.AnimControl.WallRunSet(true);
@@ -22,6 +22,9 @@ public class StateWallIdle : PlayerStateBase
 
     public override void Exit()
     {
+        //止まっているときに、カメラの値をIdle状態の値に変更するまでの時間の計測。の値をリセット
+        _stateMachine.PlayerController.CameraControl.WallRunCameraControl.ResetCountReSetWallIdleCameraTime();
+
         _stateMachine.PlayerController.Move.ReSetTime();
 
         //WallRun直後がは、Swingを不可にする
@@ -38,11 +41,16 @@ public class StateWallIdle : PlayerStateBase
 
     public override void LateUpdate()
     {
-
+        //止まっているときに、カメラの値をIdle状態の値に変更する
+        _stateMachine.PlayerController.CameraControl.WallRunCameraControl.WallIdleCamera();
     }
 
     public override void Update()
     {
+        //止まっているときに、カメラの値をIdle状態の値に変更する。までの時間を計測
+        _stateMachine.PlayerController.CameraControl.WallRunCameraControl.CountReSetWallIdleCameraTime();
+
+
         float h = _stateMachine.PlayerController.InputManager.HorizontalInput;
         float v = _stateMachine.PlayerController.InputManager.VerticalInput;
 
@@ -52,7 +60,7 @@ public class StateWallIdle : PlayerStateBase
         //各動作のクールタイム
         _stateMachine.PlayerController.CoolTimes();
 
-        if (h!=0 || h>0)
+        if (h!=0 || v>0)
         {
             _stateMachine.TransitionTo(_stateMachine.StateWallRun);
         }    //WallRunへ移行

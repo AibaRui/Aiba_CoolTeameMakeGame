@@ -8,11 +8,21 @@ public class WallRun : IPlayerAction
     [Header("歩く速度")]
     [SerializeField] private float _moveSpeed = 4;
 
-
-    [Header("プレイヤーの回転の速さ")]
+    [Header("無移動時のプレイヤーの回転の速さ")]
     [SerializeField] private float _rotateSpeed = 200;
 
+    [Header("移動時のプレイヤーの回転の速さ")]
+    [SerializeField] private float _moveRotateSpeed = 20;
+
+    private float _noMoveTimeCount = 0;
+
+    private bool _isEndNoMove = false;
+
+    public bool IsEndNoMove => _isEndNoMove;
+
     private Vector3 _useMoveDir;
+
+    public Vector3 UseMoveDir => _useMoveDir;
 
     private MoveDirection _moveDirection = MoveDirection.Up;
 
@@ -23,6 +33,7 @@ public class WallRun : IPlayerAction
         Up,
         Right,
         Left,
+        
     }
 
     public void SetMoveDir(MoveDirection moveDirection)
@@ -30,11 +41,11 @@ public class WallRun : IPlayerAction
         _moveDirection = moveDirection;
 
         //外積を使い、進行方向を取る
-        Vector3 wallForward = Vector3.Cross(_playerControl.WallRunCheck.Hit.normal, Vector3.up);
+        Vector3 wallForward = _playerControl.WallRunCheck.WallCrossRight;
 
         if (moveDirection == MoveDirection.Up)
         {
-            _useMoveDir = _playerControl.PlayerT.up;
+            _useMoveDir = Vector3.up;
         }
         else if (moveDirection == MoveDirection.Right)
         {
@@ -45,6 +56,41 @@ public class WallRun : IPlayerAction
             _useMoveDir = -wallForward;
         }
     }
+
+    public void CountNoMove()
+    {
+        if (_isEndNoMove)
+        {
+            float h = _playerControl.InputManager.HorizontalInput;
+            float v = _playerControl.InputManager.VerticalInput;
+
+            if(h!=0 || v>0)
+            {
+                _isEndNoMove = false;
+                _noMoveTimeCount = 0;
+            }
+
+            _noMoveTimeCount += Time.deltaTime;
+
+            if(_noMoveTimeCount>1.5f)
+            {
+                _isEndNoMove = false;
+                _playerControl.Rb.velocity = Vector3.zero;
+                _noMoveTimeCount = 0;
+            }
+        }
+    }
+
+    public void SetNoMove(bool set)
+    {
+        _isEndNoMove = set;
+
+        if(!set)
+        {
+            _noMoveTimeCount = 0;
+        }
+    }
+
 
     /// <summary>外積を求める関数</summary>
     /// <param name="nomal"></param>
@@ -70,24 +116,8 @@ public class WallRun : IPlayerAction
     /// <summary>止まっている際のプレイヤーの向きを決める</summary>
     public void MidleDir()
     {
-        Vector3 dir = -_playerControl.WallRunCheck.WallDir;
 
-        Quaternion _targetRotation = Quaternion.LookRotation(dir, Vector3.up);
 
-        //向くべき方向とプレイヤーの差を求める
-        float rotateDiff = Vector3.Angle(_playerControl.PlayerT.transform.forward, dir);
-
-        //誤差が1度以下で回転補正は終了
-        if (rotateDiff < 1) return;
-
-        //回転の速さ
-        float rotationSpeed = _rotateSpeed * Time.deltaTime;
-
-        //回転処理
-        Quaternion setRotation = Quaternion.RotateTowards(_playerControl.PlayerT.rotation, _targetRotation, rotationSpeed);
-        setRotation.x = 0;
-        setRotation.z = 0;
-        _playerControl.PlayerT.rotation = setRotation;
 
     }
 
@@ -115,18 +145,19 @@ public class WallRun : IPlayerAction
 
 
         _playerControl.Rb.AddForce(-dir * 5);
+
+        if (_playerControl.Rb.velocity.y < 0)
+        {
+            _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, 0, _playerControl.Rb.velocity.z);
+        }
     }
 
 
     /// <summary>移動方向にキャラを回転させる</summary>
-    /// <returns>回転が終えたかどうか</returns>
     public void CharactorRotateToMoveDirection(float hInput)
     {
         //外積を使い、進行方向を取る
         Vector3 wallCrossRight = _playerControl.WallRunCheck.WallCrossRight;
-
-        //回転速度
-        var rotationSpeed = 1;
 
         //回転したい方向
         Quaternion _targetRotation = default;
@@ -143,8 +174,8 @@ public class WallRun : IPlayerAction
             }
             else
             {
-                Vector3 dir = _playerControl.WallRunCheck.WallDir;
-                _targetRotation = Quaternion.LookRotation(-dir, Vector3.up);
+                Vector3 dir = -_playerControl.WallRunCheck.WallDir;
+                _targetRotation = Quaternion.LookRotation(dir, Vector3.up);
             }
 
         }
@@ -174,7 +205,7 @@ public class WallRun : IPlayerAction
         }
 
         //回転させる
-        Quaternion toAngle = Quaternion.RotateTowards(_playerControl.PlayerT.rotation, _targetRotation, rotationSpeed);
+        Quaternion toAngle = Quaternion.RotateTowards(_playerControl.PlayerT.rotation, _targetRotation, Time.deltaTime * _moveRotateSpeed);
         toAngle.x = 0;
         toAngle.z = 0;
 
@@ -187,8 +218,6 @@ public class WallRun : IPlayerAction
             _playerControl.PlayerT.rotation = toAngle;
         }   //角度が1度以内にまで収まったら終了
 
-
-
         Quaternion upRotation = Quaternion.LookRotation(-_playerControl.WallRunCheck.WallDir, Vector3.up);
         Quaternion rightRotation = Quaternion.LookRotation(wallCrossRight, Vector3.up);
         Quaternion leftRotation = Quaternion.LookRotation(-wallCrossRight, Vector3.up);
@@ -197,21 +226,20 @@ public class WallRun : IPlayerAction
         float angleRight = Quaternion.Angle(_playerControl.PlayerT.rotation, rightRotation);
         float angleLeft = Quaternion.Angle(_playerControl.PlayerT.rotation, leftRotation);
 
-        if (angleUp <= 60)
+        if (angleUp <= 70)
         {
             _moveDirection = MoveDirection.Up;
         }
-        else if (angleRight <= 60)
+        else if (angleRight <= 40)
         {
             _moveDirection = MoveDirection.Right;
         }
-        else if (angleLeft <= 60)
+        else if (angleLeft <= 70)
         {
             _moveDirection = MoveDirection.Left;
         }
 
         Debug.Log(_moveDirection);
-
     }
 
 
@@ -236,24 +264,24 @@ public class WallRun : IPlayerAction
 
         if (_moveDirection == MoveDirection.Up)
         {
-            if (h > 0)
+            if (h > 0.2f)
             {
                 moveDir = wallForward;
             }
-            else if (h < 0)
+            else if (h < -0.2f)
             {
                 moveDir = -wallForward;
             }
             else
             {
-                moveDir = _playerControl.PlayerT.up;
+                moveDir = Vector3.up;
             }
         }
         else if (_moveDirection == MoveDirection.Right)
         {
             if (h < 0)
             {
-                moveDir = _playerControl.PlayerT.up;
+                moveDir = Vector3.up;
             }
             else
             {
@@ -264,7 +292,7 @@ public class WallRun : IPlayerAction
         {
             if (h > 0f)
             {
-                moveDir = _playerControl.PlayerT.up;
+                moveDir = Vector3.up;
             }
             else
             {
@@ -273,8 +301,8 @@ public class WallRun : IPlayerAction
         }
 
         //壁にくっつけるため
-
         _playerControl.Rb.AddForce(-dir * 1);
+
 
 
         //Playerの回転
@@ -282,8 +310,7 @@ public class WallRun : IPlayerAction
 
         float angle = Vector3.Angle(_useMoveDir, moveDir);
 
-        float maxRotationAnglePerFrame = 2f; // 1フレームあたりの最大回転角度
-        float rotationAngle = Mathf.Min(angle, maxRotationAnglePerFrame);
+        float rotationAngle = Time.deltaTime * 200f;
 
         if ((_useMoveDir != moveDir))
         {
@@ -291,10 +318,19 @@ public class WallRun : IPlayerAction
             _useMoveDir = Quaternion.RotateTowards(Quaternion.identity, rotation, rotationAngle) * _useMoveDir;
         }
 
-        Debug.DrawRay(_playerControl.PlayerT.position, _useMoveDir.normalized * 50, Color.green);
+        //  Debug.DrawRay(_playerControl.PlayerT.position, _useMoveDir * 50, Color.green);
+        //Debug.DrawRay(_playerControl.PlayerT.position, _playerControl.Rb.velocity.normalized * 40,Color.white);
 
-        _playerControl.Rb.AddForce(_useMoveDir.normalized * _moveSpeed);
-        // _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, 0, _playerControl.Rb.velocity.z);
+       // _playerControl.Rb.AddForce(_useMoveDir * _moveSpeed);
+
+        _playerControl.Rb.velocity = (_useMoveDir * _moveSpeed)+-dir*1;
+
+        if (_playerControl.Rb.velocity.y < 0)
+        {
+            _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, 0, _playerControl.Rb.velocity.z);
+        }
+        Debug.Log(_moveDirection);
+
     }
 
     public void LastJump(bool isMove)

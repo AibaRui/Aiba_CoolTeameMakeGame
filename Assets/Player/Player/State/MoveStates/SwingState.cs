@@ -65,19 +65,20 @@ public class SwingState : PlayerStateBase
         //各動作のクールタイムを計測
         _stateMachine.PlayerController.CoolTimes();
 
-
-
         //壁が当たったら、WallRun状態に
         if (_stateMachine.PlayerController.WallRunCheck.CheckWalAlll())
         {
             if (_stateMachine.PlayerController.InputManager.HorizontalInput != 0 || _stateMachine.PlayerController.InputManager.VerticalInput != 0)
             {
-                _stateMachine.TransitionTo(_stateMachine.StateWallRun);
+
+                // _stateMachine.TransitionTo(_stateMachine.StateWallIdle);
             }    //WallRunへ移行
             else
             {
-                _stateMachine.TransitionTo(_stateMachine.StateWallIdle);
+                _stateMachine.PlayerController.WallRun.SetNoMove(true);
+                //_stateMachine.TransitionTo(_stateMachine.StateWallIdle);
             }
+            _stateMachine.TransitionTo(_stateMachine.StateWallRun);
 
             _stateMachine.PlayerController.AnimControl.WallRunTransition();
 
