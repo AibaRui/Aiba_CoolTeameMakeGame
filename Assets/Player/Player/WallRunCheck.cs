@@ -5,7 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public class WallRunCheck : IPlayerAction
 {
-    [Header("壁のレイヤー")]
+    [Header("Gizmoを描画するかどうか")]
     [SerializeField] private bool _isGizmo = true;
 
     [Header("壁のレイヤー")]
@@ -41,9 +41,6 @@ public class WallRunCheck : IPlayerAction
     public Vector3 WallDir => _wallDir;
 
     private RaycastHit _hit;
-
-    private RaycastHit _beforHit;
-
 
 
     public RaycastHit Hit => _hit;
@@ -82,32 +79,18 @@ public class WallRunCheck : IPlayerAction
 
     public bool CheckWalAlll()
     {
-        bool foward = CheckWallFront();
-        bool right = CheckWallSide(true);
-        bool left = CheckWallSide(false);
-
-        if (foward)
+        if (CheckWallFront())
         {
-            _tatchWall = TatchWall.Forward;
-
-            _playerControl.WallRun.SetMoveDir(WallRun.MoveDirection.Up);
-
             return true;
         }
 
-        if (right)
+        if (CheckWallSide(true))
         {
-            _playerControl.WallRun.SetMoveDir(WallRun.MoveDirection.Left);
-
-            _tatchWall = TatchWall.Right;
-            _isWallHitRight = true;
             return true;
         }
 
-        if (left)
+        if (CheckWallSide(false))
         {
-            _playerControl.WallRun.SetMoveDir(WallRun.MoveDirection.Right);
-            _tatchWall = TatchWall.Left;
             _isWallHitRight = false;
             return true;
         }
@@ -131,13 +114,25 @@ public class WallRunCheck : IPlayerAction
             wallDir = -wallDir;
         }
 
-        _wallDir = wallDir;
+        // _wallDir = wallDir;
 
-        bool isHit = Physics.Raycast(_playerControl.PlayerT.position, -_wallDir, out _hit, 10, _wallLayer);
+        _wallDir = _hit.normal;
+
+        RaycastHit raycast;
+
+        bool isHit = Physics.Raycast(_playerControl.PlayerT.position, -_wallDir, out raycast, 10, _wallLayer);
+
+        if (isHit)
+        {
+            _hit = raycast;
+
+
+
+        }
 
         _wallCrossRight = Vector3.Cross(_hit.normal, Vector3.up);
 
-       Debug.DrawRay(_playerControl.PlayerT.position, -wallNomal * 10, Color.red);
+        Debug.DrawRay(_playerControl.PlayerT.position, -wallNomal * 10, Color.red);
         return isHit;
     }
 
@@ -178,6 +173,21 @@ public class WallRunCheck : IPlayerAction
         {
             _hit = raycast;
             _wallCrossRight = Vector3.Cross(_hit.normal, Vector3.up);
+
+
+            if (isRight)
+            {
+                _playerControl.WallRun.SetMoveDir(WallRun.MoveDirection.Left);
+
+                _tatchWall = TatchWall.Right;
+                _isWallHitRight = true;
+            }
+            else
+            {
+                _playerControl.WallRun.SetMoveDir(WallRun.MoveDirection.Right);
+                _tatchWall = TatchWall.Left;
+                _isWallHitRight = false;
+            }
         }
 
         return isHit;
@@ -198,31 +208,34 @@ public class WallRunCheck : IPlayerAction
         {
             _hit = raycast;
             _wallCrossRight = Vector3.Cross(_hit.normal, Vector3.up);
+
+
+            _tatchWall = TatchWall.Forward;
+            _playerControl.WallRun.SetMoveDir(WallRun.MoveDirection.Up);
         }
 
         return isHit;
     }
 
-
     public void OnDrawGizmos(Transform player)
     {
         if (_isGizmo)
         {
+
+            Gizmos.color = Color.white;
+            Debug.DrawRay(player.position, player.transform.forward);
+
+
             Gizmos.color = Color.yellow;
             Gizmos.matrix = Matrix4x4.TRS(player.position, player.rotation, player.localScale);
-
-
             //前側
-            Gizmos.DrawCube(_frontPos, _boxSizeFront);
+            //Gizmos.DrawCube(_frontPos, _boxSizeFront);
             //右側
-            Gizmos.DrawCube(_rightPos, _boxSizeSide);
+            //Gizmos.DrawCube(_rightPos, _boxSizeSide);
             //左側
-            Gizmos.DrawCube(_leftPos, _boxSizeSide);
+            //Gizmos.DrawCube(_leftPos, _boxSizeSide);
 
             Gizmos.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one);
-
-
-
         }
     }
 

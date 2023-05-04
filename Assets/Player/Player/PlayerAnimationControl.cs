@@ -57,6 +57,37 @@ public class PlayerAnimationControl
 
     }
 
+    public void WallRunZipStart(bool isZipFront)
+    {
+        if(isZipFront)
+        {
+            _playerControl.Anim.Play("WallRun_UpZipToFrontUp");
+        }
+        else
+        {
+            _playerControl.Anim.Play("WallRun_UpZipStart");
+        }
+
+    }
+
+    public void WallRunZipDo(bool isZipFront)
+    {
+        if (isZipFront)
+        {
+            _playerControl.Anim.Play("WallRun_UpZipToFrontEnd");
+        }
+        else
+        {
+            _playerControl.Anim.Play("WallRun_UpZip");
+        }
+    }
+
+    public void WallRunUpSet(bool judge)
+    {
+        _playerControl.Anim.SetBool("IsWallRunUp", judge);
+    }
+
+
 
     public void Jump()
     {

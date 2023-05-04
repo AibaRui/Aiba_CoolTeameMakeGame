@@ -35,13 +35,20 @@ public class ZipState : PlayerStateBase
 
     public override void LateUpdate()
     {
-
+        _stateMachine.PlayerController.CameraControl.ZipCamera();
     }
 
     public override void Update()
     {
         //Zip‚Ì—LŒøŽžŠÔ‚ðŒv‘ª
         _stateMachine.PlayerController.ZipMove.CountFrotZipTime();
+
+
+
+        if(_stateMachine.PlayerController.WallRunCheck.CheckWallFront())
+        {
+            _stateMachine.TransitionTo(_stateMachine.StateWallIdle);
+        }
 
         if (_stateMachine.PlayerController.ZipMove.IsEndFrontZip)
         {

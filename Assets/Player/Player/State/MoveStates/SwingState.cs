@@ -78,6 +78,8 @@ public class SwingState : PlayerStateBase
                 _stateMachine.PlayerController.WallRun.SetNoMove(true);
                 //_stateMachine.TransitionTo(_stateMachine.StateWallIdle);
             }
+            _stateMachine.PlayerController.CameraControl.WallRunCameraControl.WallRunEndCamera();
+
             _stateMachine.TransitionTo(_stateMachine.StateWallRun);
 
             _stateMachine.PlayerController.AnimControl.WallRunTransition();

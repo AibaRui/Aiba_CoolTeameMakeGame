@@ -115,6 +115,13 @@ public class Swing : IPlayerAction
     /// <summary>スウィングの初期設定</summary>
     public void SwingSetting()
     {
+
+        if(_playerControl.Rb.velocity.y>0)
+        {
+            _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, -20, _playerControl.Rb.velocity.z);
+
+        }
+
         _isSwingNow = true;
 
         //重力を無くす
@@ -201,6 +208,9 @@ public class Swing : IPlayerAction
     /// <summary>スウィング中止</summary>
     public void StopSwing(bool isJump)
     {
+        //LineRendrerを消す
+        _playerControl.LineRenderer.positionCount = 0;
+
         //Jointを消す
         _playerControl.DestroyJoint();
         //Swing不可
@@ -316,7 +326,7 @@ public class Swing : IPlayerAction
 
     public bool CheckLine()
     {
-        if (swingPoint.y - 8 <= _playerControl.PlayerT.position.y)
+        if (swingPoint.y - 6 <= _playerControl.PlayerT.position.y)
         {
             _isSamLine = true;
             return true;

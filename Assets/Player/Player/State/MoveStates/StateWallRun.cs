@@ -38,6 +38,8 @@ public class StateWallRun : PlayerStateBase
     public override void LateUpdate()
     {
         _stateMachine.PlayerController.CameraControl.WallRunCameraControl.WallRunCameraFollow();
+
+        _stateMachine.PlayerController.CameraControl.WallRunCameraControl.XOffSetControlWallRun();
     }
 
     public override void Update()
@@ -51,6 +53,13 @@ public class StateWallRun : PlayerStateBase
 
         //各動作のクールタイム
         _stateMachine.PlayerController.CoolTimes();
+
+
+        if(_stateMachine.PlayerController.WallRunUpZip.CheckUpZipPosition()&& _stateMachine.PlayerController.InputManager.IsJumping)
+        {
+            _stateMachine.TransitionTo(_stateMachine.WallRunUpZipState);
+            return;
+        }
 
         if (h==0 && v<=0 && !_stateMachine.PlayerController.WallRun.IsEndNoMove)
         {
@@ -70,6 +79,7 @@ public class StateWallRun : PlayerStateBase
 
             //移行
             _stateMachine.TransitionTo(_stateMachine.StateJump);
+
         }    //WallRunへ移行
     }
 }

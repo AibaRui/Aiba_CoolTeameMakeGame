@@ -18,14 +18,15 @@ public class WallRun : IPlayerAction
 
     private bool _isEndNoMove = false;
 
-    public bool IsEndNoMove => _isEndNoMove;
-
     private Vector3 _useMoveDir;
-
-    public Vector3 UseMoveDir => _useMoveDir;
 
     private MoveDirection _moveDirection = MoveDirection.Up;
 
+
+
+
+    public bool IsEndNoMove => _isEndNoMove;
+    public Vector3 UseMoveDir => _useMoveDir;
     public MoveDirection MoveDir => _moveDirection;
 
     public enum MoveDirection
@@ -33,7 +34,7 @@ public class WallRun : IPlayerAction
         Up,
         Right,
         Left,
-        
+
     }
 
     public void SetMoveDir(MoveDirection moveDirection)
@@ -64,7 +65,7 @@ public class WallRun : IPlayerAction
             float h = _playerControl.InputManager.HorizontalInput;
             float v = _playerControl.InputManager.VerticalInput;
 
-            if(h!=0 || v>0)
+            if (h != 0 || v > 0)
             {
                 _isEndNoMove = false;
                 _noMoveTimeCount = 0;
@@ -72,7 +73,7 @@ public class WallRun : IPlayerAction
 
             _noMoveTimeCount += Time.deltaTime;
 
-            if(_noMoveTimeCount>1.5f)
+            if (_noMoveTimeCount > 1.5f)
             {
                 _isEndNoMove = false;
                 _playerControl.Rb.velocity = Vector3.zero;
@@ -85,7 +86,7 @@ public class WallRun : IPlayerAction
     {
         _isEndNoMove = set;
 
-        if(!set)
+        if (!set)
         {
             _noMoveTimeCount = 0;
         }
@@ -130,7 +131,7 @@ public class WallRun : IPlayerAction
         }   //nullチェック
 
         //壁と平衡のベクトル。外積で求める
-        Vector3 wallForward = GetCross(_playerControl.WallRunCheck.Hit.normal, Camera.main.transform.forward);
+        Vector3 wallForward = _playerControl.WallRunCheck.WallCrossRight;
 
         //壁と垂直のベクトルをとる
         Vector3 dir = Vector3.Cross(wallForward, Vector3.up);
@@ -210,6 +211,7 @@ public class WallRun : IPlayerAction
         toAngle.z = 0;
 
 
+
         //現在の回転と、回転終了との角度を比べる
         float y = Quaternion.Angle(_targetRotation, _playerControl.PlayerT.rotation);
 
@@ -229,17 +231,20 @@ public class WallRun : IPlayerAction
         if (angleUp <= 70)
         {
             _moveDirection = MoveDirection.Up;
+            _playerControl.AnimControl.WallRunUpSet(true);
         }
         else if (angleRight <= 40)
         {
             _moveDirection = MoveDirection.Right;
+            _playerControl.AnimControl.WallRunUpSet(false);
         }
         else if (angleLeft <= 70)
         {
             _moveDirection = MoveDirection.Left;
+            _playerControl.AnimControl.WallRunUpSet(false);
         }
 
-        Debug.Log(_moveDirection);
+        // Debug.Log(_moveDirection);
     }
 
 
@@ -300,11 +305,6 @@ public class WallRun : IPlayerAction
             }
         }
 
-        //壁にくっつけるため
-        _playerControl.Rb.AddForce(-dir * 1);
-
-
-
         //Playerの回転
         CharactorRotateToMoveDirection(h);
 
@@ -321,28 +321,31 @@ public class WallRun : IPlayerAction
         //  Debug.DrawRay(_playerControl.PlayerT.position, _useMoveDir * 50, Color.green);
         //Debug.DrawRay(_playerControl.PlayerT.position, _playerControl.Rb.velocity.normalized * 40,Color.white);
 
-       // _playerControl.Rb.AddForce(_useMoveDir * _moveSpeed);
-
-        _playerControl.Rb.velocity = (_useMoveDir * _moveSpeed)+-dir*1;
+        _playerControl.Rb.velocity = (_useMoveDir * _moveSpeed) + -dir * 1;
 
         if (_playerControl.Rb.velocity.y < 0)
         {
             _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, 0, _playerControl.Rb.velocity.z);
         }
-        Debug.Log(_moveDirection);
-
     }
 
     public void LastJump(bool isMove)
     {
         if (isMove)
         {
-            Vector3 dir = _playerControl.Rb.velocity.normalized + _playerControl.WallRunCheck.Hit.normal;
-            _playerControl.Rb.AddForce(dir * 15, ForceMode.Impulse);
+            if (_playerControl.WallRun.MoveDir == MoveDirection.Up)
+            {
+                _playerControl.Rb.AddForce(Vector3.up * 15, ForceMode.Impulse);
+            }
+            else
+            {
+                Vector3 dir = _playerControl.Rb.velocity.normalized + _playerControl.WallRunCheck.Hit.normal;
+                _playerControl.Rb.AddForce(dir * 5, ForceMode.Impulse);
+            }
         }
         else
         {
-            _playerControl.Rb.AddForce(_playerControl.WallRunCheck.Hit.normal * 15, ForceMode.Impulse);
+            _playerControl.Rb.AddForce(_playerControl.WallRunCheck.Hit.normal * 5, ForceMode.Impulse);
         }
 
         _playerControl.ModelT.rotation = _playerControl.PlayerT.rotation;

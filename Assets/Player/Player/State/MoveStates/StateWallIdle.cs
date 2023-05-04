@@ -43,6 +43,8 @@ public class StateWallIdle : PlayerStateBase
     {
         //止まっているときに、カメラの値をIdle状態の値に変更する
         _stateMachine.PlayerController.CameraControl.WallRunCameraControl.WallIdleCamera();
+
+        _stateMachine.PlayerController.CameraControl.WallRunCameraControl.XOffSetWallIdle();
     }
 
     public override void Update()

@@ -11,7 +11,7 @@ public class DownAirState : PlayerStateBase
         _stateMachine.PlayerController.CameraControl.UseSwingCamera();
 
         //ë¨ìxê›íË
-        _stateMachine.PlayerController.VelocityLimit.SetLimit(25, 20, 25);
+        _stateMachine.PlayerController.VelocityLimit.SetLimit(25, 40, 25);
     }
 
     public override void Exit()

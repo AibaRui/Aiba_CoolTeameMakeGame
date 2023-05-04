@@ -17,6 +17,10 @@ public class ZipMove : IPlayerAction
     [Header("1回目に前方に加速する力")]
     [SerializeField] private float _frontZipSpeedFirst = 15;
 
+    [Header("1回目、地面に近いときに前方に加速する力")]
+    [SerializeField] private float _frontZipSpeedFirstNearGround = 5;
+
+
     [Header("2回目に前方に加速する力")]
     [SerializeField] private float _frontZipSpeedSecond = 2;
 
@@ -56,12 +60,24 @@ public class ZipMove : IPlayerAction
 
         if (_frontZipDoCount == 0)
         {
-            _playerControl.Rb.velocity = (dir * _frontZipSpeedFirst);
+            if (_playerControl.GroundCheck.IsHitNearGround())
+            {
+                _playerControl.Rb.velocity = (dir * _frontZipSpeedFirstNearGround);
+            }
+            else
+            {
+                _playerControl.Rb.velocity = (dir * _frontZipSpeedFirst);
+            }
+
         } //初回は、強く
         else
         {
             _playerControl.Rb.AddForce(dir * _frontZipSpeedSecond, ForceMode.Impulse);
         }   //2回目移行は遅い
+
+
+
+
 
         if (_frontZipDoCount <= _frontZipDoMaxCount)
         {

@@ -26,19 +26,34 @@ public class WallRunCameraControl : MonoBehaviour
     [Header("動いてからカメラの距離を変更する速度")]
     [SerializeField] private float _setCameraDistanceSpeed = 10;
 
+
+    [Header("-----X軸のOffsetの移動についての設定-----")]
+
+    [Header("OffSetの変更速度")]
+    [SerializeField] private float _offSetXChangeSpeed = 50f;
+
+    [Header("初期状態のOffSet")]
+    [SerializeField] private float _startOffSetX = 0f;
+
+    [Header("壁が左側の時の最大OffSet")]
+    [SerializeField] private float _leftWallMaxOffSetX = -3f;
+
+    [Header("壁が右側の時の最大OffSet")]
+    [SerializeField] private float _rightWallMaxOffSetX = 3f;
+
     private float _reSetCameraDistanceTimeCount = 0;
 
     [SerializeField] private CameraControl _cameraControl;
 
     private float _upperSpeed = 0;
 
-    private CinemachinePOV _swingCinemachinePOV;
-    private CinemachineFramingTransposer _swingCameraFraming;
+    private CinemachinePOV _wallRunPOV;
+    private CinemachineFramingTransposer _wallRunFraming;
 
     void Start()
     {
-        _swingCinemachinePOV = _cameraControl.WallRunCameraController.GetCinemachineComponent<CinemachinePOV>();
-        _swingCameraFraming = _cameraControl.WallRunCameraController.GetCinemachineComponent<CinemachineFramingTransposer>();
+        _wallRunPOV = _cameraControl.WallRunCameraController.GetCinemachineComponent<CinemachinePOV>();
+        _wallRunFraming = _cameraControl.WallRunCameraController.GetCinemachineComponent<CinemachineFramingTransposer>();
     }
 
 
@@ -48,9 +63,9 @@ public class WallRunCameraControl : MonoBehaviour
     {
         if (_reSetCameraDistanceTimeCount >= _reSetCameraDistanceTime)
         {
-            if(_idleCameraDistance<_swingCameraFraming.m_CameraDistance)
+            if (_idleCameraDistance < _wallRunFraming.m_CameraDistance)
             {
-                _swingCameraFraming.m_CameraDistance -= Time.deltaTime*_reSetCameraDistanceSpeed;
+                _wallRunFraming.m_CameraDistance -= Time.deltaTime * _reSetCameraDistanceSpeed;
             }
         }
     }
@@ -70,6 +85,61 @@ public class WallRunCameraControl : MonoBehaviour
         _reSetCameraDistanceTimeCount = 0;
     }
 
+    public void WallRunEndCamera()
+    {
+        _wallRunFraming.m_TrackedObjectOffset.x = _startOffSetX;
+    }
+
+    public void XOffSetWallIdle()
+    {
+        if (_wallRunFraming.m_TrackedObjectOffset.x > _startOffSetX)
+        {
+            if (Mathf.Abs(_wallRunFraming.m_TrackedObjectOffset.x - _startOffSetX) < 0.01f) return;
+
+            _wallRunFraming.m_TrackedObjectOffset.x -= Time.deltaTime * _offSetXChangeSpeed;
+
+        }
+        else if (_wallRunFraming.m_TrackedObjectOffset.x < _startOffSetX)
+        {
+            if (Mathf.Abs(_wallRunFraming.m_TrackedObjectOffset.x - _startOffSetX) < 0.01f) return;
+
+            _wallRunFraming.m_TrackedObjectOffset.x += Time.deltaTime * _offSetXChangeSpeed;
+        }
+    }
+
+    public void XOffSetControlWallRun()
+    {
+        if (_cameraControl.PlayerControl.WallRun.MoveDir == WallRun.MoveDirection.Right)
+        {
+            if (_wallRunFraming.m_TrackedObjectOffset.x < _leftWallMaxOffSetX)
+            {
+                _wallRunFraming.m_TrackedObjectOffset.x += Time.deltaTime * _offSetXChangeSpeed;
+            }
+        }
+        else if (_cameraControl.PlayerControl.WallRun.MoveDir == WallRun.MoveDirection.Left)
+        {
+            if (_wallRunFraming.m_TrackedObjectOffset.x > _rightWallMaxOffSetX)
+            {
+                _wallRunFraming.m_TrackedObjectOffset.x -= Time.deltaTime * _offSetXChangeSpeed;
+            }
+        }
+        else
+        {
+            if (_wallRunFraming.m_TrackedObjectOffset.x > _startOffSetX)
+            {
+                if (Mathf.Abs(_wallRunFraming.m_TrackedObjectOffset.x - _startOffSetX) < 0.01f) return;
+
+                _wallRunFraming.m_TrackedObjectOffset.x -= Time.deltaTime * _offSetXChangeSpeed ;
+
+            }
+            else if (_wallRunFraming.m_TrackedObjectOffset.x < _startOffSetX)
+            {
+                if (Mathf.Abs(_wallRunFraming.m_TrackedObjectOffset.x - _startOffSetX) < 0.01f) return;
+
+                _wallRunFraming.m_TrackedObjectOffset.x += Time.deltaTime * _offSetXChangeSpeed ;
+            }
+        }
+    }
 
 
     public void WallRunCameraFollow()
@@ -99,38 +169,65 @@ public class WallRunCameraControl : MonoBehaviour
             float targetAngle = lookRotation.eulerAngles.y;
 
             //現在の角度
-            float currentAngle = _swingCinemachinePOV.m_HorizontalAxis.Value;
+            float currentAngle = _wallRunPOV.m_HorizontalAxis.Value;
 
             //新しい角度を作成
             float newAngle = Mathf.MoveTowardsAngle(currentAngle, targetAngle, _horizontalMaxSpeed * Time.deltaTime);
 
             //現在の角度と、向かせたい角度の差が一定値に収まるまで更新
-            if (Mathf.Abs(lookRotation.eulerAngles.y - _swingCinemachinePOV.m_HorizontalAxis.Value) > 0.5f)
+            if (Mathf.Abs(lookRotation.eulerAngles.y - _wallRunPOV.m_HorizontalAxis.Value) > 0.5f)
             {
-                _swingCinemachinePOV.m_HorizontalAxis.Value = newAngle;
+                _wallRunPOV.m_HorizontalAxis.Value = newAngle;
             }
 
             //縦方向の回転の設定
             if (_cameraControl.PlayerControl.WallRun.MoveDir == WallRun.MoveDirection.Up)
             {
-                if (_swingCinemachinePOV.m_VerticalAxis.Value > -60)
+                if (_wallRunPOV.m_VerticalAxis.Value > -60)
                 {
-                    _swingCinemachinePOV.m_VerticalAxis.Value -= _upperMaxSpeed * Time.deltaTime;
+                    _wallRunPOV.m_VerticalAxis.Value -= _upperMaxSpeed * Time.deltaTime;
                 }
             }
             else
             {
-                if (_swingCinemachinePOV.m_VerticalAxis.Value < 25)
+                if (_wallRunPOV.m_VerticalAxis.Value < 25)
                 {
-                    _swingCinemachinePOV.m_VerticalAxis.Value += _upperMaxSpeed * Time.deltaTime;
+                    _wallRunPOV.m_VerticalAxis.Value += _upperMaxSpeed * Time.deltaTime;
                 }
             }
         }
 
         //カメラの距離の設定
-        if (_swingCameraFraming.m_CameraDistance < _moveCameraDistance)
+        if (_wallRunFraming.m_CameraDistance < _moveCameraDistance)
         {
-            _swingCameraFraming.m_CameraDistance += Time.deltaTime * _setCameraDistanceSpeed;
+            _wallRunFraming.m_CameraDistance += Time.deltaTime * _setCameraDistanceSpeed;
         }
     }
+
+    public void WallRunZipUpToFrontCameraSet()
+    {
+        if (_cameraControl.PlayerControl.InputManager.IsControlCameraValueChange == Vector2.zero)
+        {
+
+            if (_wallRunPOV.m_VerticalAxis.Value > 7)
+            {
+                _wallRunPOV.m_VerticalAxis.Value -= 300 * Time.deltaTime;
+
+                if (_wallRunPOV.m_VerticalAxis.Value - 7 < 0.5f)
+                {
+                    _wallRunPOV.m_VerticalAxis.Value = 7;
+                }
+            }
+            if (_wallRunPOV.m_VerticalAxis.Value < 7)
+            {
+                _wallRunPOV.m_VerticalAxis.Value += 300 * Time.deltaTime;
+
+                if (_wallRunPOV.m_VerticalAxis.Value - 7 < 0.5f)
+                {
+                    _wallRunPOV.m_VerticalAxis.Value = 7;
+                }
+            }
+        }
+    }
+
 }

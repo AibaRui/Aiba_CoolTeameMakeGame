@@ -71,7 +71,7 @@ public class PlayerMove : IPlayerAction
 
             Vector3 vea = new Vector3(_playerControl.Rb.velocity.x, 0, _playerControl.Rb.velocity.z);
 
-          //  _playerControl.Rb.AddForce(-dir * 15);
+            //  _playerControl.Rb.AddForce(-dir * 15);
 
 
 
@@ -156,7 +156,7 @@ public class PlayerMove : IPlayerAction
         //速度を加える
         _playerControl.Rb.velocity = velo * moveSpeed;
         //重力を加える
-        _playerControl.Rb.AddForce(-_playerControl.PlayerT.up * _gravity);
+        _playerControl.Rb.AddForce(Vector3.down * _gravity);
     }
 
     public void AirMove()
@@ -180,7 +180,7 @@ public class PlayerMove : IPlayerAction
 
         //if (!_playerControl.CameraControl.IsEndAutpFollow)
         //{
-            _playerControl.PlayerT.rotation = Quaternion.RotateTowards(_playerControl.PlayerT.rotation, _targetRotation, rotationSpeed);
+        _playerControl.PlayerT.rotation = Quaternion.RotateTowards(_playerControl.PlayerT.rotation, _targetRotation, rotationSpeed);
         // }
 
 
@@ -189,12 +189,20 @@ public class PlayerMove : IPlayerAction
         //Quaternion _targetRotation2 = Quaternion.LookRotation(Camera.main.transform.forward, Vector3.up);
         //_playerControl.ModelT.rotation = Quaternion.RotateTowards(_playerControl.ModelT.rotation, _targetRotation2, rotationSpeed2);
 
-        _playerControl.Rb.AddForce(velo * _airMoveSpeed);
 
-        if (_playerControl.Rb.velocity.y < 6)
+        float speed = 0;
+
+        if (_playerControl.GroundCheck.IsHitNearGround())
         {
-            // _playerControl.Rb.AddForce(-_playerControl.PlayerT.up * _gravity);
+            speed = 3;
         }
+        else
+        {
+            speed = _airMoveSpeed;
+
+        }
+
+        _playerControl.Rb.AddForce((velo * speed) + Vector3.down * _gravity);
 
         Do();
     }
