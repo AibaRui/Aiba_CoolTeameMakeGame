@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ConcentrationLineShader
-  m_Shader: {fileID: -6465566751694194690, guid: f5dc94b87619b4e4b9de31f7b92c92a1, type: 3}
+  m_Name: Shader Graphs_New Shader Graph
+  m_Shader: {fileID: -6465566751694194690, guid: b60009aa7a0345d4884f12436084f2b7, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -19,29 +19,15 @@ Material:
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
-    m_TexEnvs:
-    - _SampleTexture2D_8380f95169664a1e9a631a38bbe2a2ee_Texture_1:
-        m_Texture: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _Texture2D:
-        m_Texture: {fileID: 10305, guid: 0000000000000000f000000000000000, type: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
+    m_TexEnvs: []
     m_Ints: []
     m_Floats:
-    - _AngleScale: 1
     - _BUILTIN_QueueControl: 0
     - _BUILTIN_QueueOffset: 0
-    - _Lerp: 0.13
-    - _Randomness: 15
-    - _SmoothstepEdge1: 0.5
-    - _SmoothstepEdge2: 1.5
-    - _Speed: 7
-    m_Colors:
-    - _Vector2: {r: 1, g: 1, b: 0, a: 0}
+    - _Float: 0
+    m_Colors: []
   m_BuildTextureStacks: []
---- !u!114 &3564739504639530109
+--- !u!114 &6572995588610194415
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
