@@ -15,12 +15,16 @@ public class ZipState : PlayerStateBase
 
         //アニメーションの設定
         _stateMachine.PlayerController.AnimControl.FrontZip();
+
+        _stateMachine.PlayerController.EffectControl.ZipSet(true);
     }
 
     public override void Exit()
     {
         //FrontZipのタイマーをリセット
         _stateMachine.PlayerController.ZipMove.EndZip();
+
+        _stateMachine.PlayerController.EffectControl.ZipSet(false);
     }
 
     public override void FixedUpdate()
@@ -31,13 +35,20 @@ public class ZipState : PlayerStateBase
 
     public override void LateUpdate()
     {
-
+        _stateMachine.PlayerController.CameraControl.ZipCamera();
     }
 
     public override void Update()
     {
         //Zipの有効時間を計測
         _stateMachine.PlayerController.ZipMove.CountFrotZipTime();
+
+
+
+        if(_stateMachine.PlayerController.WallRunCheck.CheckWallFront())
+        {
+            _stateMachine.TransitionTo(_stateMachine.StateWallIdle);
+        }
 
         if (_stateMachine.PlayerController.ZipMove.IsEndFrontZip)
         {

@@ -36,6 +36,8 @@ public class CameraControl : MonoBehaviour
     [Header("カメラ視点の変更をするまでのクールタイム")]
     [SerializeField] private float _cameraAngleChangeTime = 1f;
 
+    [SerializeField] private WallRunCameraControl _wallRunCamera;
+
     [SerializeField] private PlayerControl _playerControl;
 
     [SerializeField] Transform follow;
@@ -43,8 +45,7 @@ public class CameraControl : MonoBehaviour
     [SerializeField] Transform lookAt;
 
     public InputChoice inputChoice;
-    // public InvertSettings keyboardAndMouseInvertSettings;
-    // public InvertSettings controllerInvertSettings;
+
     public bool allowRuntimeCameraSettingsChanges;
 
     [SerializeField] private float _firstZ;
@@ -60,13 +61,22 @@ public class CameraControl : MonoBehaviour
     [Header("構え時のカメラ")]
     [SerializeField] private CinemachineVirtualCamera _setUpControllerCamera;
 
+    [Header("WallRun用のカメラ")]
+    [SerializeField] private CinemachineVirtualCamera _wallRunControllerCamera;
+
     private CinemachinePOV _swingCinemachinePOV;
+
     private CinemachineFramingTransposer _swingCameraFraming;
+
+    public CinemachineVirtualCamera WallRunCameraController => _wallRunControllerCamera;
+
 
     private bool _isUpEnd = false;
 
     private float _countTime = 0;
     private bool _isDontCameraMove = false;
+
+    public bool IsDontCameraMove => _isDontCameraMove;
 
     private float _countCameraMoveSwingingX = 0;
 
@@ -81,7 +91,14 @@ public class CameraControl : MonoBehaviour
     private bool _isSwingEndCameraDistanceToLong = false;
 
     private float _swingEndPlayerRotateY;
+
+
+    public WallRunCameraControl WallRunCameraControl => _wallRunCamera;
+    public PlayerControl PlayerControl => _playerControl;
     public float SwingEndPlayerRotateY { get => _swingEndPlayerRotateY; set => _swingEndPlayerRotateY = value; }
+
+
+
 
     public bool IsEndAutpFollow => _isEndAutoFollow;
     void Awake()
@@ -147,8 +164,18 @@ public class CameraControl : MonoBehaviour
         //移動入力を受け取る
         float h = _playerControl.InputManager.HorizontalInput;
 
-        if (h == 0)
+        if (h > -0.5f && h < 0.5f)
         {
+            //if (_countCameraMoveSwingingX > 0)
+            //{
+            //    _countCameraMoveSwingingX -= 0.01f;
+            //}
+
+            //if (_countCameraMoveAirX > 0)
+            //{
+            //    _countCameraMoveAirX -= 0.01f;
+            //}
+
             _countCameraMoveSwingingX = 0;
             _countCameraMoveAirX = 0;
         }
@@ -156,19 +183,23 @@ public class CameraControl : MonoBehaviour
         {
             if (_playerControl.Swing.IsSwingNow)
             {
-                if (_countCameraMoveSwingingX < 0.7)
+                if (_countCameraMoveSwingingX < 0.5)
                 {
-                    _countCameraMoveSwingingX += 0.02f;
+                    _countCameraMoveSwingingX += 0.002f;
+                }
+            }
+            else
+            {
+                if (_countCameraMoveAirX < 0.4f)
+                {
+                    _countCameraMoveAirX += 0.002f;
                 }
             }
 
-            if (!_playerControl.VelocityLimit.IsSpeedUp)
-            {
-                if (_countCameraMoveAirX < 0.8f)
-                {
-                    _countCameraMoveAirX += 0.0001f * _playerControl.Rb.velocity.magnitude;
-                }
-            }
+            // if (!_playerControl.VelocityLimit.IsSpeedUp)
+            //  {
+
+            // }
 
             if (_isDontCameraMove)
             {
@@ -245,6 +276,7 @@ public class CameraControl : MonoBehaviour
         //}
     }
 
+
     public void SwingCameraValueX(bool isSwing)
     {
         if (isSwing)
@@ -253,11 +285,11 @@ public class CameraControl : MonoBehaviour
             float h = _playerControl.InputManager.HorizontalInput;
 
             ////////////X軸の調整
-            if (h > 0)
+            if (h > 0.8f)
             {
                 _swingCinemachinePOV.m_HorizontalAxis.Value += _countCameraMoveSwingingX;
             }
-            else if (h < 0)
+            else if (h < -0.8f)
             {
                 _swingCinemachinePOV.m_HorizontalAxis.Value -= _countCameraMoveSwingingX;
             }
@@ -274,12 +306,14 @@ public class CameraControl : MonoBehaviour
             //移動入力を受け取る
             float h = _playerControl.InputManager.HorizontalInput;
 
+            Debug.Log(_countCameraMoveAirX);
+
             ////////////X軸の調整
-            if (h > 0)
+            if (h > 0.8f)
             {
                 _swingCinemachinePOV.m_HorizontalAxis.Value += _countCameraMoveAirX;
             }
-            else if (h < 0)
+            else if (h < -0.8f)
             {
                 _swingCinemachinePOV.m_HorizontalAxis.Value -= _countCameraMoveAirX;
             }
@@ -295,7 +329,7 @@ public class CameraControl : MonoBehaviour
         {
             Vector3 v = new Vector3(0, velocityY, 0);
             if (_swingCameraFraming.m_CameraDistance > _firstSwingCameraDistance + 0.5f)
-                _swingCameraFraming.m_CameraDistance -= 0.005f * v.magnitude;
+                _swingCameraFraming.m_CameraDistance -= 0.0007f * v.magnitude;
 
             if (Mathf.Abs(_swingCameraFraming.m_CameraDistance - (_firstSwingCameraDistance + 0.5f)) < 0.1f)
             {
@@ -305,7 +339,8 @@ public class CameraControl : MonoBehaviour
 
             if (_swingCameraFraming.m_TrackedObjectOffset.y > _maxUpOffSet)
             {
-                _swingCameraFraming.m_TrackedObjectOffset.y -= Time.deltaTime;
+                Debug.Log($"最大:{_maxUpOffSet} 現在{_swingCameraFraming.m_TrackedObjectOffset.y}");
+                _swingCameraFraming.m_TrackedObjectOffset.y -= Time.deltaTime * 1.8f;
             }
         }   //位置を下の方に下げる
         else if (velocityY < 0)
@@ -323,7 +358,15 @@ public class CameraControl : MonoBehaviour
 
             if (_swingCameraFraming.m_TrackedObjectOffset.y < _maxDownOffSet)
             {
-                _swingCameraFraming.m_TrackedObjectOffset.y += Time.deltaTime;
+                if (_swingCameraFraming.m_TrackedObjectOffset.y < _firstOffSet)
+                {
+                    _swingCameraFraming.m_TrackedObjectOffset.y += Time.deltaTime*2;
+                }
+                else
+                {
+                    _swingCameraFraming.m_TrackedObjectOffset.y += Time.deltaTime;
+                }
+
             } //位置を上の方にする
         }
 
@@ -334,18 +377,32 @@ public class CameraControl : MonoBehaviour
             {
                 if (_swingCinemachinePOV.m_VerticalAxis.Value > -40)
                 {
-                    Vector3 v = new Vector3(0, velocityY, 0);
-                    _swingCinemachinePOV.m_VerticalAxis.Value -= 0.02f * v.magnitude;
-                    Debug.Log("d");
+                    float add = new Vector3(0, velocityY, 0).magnitude;
+
+                    float limit = new Vector3(0, 30, 0).magnitude;
+
+                    if (add > limit)
+                    {
+                        add = limit;
+                    }
+
+
+                    _swingCinemachinePOV.m_VerticalAxis.Value -= 0.006f * add;
                 }
             }
             else if (velocityY < 0)
             {
-                if (_swingCinemachinePOV.m_VerticalAxis.Value <= 20)
+                if (_swingCinemachinePOV.m_VerticalAxis.Value <= 30)
                 {
-                    Vector3 v = new Vector3(0, velocityY, 0);
-                    _swingCinemachinePOV.m_VerticalAxis.Value += 0.01f * v.magnitude;
-                    Debug.Log("v");
+                    float add = new Vector3(0, velocityY, 0).magnitude;
+
+                    float limit = new Vector3(0, 20, 0).magnitude;
+
+                    if (add > limit)
+                    {
+                        add = limit;
+                    }
+                    _swingCinemachinePOV.m_VerticalAxis.Value += 0.005f * add;
                 }
             }
         }
@@ -357,7 +414,7 @@ public class CameraControl : MonoBehaviour
         //Swing終わりに、カメラを離すかどうか
         if (_isSwingEndCameraDistanceToLong)
         {
-            if (velocityY < 0) _isSwingEndCameraDistanceToLong = false;
+            if (velocityY < 5) _isSwingEndCameraDistanceToLong = false;
 
             //カメラの距離を離す
             Vector3 v = new Vector3(0, velocityY, 0);
@@ -368,43 +425,72 @@ public class CameraControl : MonoBehaviour
             {
                 _swingCameraFraming.m_CameraDistance = _maxSwingCameraDistance + 1;
             }
+            Debug.Log("YES");
         }
 
 
-        if (_isUpEnd)
+        if (_isUpEnd)//上方向に飛び上がった時
         {
             //モニター上でのプレイヤーの位置を変える。上の方に
-            if (_swingCameraFraming.m_TrackedObjectOffset.y > -2)
+            if (_swingCameraFraming.m_TrackedObjectOffset.y > -1.6f)
             {
-                _swingCameraFraming.m_TrackedObjectOffset.y -= Time.deltaTime * 10;
+                Vector3 v = new Vector3(0, velocityY, 0);
+                _swingCameraFraming.m_TrackedObjectOffset.y -= 0.01f * v.magnitude;
 
-                if (_swingCameraFraming.m_CameraDistance <= _maxSwingCameraDistance)
-                    _swingCameraFraming.m_CameraDistance += Time.deltaTime * 10;
+
+                //if (_swingCameraFraming.m_CameraDistance <= _maxSwingCameraDistance)
+                //    _swingCameraFraming.m_CameraDistance += Time.deltaTime;
             }
-            else
+
+            if (velocityY < 0 || _swingCameraFraming.m_TrackedObjectOffset.y <= -1.6f)
             {
                 _isUpEnd = false;
-            }
-        }       //上方向に飛び上がった時
+            }   //Yの速度が0より小さくなったら終了
+        }
         else
         {
             //モニター上でのプレイヤーの位置を変える。初期状態に
             if (velocityY < 0)
             {
-                if (_swingCameraFraming.m_TrackedObjectOffset.y < _firstOffSet)
-                    _swingCameraFraming.m_TrackedObjectOffset.y += Time.deltaTime * 0.5f;
 
-                if (_swingCameraFraming.m_TrackedObjectOffset.y > _firstOffSet)
-                    _swingCameraFraming.m_TrackedObjectOffset.y -= Time.deltaTime * 0.5f;
+                if (velocityY > -5)
+                {
+                    if (_swingCameraFraming.m_TrackedObjectOffset.y < _firstOffSet)
+                        _swingCameraFraming.m_TrackedObjectOffset.y += Time.deltaTime * 1f;
 
-                if (Mathf.Abs(_swingCameraFraming.m_TrackedObjectOffset.y - _firstOffSet) < 0.02f)
-                    _swingCameraFraming.m_TrackedObjectOffset.y = _firstOffSet;
+                    if (_swingCameraFraming.m_TrackedObjectOffset.y > _firstOffSet)
+                        _swingCameraFraming.m_TrackedObjectOffset.y -= Time.deltaTime * 0.5f;
 
+                    if (Mathf.Abs(_swingCameraFraming.m_TrackedObjectOffset.y - _firstOffSet) < 0.02f)
+                        _swingCameraFraming.m_TrackedObjectOffset.y = _firstOffSet;
+                }
+                else
+                {
+                    float speed = 0;
+
+                    if (velocityY > -13)
+                    {
+                        speed = 0.1f;
+                    }
+                    else if (velocityY > -16)
+                    {
+                        speed = 0.4f;
+                    }
+                    else
+                    {
+                        speed = 0.6f;
+                    }
+
+                    if (_swingCameraFraming.m_TrackedObjectOffset.y < _maxDownOffSet - 1)
+                    {
+                        _swingCameraFraming.m_TrackedObjectOffset.y += Time.deltaTime * speed;
+                    } //位置を上の方にする
+                }
 
                 if (_swingCameraFraming.m_CameraDistance > _firstSwingCameraDistance)
                 {
                     Vector3 v = new Vector3(0, _playerControl.Rb.velocity.y, 0);
-                    _swingCameraFraming.m_CameraDistance -= 0.004f * v.magnitude;
+                    _swingCameraFraming.m_CameraDistance -= 0.0009f * v.magnitude;
 
                     if (_swingCameraFraming.m_CameraDistance < _firstSwingCameraDistance)
                     {
@@ -412,15 +498,34 @@ public class CameraControl : MonoBehaviour
                     }
                 }
             }
+        }
 
-            if (_isDontCameraMove)
+        if (_isDontCameraMove)
+        {
+            //カメラの角度を元に戻す
+            if (_playerControl.InputManager.IsControlCameraValueChange == Vector2.zero)
             {
-                //カメラの角度を元に戻す
-                if (_playerControl.InputManager.IsControlCameraValueChange == Vector2.zero)
+                if (_playerControl.Rb.velocity.y < -15)
                 {
+                    //if (_swingCinemachinePOV.m_VerticalAxis.Value <= 50)
+                    //{
+                    //    float add = new Vector3(0, velocityY, 0).magnitude;
+
+                    //    float limit = new Vector3(0, 20, 0).magnitude;
+
+                    //    if (add > limit)
+                    //    {
+                    //        add = limit;
+                    //    }
+                    //    _swingCinemachinePOV.m_VerticalAxis.Value += 0.005f * add;
+                    //}
+                }
+                else
+                {
+
                     if (_swingCinemachinePOV.m_VerticalAxis.Value > _firstYvalue)
                     {
-                        _swingCinemachinePOV.m_VerticalAxis.Value -= Time.deltaTime * 20;
+                        _swingCinemachinePOV.m_VerticalAxis.Value -= Time.deltaTime * 15;
 
                         if (_swingCinemachinePOV.m_VerticalAxis.Value < _firstYvalue)
                         {
@@ -429,7 +534,7 @@ public class CameraControl : MonoBehaviour
                     }
                     else if (_swingCinemachinePOV.m_VerticalAxis.Value < _firstYvalue)
                     {
-                        _swingCinemachinePOV.m_VerticalAxis.Value += Time.deltaTime * 20;
+                        _swingCinemachinePOV.m_VerticalAxis.Value += Time.deltaTime * 15;
 
                         if (_swingCinemachinePOV.m_VerticalAxis.Value > _firstYvalue)
                         {
@@ -439,6 +544,40 @@ public class CameraControl : MonoBehaviour
                 }
             }
         }
+    }
+
+
+
+    public void ZipCamera()
+    {
+        if (_swingCameraFraming.m_TrackedObjectOffset.y < _firstOffSet)
+            _swingCameraFraming.m_TrackedObjectOffset.y += Time.deltaTime * 3f;
+
+        if (_swingCameraFraming.m_TrackedObjectOffset.y > _firstOffSet)
+            _swingCameraFraming.m_TrackedObjectOffset.y -= Time.deltaTime * 1f;
+
+        if (Mathf.Abs(_swingCameraFraming.m_TrackedObjectOffset.y - _firstOffSet) < 0.02f)
+            _swingCameraFraming.m_TrackedObjectOffset.y = _firstOffSet;
+
+        if (_swingCinemachinePOV.m_VerticalAxis.Value > _firstYvalue)
+        {
+            _swingCinemachinePOV.m_VerticalAxis.Value -= Time.deltaTime * 30;
+
+            if (_swingCinemachinePOV.m_VerticalAxis.Value < _firstYvalue)
+            {
+                _swingCinemachinePOV.m_VerticalAxis.Value = _firstYvalue;
+            }
+        }
+        else if (_swingCinemachinePOV.m_VerticalAxis.Value < _firstYvalue)
+        {
+            _swingCinemachinePOV.m_VerticalAxis.Value += Time.deltaTime * 30;
+
+            if (_swingCinemachinePOV.m_VerticalAxis.Value > _firstYvalue)
+            {
+                _swingCinemachinePOV.m_VerticalAxis.Value = _firstYvalue;
+            }
+        }
+
     }
 
 
@@ -454,8 +593,21 @@ public class CameraControl : MonoBehaviour
     }
 
 
+    public void UseWallRunCamera()
+    {
+        controllerCamera.Priority = 0;
+        _setUpControllerCamera.Priority = 0;
 
-    public void SwingCamera()
+        _swingControllerCamera.Priority = 0;
+
+        _wallRunControllerCamera.Priority = 50;
+
+
+        //Swing時のカメラのOffsetを戻す
+        _swingCameraFraming.m_TrackedObjectOffset.y = _firstOffSet;
+    }
+
+    public void UseSwingCamera()
     {
         controllerCamera.Priority = 0;
         _setUpControllerCamera.Priority = 0;
@@ -467,8 +619,12 @@ public class CameraControl : MonoBehaviour
     {
         controllerCamera.Priority = 0;
         _swingControllerCamera.Priority = 0;
+        _wallRunControllerCamera.Priority = 0;
 
         _setUpControllerCamera.Priority = 50;
+
+        //Swing時のカメラのOffsetを戻す
+        _swingCameraFraming.m_TrackedObjectOffset.y = _firstOffSet;
     }
 
     public void RsetCamera()
@@ -477,6 +633,7 @@ public class CameraControl : MonoBehaviour
 
         _swingControllerCamera.Priority = 0;
         _setUpControllerCamera.Priority = 0;
+        _wallRunControllerCamera.Priority = 0;
 
         controllerCamera.Priority = 40;
     }
@@ -485,9 +642,11 @@ public class CameraControl : MonoBehaviour
     public void SwingEndSetCamera()
     {
         _countCameraMoveY = 0;
-        _countCameraMoveAirX = _countCameraMoveSwingingX;
+        // _countCameraMoveAirX = _countCameraMoveSwingingX;
         _countCameraMoveSwingingX = 0;
         _autoFloowCount = 0;
+
+        //_swingCameraFraming.m_TrackedObjectOffset.y = _firstOffSet;
     }
 
     public void EndFollow()

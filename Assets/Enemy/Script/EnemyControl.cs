@@ -17,8 +17,8 @@ public class EnemyControl : MonoBehaviour
 
     [SerializeField] private EnemyMove _move;
 
-    [SerializeField] private EnemyAttack _attack;
-
+    [SerializeField] private EnemyNearAttack _attack;
+    [SerializeField] private EnemyLongAttack _longAttack;
     private bool _isDead;
 
     public bool IsDead => _isDead;
@@ -38,6 +38,7 @@ public class EnemyControl : MonoBehaviour
         {
             _move.Move();
             _attack.Attack();
+            _longAttack.Attack();
         }
     }
 

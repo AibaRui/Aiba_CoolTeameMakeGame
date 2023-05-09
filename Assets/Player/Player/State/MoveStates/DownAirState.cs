@@ -8,10 +8,10 @@ public class DownAirState : PlayerStateBase
     public override void Enter()
     {
         //カメラを遠巻きにする
-        _stateMachine.PlayerController.CameraControl.SwingCamera();
+        _stateMachine.PlayerController.CameraControl.UseSwingCamera();
 
         //速度設定
-        _stateMachine.PlayerController.VelocityLimit.SetLimit(15, 20, 15);
+        _stateMachine.PlayerController.VelocityLimit.SetLimit(25, 40, 25);
     }
 
     public override void Exit()
@@ -29,6 +29,13 @@ public class DownAirState : PlayerStateBase
 
 
 
+
+    }
+
+    public override void LateUpdate()
+    {    
+        //カメラの時間
+        _stateMachine.PlayerController.CameraControl.CountTime();
         //カメラの傾きを戻す
         _stateMachine.PlayerController.CameraControl.AirCameraYValue(_stateMachine.PlayerController.Rb.velocity.y);
 
@@ -39,15 +46,9 @@ public class DownAirState : PlayerStateBase
         _stateMachine.PlayerController.CameraControl.SwingCameraValueX(false);
     }
 
-    public override void LateUpdate()
-    {
-
-    }
-
     public override void Update()
     {   
-        //カメラの時間
-        _stateMachine.PlayerController.CameraControl.CountTime();
+
 
         //各動作のクールタイム
         _stateMachine.PlayerController.CoolTimes();
@@ -99,7 +100,7 @@ public class DownAirState : PlayerStateBase
             return;
         }
 
-        if (_stateMachine.PlayerController.SearchSwingPoint.IsCanHit)
+        if (_stateMachine.PlayerController.SearchSwingPoint.Search())
         {
             if (_stateMachine.PlayerController.Swing.IsCanSwing &&
                 _stateMachine.PlayerController.InputManager.IsSwing == 1)

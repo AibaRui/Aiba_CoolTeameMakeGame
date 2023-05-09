@@ -36,6 +36,8 @@ public class PlayerStateMachine : StateMachine
     private AttackState _stateAttack = default;
     [SerializeField]
     private AvoidState _stateAvoid = default;
+    [SerializeField]
+    private WallRunUpZipState _stateWallRunUpZip = default;
 
     private PlayerControl _playerController = null;
 
@@ -56,6 +58,7 @@ public class PlayerStateMachine : StateMachine
     public SetUpState StateGrappleSetUp => _stateGrappleSetUp;
     public AttackState AttackState => _stateAttack;
     public AvoidState AvoidState => _stateAvoid;
+    public WallRunUpZipState WallRunUpZipState => _stateWallRunUpZip;
 
 
     #endregion
@@ -85,6 +88,7 @@ public class PlayerStateMachine : StateMachine
         _stateGrappleSetUp.Init(this);
         _stateAttack.Init(this);
         _stateAvoid.Init(this);
+        _stateWallRunUpZip.Init(this);
     }
 
 }

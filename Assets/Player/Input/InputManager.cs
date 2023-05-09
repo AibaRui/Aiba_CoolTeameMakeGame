@@ -84,7 +84,13 @@ public class InputManager : MonoBehaviour
 
     public float VerticalInput { get => _verticalInput; }
 
-    private float yInput;
+    private float _cameraHorizontalInput;
+
+    private float _cameraVerticalInput;
+
+    public float CameraHorizontalInput => _cameraHorizontalInput;
+
+    public float CameraVerticalInput => _cameraVerticalInput;
 
     public void HandleInput()
     {
@@ -93,6 +99,8 @@ public class InputManager : MonoBehaviour
 
         _horizontalInput = Input.GetAxisRaw("Horizontal");
         _verticalInput = Input.GetAxisRaw("Vertical");
+
+        //Debug.Log(_horizontalInput);
 
         //マウスの左クリック
         _isLeftMouseClickDown = Input.GetMouseButtonDown(0);
@@ -132,6 +140,8 @@ public class InputManager : MonoBehaviour
         _isSwing = Input.GetAxisRaw("Swing");
 
         _isMouseScrol = Input.GetAxis("Mouse ScrollWheel");
+
+
     }
 
 

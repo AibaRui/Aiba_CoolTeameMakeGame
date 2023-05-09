@@ -5,9 +5,8 @@ using UnityEngine;
 [System.Serializable]
 public class WallRunCheck : IPlayerAction
 {
-    [Header("壁のレイヤー")]
+    [Header("Gizmoを描画するかどうか")]
     [SerializeField] private bool _isGizmo = true;
-
 
     [Header("壁のレイヤー")]
     [SerializeField]
@@ -32,11 +31,23 @@ public class WallRunCheck : IPlayerAction
 
     public TatchWall TatchingWall => _tatchWall;
 
+    /// <summary>壁のある方向</summary>
+    private Vector3 _wallDir = Vector3.zero;
+
+    private Vector3 _wallCrossRight = Vector3.zero;
+
+    public Vector3 WallCrossRight => _wallCrossRight;
+
+    public Vector3 WallDir => _wallDir;
+
     private RaycastHit _hit;
 
-    private RaycastHit _beforHit;
 
     public RaycastHit Hit => _hit;
+
+    private bool _isWallHitRight = false;
+
+    public bool IsWallRightHit => _isWallHitRight;
 
     /// <summary>接触している壁の方向</summary>
     public enum TatchWall
@@ -51,15 +62,15 @@ public class WallRunCheck : IPlayerAction
 
     public bool CheckWall()
     {
-        if(_tatchWall ==TatchWall.Forward)
+        if (_tatchWall == TatchWall.Forward)
         {
-           return CheckWallFront();
+            return CheckWallFront();
         }
         else if (_tatchWall == TatchWall.Left)
         {
             return CheckWallSide(false);
         }
-        else 
+        else
         {
             return CheckWallSide(true);
         }
@@ -68,25 +79,19 @@ public class WallRunCheck : IPlayerAction
 
     public bool CheckWalAlll()
     {
-        bool foward = CheckWallFront();
-        bool right = CheckWallSide(true);
-        bool left = CheckWallSide(false);
-
-        if (foward)
+        if (CheckWallFront())
         {
-            _tatchWall = TatchWall.Forward;
             return true;
         }
 
-        if (right)
+        if (CheckWallSide(true))
         {
-            _tatchWall = TatchWall.Right;
             return true;
         }
 
-        if (left)
+        if (CheckWallSide(false))
         {
-            _tatchWall = TatchWall.Left;
+            _isWallHitRight = false;
             return true;
         }
 
@@ -99,18 +104,35 @@ public class WallRunCheck : IPlayerAction
         //法線を取る
         Vector3 wallNomal = _hit.normal;
         //外積を使い、進行方向を取る
-        Vector3 wallForward = Vector3.Cross(wallNomal, _playerControl.PlayerT.up);
+        Vector3 wallForward = Vector3.Cross(wallNomal, Vector3.up);
 
         //壁と垂直のベクトルをとる
-        Vector3 dir = Vector3.Cross(wallForward, _playerControl.PlayerT.up);
+        Vector3 wallDir = Vector3.Cross(wallForward.normalized, Vector3.up);
 
-        if ((_playerControl.WallRunCheck.Hit.normal - dir).magnitude > (_playerControl.WallRunCheck.Hit.normal - -dir).magnitude)
+        if ((_playerControl.WallRunCheck.Hit.normal - wallDir).magnitude > (_playerControl.WallRunCheck.Hit.normal - -wallDir).magnitude)
         {
-            dir = -dir;
+            wallDir = -wallDir;
         }
 
-        bool isHit = Physics.Raycast(_playerControl.PlayerT.position, -dir, out _hit, 2, _wallLayer);
-        Debug.DrawRay(_playerControl.PlayerT.position,-dir*10,Color.red);
+        // _wallDir = wallDir;
+
+        _wallDir = _hit.normal;
+
+        RaycastHit raycast;
+
+        bool isHit = Physics.Raycast(_playerControl.PlayerT.position, -_wallDir, out raycast, 10, _wallLayer);
+
+        if (isHit)
+        {
+            _hit = raycast;
+
+
+
+        }
+
+        _wallCrossRight = Vector3.Cross(_hit.normal, Vector3.up);
+
+        Debug.DrawRay(_playerControl.PlayerT.position, -wallNomal * 10, Color.red);
         return isHit;
     }
 
@@ -143,11 +165,29 @@ public class WallRunCheck : IPlayerAction
 
         RaycastHit raycast;
 
-        bool isHit = Physics.BoxCast(_playerControl.PlayerT.position + addPos, _boxSizeSide, rayDir, out raycast, _playerControl.PlayerT.rotation, 0.2f, _wallLayer);
+        // bool isHit = Physics.BoxCast(_playerControl.PlayerT.position + addPos, _boxSizeSide, rayDir, out raycast, _playerControl.PlayerT.rotation, 0.2f, _wallLayer);
+
+        bool isHit = Physics.Raycast(_playerControl.PlayerT.position, rayDir, out raycast, 2, _wallLayer);
 
         if (isHit)
         {
             _hit = raycast;
+            _wallCrossRight = Vector3.Cross(_hit.normal, Vector3.up);
+
+
+            if (isRight)
+            {
+                _playerControl.WallRun.SetMoveDir(WallRun.MoveDirection.Left);
+
+                _tatchWall = TatchWall.Right;
+                _isWallHitRight = true;
+            }
+            else
+            {
+                _playerControl.WallRun.SetMoveDir(WallRun.MoveDirection.Right);
+                _tatchWall = TatchWall.Left;
+                _isWallHitRight = false;
+            }
         }
 
         return isHit;
@@ -160,36 +200,42 @@ public class WallRunCheck : IPlayerAction
 
         RaycastHit raycast;
 
-        bool isHit = Physics.BoxCast(_playerControl.PlayerT.position + addPos, _boxSizeFront, _playerControl.PlayerT.transform.forward, out raycast, _playerControl.PlayerT.rotation, 0.2f, _wallLayer);
+        //bool isHit = Physics.BoxCast(_playerControl.PlayerT.position + addPos, _boxSizeFront, _playerControl.PlayerT.transform.forward, out raycast, _playerControl.PlayerT.rotation, 0.2f, _wallLayer);
 
-        if(isHit)
+        bool isHit = Physics.Raycast(_playerControl.PlayerT.position, _playerControl.PlayerT.transform.forward, out raycast, 2, _wallLayer);
+
+        if (isHit)
         {
             _hit = raycast;
+            _wallCrossRight = Vector3.Cross(_hit.normal, Vector3.up);
+
+
+            _tatchWall = TatchWall.Forward;
+            _playerControl.WallRun.SetMoveDir(WallRun.MoveDirection.Up);
         }
 
         return isHit;
     }
 
-
     public void OnDrawGizmos(Transform player)
     {
         if (_isGizmo)
         {
+
+            Gizmos.color = Color.white;
+            Debug.DrawRay(player.position, player.transform.forward);
+
+
             Gizmos.color = Color.yellow;
             Gizmos.matrix = Matrix4x4.TRS(player.position, player.rotation, player.localScale);
-
-
             //前側
-            Gizmos.DrawCube(_frontPos, _boxSizeFront);
+            //Gizmos.DrawCube(_frontPos, _boxSizeFront);
             //右側
-            Gizmos.DrawCube(_rightPos, _boxSizeSide);
+            //Gizmos.DrawCube(_rightPos, _boxSizeSide);
             //左側
-            Gizmos.DrawCube(_leftPos, _boxSizeSide);
+            //Gizmos.DrawCube(_leftPos, _boxSizeSide);
 
             Gizmos.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one);
-
-
-
         }
     }
 

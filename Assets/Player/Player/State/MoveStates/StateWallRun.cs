@@ -7,8 +7,17 @@ public class StateWallRun : PlayerStateBase
 {
     public override void Enter()
     {
+        //カメラをWallRun用に変更
+        _stateMachine.PlayerController.CameraControl.UseWallRunCamera();
+
         _stateMachine.PlayerController.WallRunCheck.CheckHitWall();
+
         _stateMachine.PlayerController.Rb.useGravity = false;
+
+        //WallRunのAnimatorを設定
+        _stateMachine.PlayerController.AnimControl.WallRunSet(true);
+
+
     }
 
     public override void Exit()
@@ -17,39 +26,60 @@ public class StateWallRun : PlayerStateBase
 
         //WallRun直後がは、Swingを不可にする
         _stateMachine.PlayerController.Swing.SetSwingFalse();
+
+        _stateMachine.PlayerController.WallRun.SetNoMove(false);
     }
 
     public override void FixedUpdate()
     {
         _stateMachine.PlayerController.WallRun.WallMove();
-        Debug.Log("WallRun");
     }
 
     public override void LateUpdate()
     {
+        _stateMachine.PlayerController.CameraControl.WallRunCameraControl.WallRunCameraFollow();
 
+        _stateMachine.PlayerController.CameraControl.WallRunCameraControl.XOffSetControlWallRun();
     }
 
     public override void Update()
     {
+        _stateMachine.PlayerController.WallRun.CountNoMove();
+
         bool isHit = _stateMachine.PlayerController.WallRunCheck.CheckHitWall();
+
+        float h = _stateMachine.PlayerController.InputManager.HorizontalInput;
+        float v = _stateMachine.PlayerController.InputManager.VerticalInput;
 
         //各動作のクールタイム
         _stateMachine.PlayerController.CoolTimes();
 
-        if (_stateMachine.PlayerController.InputManager.IsSwing <= 0 )
+
+        if(_stateMachine.PlayerController.WallRunUpZip.CheckUpZipPosition()&& _stateMachine.PlayerController.InputManager.IsJumping)
+        {
+            _stateMachine.TransitionTo(_stateMachine.WallRunUpZipState);
+            return;
+        }
+
+        if (h==0 && v<=0 && !_stateMachine.PlayerController.WallRun.IsEndNoMove)
         {
             _stateMachine.TransitionTo(_stateMachine.StateWallIdle);
         }    //WallRunへ移行
 
         if (_stateMachine.PlayerController.InputManager.IsJumping || !isHit)
         {
+            //重力をオン
+            _stateMachine.PlayerController.Rb.useGravity = true;
+
             //WallRunのAnimatorを設定
             _stateMachine.PlayerController.AnimControl.WallRunSet(false);
+            
+            //ジャンプ処理
+            _stateMachine.PlayerController.WallRun.LastJump(true);
 
+            //移行
             _stateMachine.TransitionTo(_stateMachine.StateJump);
-            _stateMachine.PlayerController.WallRun.LastJump();
-            _stateMachine.PlayerController.Rb.useGravity = true;
+
         }    //WallRunへ移行
     }
 }

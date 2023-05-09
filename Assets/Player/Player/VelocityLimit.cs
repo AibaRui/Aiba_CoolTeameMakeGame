@@ -48,16 +48,16 @@ public class VelocityLimit : IPlayerAction
         {
             Vector3 speed = new Vector3(_playerControl.Rb.velocity.normalized.x, 0, _playerControl.Rb.velocity.normalized.z);
 
-            _playerControl.Rb.AddForce(-speed * 6f);
-            _playerControl.Rb.AddForce(Vector3.down * 4f);
+            _playerControl.Rb.AddForce(-speed * 10f);
+            _playerControl.Rb.AddForce(Vector3.down * 5f);
 
             Vector3 speedRb = new Vector3(_playerControl.Rb.velocity.x, 0, _playerControl.Rb.velocity.z);
 
-            Vector3 limit = new Vector3(15, 0, 15);
+            Vector3 limit = new Vector3(25, 0, 25);
 
             if (Vector3.Magnitude(speedRb) < Vector3.Magnitude(limit))
             {
-                SetLimit(15, 30, 15);
+                SetLimit(25, 30, 25);
                 _isSpeedUp = false;
             }
         }

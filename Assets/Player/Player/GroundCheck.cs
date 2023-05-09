@@ -11,12 +11,22 @@ public class GroundCheck
     [SerializeField]
     private Vector3 _size;
 
+    [Header("地面に近いことを示すBoxチェックのOffSet")]
+    [SerializeField]
+    private Vector3 _offsetBoxNearGround;
+    [Header("地面に近いことを示すBoxチェックのBoxの大きさ")]
+    [SerializeField]
+    private Vector3 _sizeBoxNearGround;
+
 
     [Header("Swing中の地面のチェック")]
     [SerializeField]
     private Vector3 _offsetBoxSwing;
     [SerializeField]
     private Vector3 _sizeBoxSwing;
+
+
+
 
     [Header("箱。Swing中の地面までの距離のチェック")]
     [SerializeField]
@@ -81,6 +91,17 @@ public class GroundCheck
         }
     }
 
+    public bool IsHitNearGround()
+    {
+        var posX = _playerControl.PlayerT.position.x + _offsetBoxNearGround.x;
+        var posY = _playerControl.PlayerT.position.y + _offsetBoxNearGround.y;
+        var posZ = _playerControl.PlayerT.position.z + _offsetBoxNearGround.z;
+
+        var hit = Physics.CheckBox(new Vector3(posX, posY, posZ), _sizeBoxNearGround, Quaternion.identity, _targetLayer);
+
+        return hit;
+    }
+
 
     public bool DistancePlayerToGround()
     {
@@ -121,30 +142,37 @@ public class GroundCheck
         if (_isDrawGizmo)
         {
             Gizmos.color = Color.yellow;
-            Gizmos.DrawRay(origin.position,Vector3.down*_rayLong);
+            Gizmos.DrawRay(origin.position, Vector3.down * _rayLong);
 
-            //Gizmos.color = Color.blue;
-            //var posXs = origin.position.x + _offsetBoxSwing.x;
-            //var posYs = origin.position.y + _offsetBoxSwing.y;
-            //var posZs = origin.position.z + _offsetBoxSwing.z;
-            //Gizmos.DrawCube(new Vector3(posXs, posYs, posZs), _sizeBoxSwing);
+            Gizmos.color = Color.blue;
+            var posXs = origin.position.x + _offsetBoxSwing.x;
+            var posYs = origin.position.y + _offsetBoxSwing.y;
+            var posZs = origin.position.z + _offsetBoxSwing.z;
+            Gizmos.DrawWireCube(new Vector3(posXs, posYs, posZs), _sizeBoxSwing);
+            
+
+
+            Gizmos.color = Color.green;
+            var posXNearGround = origin.position.x + _offsetBoxNearGround.x;
+            var posYNearGround = origin.position.y + _offsetBoxNearGround.y;
+            var posZNearGround = origin.position.z + _offsetBoxNearGround.z;
+            Gizmos.DrawWireCube(new Vector3(posXNearGround, posYNearGround, posZNearGround), _sizeBoxNearGround);
 
 
             Gizmos.color = Color.red;
             var posX = origin.position.x + _offset.x;
             var posY = origin.position.y + _offset.y;
             var posz = origin.position.z + _offset.z;
-
             Gizmos.DrawCube(new Vector3(posX, posY, posz), _size);
 
 
-            Gizmos.color = Color.yellow;
-            var posXS = origin.position.x + _offsetBoxSwingToGroundLong.x;
-            var posYS = origin.position.y + _offsetBoxSwingToGroundLong.y;
-            var poszS = origin.position.z + _offsetBoxSwingToGroundLong.z;
+            //Gizmos.color = Color.yellow;
+            //var posXS = origin.position.x + _offsetBoxSwingToGroundLong.x;
+            //var posYS = origin.position.y + _offsetBoxSwingToGroundLong.y;
+            //var poszS = origin.position.z + _offsetBoxSwingToGroundLong.z;
 
 
-            Gizmos.DrawCube(new Vector3(posXS, posYS, poszS), _size);
+            //Gizmos.DrawCube(new Vector3(posXS, posYS, poszS), _size);
 
         }
     }
