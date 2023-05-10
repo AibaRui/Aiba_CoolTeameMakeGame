@@ -35,12 +35,13 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private SearchSwingPoint _searchSwingPoint;
     [SerializeField] private ZipMove _zipMove;
     [SerializeField] private WallRun _wallRun;
+    [SerializeField] private WallRunUpZip _wallRunUpZip;
     [SerializeField] private WallRunCheck _wallRunCheck;
     [SerializeField] private Grapple _grapple;
     [SerializeField] private Attack _attack;
     [SerializeField] private Avoid _avoid;
     [SerializeField] private SetUp _setUp;
-
+    [SerializeField] private PlayerEffectControl _effectControl;
 
 
     private SpringJoint _joint;
@@ -71,6 +72,9 @@ public class PlayerControl : MonoBehaviour
     public Attack Attack => _attack;
     public WallRunCheck WallRunCheck => _wallRunCheck;
     public Avoid Avoid => _avoid;
+    public PlayerEffectControl EffectControl => _effectControl;
+    public WallRunUpZip WallRunUpZip => _wallRunUpZip;
+
 
     public SetUp SetUp => _setUp;
 
@@ -95,6 +99,8 @@ public class PlayerControl : MonoBehaviour
         _attack.Init(this);
         _avoid.Init(this);
         _setUp.Init(this);
+        _effectControl.Init(this);
+        _wallRunUpZip.Init(this);
     }
 
     void Start()
@@ -109,6 +115,8 @@ public class PlayerControl : MonoBehaviour
         _searchSwingPoint.OnDrawGizmos(PlayerT);
 
         _wallRunCheck.OnDrawGizmos(PlayerT);
+
+        _wallRunUpZip.OnDrawGizmos(PlayerT);
     }
     private void Update()
     {
@@ -117,9 +125,8 @@ public class PlayerControl : MonoBehaviour
 
         _animControl.AnimSet();
 
-        _searchSwingPoint.Search(PlayerT);
 
-        _wallRunCheck.CheckWallFront();
+        _effectControl.ConcentrationLineEffect();
     }
 
     private void FixedUpdate()

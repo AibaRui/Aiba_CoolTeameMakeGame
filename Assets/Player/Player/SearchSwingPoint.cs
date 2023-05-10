@@ -6,14 +6,16 @@ using System;
 [System.Serializable]
 public class SearchSwingPoint : IPlayerAction
 {
+    [Header("箱のRayを描画するかどうか")]
+    [SerializeField]
+    private bool _isDrowCube = true;
+
     [Header("箱のサイズ")]
     [SerializeField] private Vector3 _boxSize;
 
-    [Header("右側の")]
-    [SerializeField] private Vector3 _rightP;
+    [SerializeField] private List<SwingDirPos> _boxPos = new List<SwingDirPos>();
 
-    [Header("左側の")]
-    [SerializeField] private Vector3 _leftP;
+
 
     [Header("自身の左側にワイヤーを飛ばす位置")]
     [SerializeField] private List<SwingDirPos> _swingPosLeft = new List<SwingDirPos>();
@@ -27,6 +29,7 @@ public class SearchSwingPoint : IPlayerAction
     [Header("ワイヤーの最短の長さ")]
     [SerializeField] private float _minWireLong = 15;
 
+    [SerializeField] private Transform _Cpos;
 
     [SerializeField] private LayerMask _layer;
 
@@ -34,76 +37,130 @@ public class SearchSwingPoint : IPlayerAction
     private bool _isCanHit;
     /// <summary>Swingのワイヤーを刺す位置</summary>
     private Vector3 _swingPosition;
+    private Vector3 _realSwingPoint;
+    public Vector3 RealSwingPoint { get => _realSwingPoint; set => _realSwingPoint = value; }
+
 
     public Vector3 SwingPos => _swingPosition;
     public bool IsCanHit => _isCanHit;
 
     /// <summary>Swingの出来る場所を探す</summary>
-    public void Search(Transform player)
+    public bool Search()
     {
         var horizontalRotation = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up);
 
+        //右入力があった場合、右側を優先して検索
         if (_playerControl.InputManager.HorizontalInput > 0)
         {
-            Vector3 p = WallSearch(1, player, horizontalRotation);
+            //右側を先に確認
+            bool firstCheck = WallSearch(1, _playerControl.PlayerT, horizontalRotation);
 
-            if (p == Vector3.zero)
+            //右側に当たり場所がなかった場合
+            if (firstCheck == false)
             {
-                WallSearch(-1, player, horizontalRotation);
+                //2回目、左側を確認する
+                bool secondCheck = WallSearch(-1, _playerControl.PlayerT, horizontalRotation);
+
+                if (secondCheck)
+                {
+                    return true;
+                }　//左側が当たっていたら返す
+                else
+                {
+                    //最終確認。Boxでの確認。右側から
+                    bool lastCheckRight = BoxCheck(1, horizontalRotation);
+                    if (lastCheckRight)
+                    {
+                        return true;
+                    }   
+                    else
+                    {
+                        return BoxCheck(-1, horizontalRotation);
+                    }
+                }
             }
-        }
+            else
+            {
+                return firstCheck;
+            }   //１回目で右側に当たっていたら右側を返す
+        }   
+        //左側の入力があった場合。確認方法は同じ
         else if (_playerControl.InputManager.HorizontalInput < 0)
         {
-            Vector3 p = WallSearch(-1, player, horizontalRotation);
+            bool firstCheck = WallSearch(-1, _playerControl.PlayerT, horizontalRotation);
 
-            if (p == Vector3.zero)
+            if (firstCheck == false)
             {
-                WallSearch(1, player, horizontalRotation);
+                bool secondCheck = WallSearch(1, _playerControl.PlayerT, horizontalRotation);
+
+                if (secondCheck)
+                {
+                    return true;
+                }
+                else
+                {
+                    bool lastCheckLeft = BoxCheck(-1, horizontalRotation);
+                    if (lastCheckLeft)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return BoxCheck(1, horizontalRotation);
+                    }
+                }
+            }
+            else
+            {
+                return firstCheck;
             }
         }
         else
         {
-            Vector3 p = WallSearch(1, player, horizontalRotation);
+            bool firstCheck = WallSearch(1, _playerControl.PlayerT, horizontalRotation);
 
-            if (p == Vector3.zero)
+            if (firstCheck == false)
             {
-                WallSearch(-1, player, horizontalRotation);
+                bool secondCheck = WallSearch(-1, _playerControl.PlayerT, horizontalRotation);
+
+                if (secondCheck)
+                {
+                    return true;
+                }
+                else
+                {
+                    bool lastCheckRight = BoxCheck(1, horizontalRotation);
+                    if (lastCheckRight)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return BoxCheck(-1, horizontalRotation);
+                    }
+                }
+            }
+            else
+            {
+                return firstCheck;
             }
         }
     }
 
 
-    public Vector3 WallSearch(float inputH, Transform player, Quaternion hRotation)
+    public bool WallSearch(float inputH, Transform player, Quaternion hRotation)
     {
         //探す場所
         List<SwingDirPos> searchPoints = new List<SwingDirPos>();
 
-        Vector3 searchBoxPos = default;
-
         if (inputH == 1)
         {
             searchPoints = _swingPosRight;
-            searchBoxPos = _rightP;
         }   //右入力、右側を探すとき
         else if (inputH == -1)
         {
             searchPoints = _swingPosLeft;
-            searchBoxPos = _leftP;
         }   //左入力、左側を探すとき
-        //else
-        //{
-        //    List<SwingDirPos> tmpSearchPoint = new List<SwingDirPos>();
-
-        //    foreach (var leftPos in _swingPosLeft)
-        //    {
-        //        tmpSearchPoint.Add(leftPos);
-        //    }
-        //    foreach (var rightPos in _swingPosRight)
-        //    {
-        //        tmpSearchPoint.Add(rightPos);
-        //    }
-        //    searchPoints = tmpSearchPoint;
-        //}   //入力無し、高い所から探す
 
         //高い順に並び変える
         searchPoints.Sort();
@@ -141,59 +198,118 @@ public class SearchSwingPoint : IPlayerAction
                 //Hit地点までの距離が、ワイヤーの最短距離より長かったら有効
                 if (distance >= _minWireLong)
                 {
-                    float groundY = _playerControl.GroundCheck.IsSwingPlayerToGroundOfLong();
-
-                    //プレイヤーと地面の距離>ワイヤーの長さ
-                    //の時有効
-                    //  if (hit.point.y - distance >= groundY)
-                    // {
                     _isCanHit = true;
                     _swingPosition = hit.point;
-                    return _swingPosition;
-                    //  }
+
+
+
+                    Vector3 d = new Vector3(_playerControl.PlayerT.position.x, _swingPosition.y, _playerControl.PlayerT.position.z);
+
+                    Vector3 f = Camera.main.transform.forward;
+                    f.y = 0;
+
+                    Vector3 dirPlayer = d + f * 20;
+
+                    _realSwingPoint = dirPlayer;
+
+                    if (_swingPosition == Vector3.zero)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
                 }
             }
         }
 
-        ////Boxでの参照
-        //Vector3 addCenter = hRotation * new Vector3(searchBoxPos.x, searchBoxPos.y, searchBoxPos.z);
-        //Vector3 boxDir = hRotation * new Vector3(0, 0, 1);
-        //Vector3 boxCenter = _playerControl.PlayerT.position + addCenter;
-
-        //RaycastHit boxHit;
-
-        ////Castを飛ばす
-        //bool isHitBox = Physics.BoxCast(boxCenter, _boxSize, boxDir, out boxHit, Quaternion.identity, _maxWireLong, _layer);
-
-        //if (isHitBox)
-        //{
-        //    float distance = Vector3.Distance(boxHit.point, _playerControl.PlayerT.position);
-
-        //    //Hit地点までの距離が、ワイヤーの最短距離より長かったら有効
-        //    if (distance >= _minWireLong)
-        //    {
-        //        float groundY = _playerControl.GroundCheck.IsSwingPlayerToGroundOfLong();
-
-        //        //プレイヤーと地面の距離>ワイヤーの長さ
-        //        //の時有効
-        //        //    if (boxHit.point.y - distance >= groundY)
-        //        //    {
-        //        _isCanHit = true;
-        //        _swingPosition = boxHit.point;
-        //        // Debug.Log($"{inputH}:BoxHit");
-        //        return _swingPosition;
-        //        //  }
-        //    }
-        //}
-
         _isCanHit = false;
-        return Vector3.zero;
+        return false;
     }
+
+    public bool BoxCheck(float h, Quaternion hRotation)
+    {
+
+        foreach (var boxPos in _boxPos)
+        {
+            ////Boxでの参照
+            Vector3 addCenter = hRotation * new Vector3(boxPos.Dir.x, boxPos.Dir.y, boxPos.Dir.z);
+            Vector3 boxCenter = _playerControl.PlayerT.position + addCenter;
+
+            RaycastHit boxHit;
+
+            Vector3 dir = default;
+
+            if (h == 1)
+            {
+                dir = hRotation * Vector3.right;
+            }
+            else
+            {
+                dir = hRotation * Vector3.left;
+            }
+
+
+            //Castを飛ばす
+            bool isHitBox = Physics.BoxCast(boxCenter, _boxSize, dir, out boxHit, Quaternion.identity, _maxWireLong, _layer);
+
+            if (isHitBox)
+            {
+                float distance = Vector3.Distance(boxHit.point, _playerControl.PlayerT.position);
+
+                //Hit地点までの距離が、ワイヤーの最短距離より長かったら有効
+                if (distance >= _minWireLong)
+                {
+                    _isCanHit = true;
+                    _swingPosition = boxHit.point;
+
+                    Vector3 d = new Vector3(_playerControl.PlayerT.position.x, _swingPosition.y, _playerControl.PlayerT.position.z);
+
+                    Vector3 cameraFoward = Camera.main.transform.forward;
+                    cameraFoward.y = 0;
+
+                    Vector3 dirPlayer = d + cameraFoward * 20;
+
+                    _realSwingPoint = dirPlayer;
+
+                    if (_swingPosition == Vector3.zero)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
 
 
     public void OnDrawGizmos(Transform player)
     {
         var horizontalRotation = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up);
+
+        foreach (var a in _boxPos)
+        {
+            Gizmos.color = Color.blue;
+
+            Quaternion cameraR = default;
+
+            var q = Camera.main.transform.rotation.eulerAngles;
+            q.x = 0f;
+            cameraR = Quaternion.Euler(q);
+
+
+            Gizmos.matrix = Matrix4x4.TRS(player.position, cameraR, player.localScale);
+
+            Gizmos.DrawCube(a.Dir, _boxSize);
+
+            Gizmos.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one);
+        }
 
         foreach (var a in _swingPosLeft)
         {

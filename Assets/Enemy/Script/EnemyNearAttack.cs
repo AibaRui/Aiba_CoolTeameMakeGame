@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyAttack : MonoBehaviour
+public class EnemyNearAttack : MonoBehaviour
 {
     [Header("クールタイム")]
     [SerializeField] private float _coolTime = 5;
@@ -15,6 +15,10 @@ public class EnemyAttack : MonoBehaviour
     private float _countCoolTime = 0;
 
     private bool _isCanAttack = true;
+
+    private bool _isNearAttack = false;
+
+    public bool IsNearAttack => _isNearAttack;
 
     public void AttackCoolTime()
     {
@@ -33,7 +37,6 @@ public class EnemyAttack : MonoBehaviour
     {
         if(_isCanAttack)
         {
-
             float distance = Vector3.Distance(_player.transform.position, _enemyControl.EnemyBody.transform.position);
 
             if (distance < 20)
