@@ -306,7 +306,7 @@ public class CameraControl : MonoBehaviour
             //ˆÚ“®“ü—Í‚ðŽó‚¯Žæ‚é
             float h = _playerControl.InputManager.HorizontalInput;
 
-            Debug.Log(_countCameraMoveAirX);
+       
 
             ////////////XŽ²‚Ì’²®
             if (h > 0.8f)
@@ -387,7 +387,7 @@ public class CameraControl : MonoBehaviour
                     }
 
 
-                    _swingCinemachinePOV.m_VerticalAxis.Value -= 0.006f * add;
+                    _swingCinemachinePOV.m_VerticalAxis.Value -= 0.0065f * add;
                 }
             }
             else if (velocityY < 0)
@@ -402,7 +402,7 @@ public class CameraControl : MonoBehaviour
                     {
                         add = limit;
                     }
-                    _swingCinemachinePOV.m_VerticalAxis.Value += 0.005f * add;
+                    _swingCinemachinePOV.m_VerticalAxis.Value += 0.006f * add;
                 }
             }
         }

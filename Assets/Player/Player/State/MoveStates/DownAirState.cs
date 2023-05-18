@@ -94,7 +94,7 @@ public class DownAirState : PlayerStateBase
         //}
 
         //Zip
-        if (_stateMachine.PlayerController.InputManager.IsJumping)
+        if (_stateMachine.PlayerController.InputManager.IsJumping && _stateMachine.PlayerController.ZipMove.IsCanZip)
         {
             _stateMachine.TransitionTo(_stateMachine.StateZip);
             return;

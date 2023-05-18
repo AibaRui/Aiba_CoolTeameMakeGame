@@ -124,13 +124,13 @@ public class PlayerMove : IPlayerAction
         float h = _playerControl.InputManager.HorizontalInput;
         float v = _playerControl.InputManager.VerticalInput;
 
-        if (_isSpeedDash)
-        {
-            if (h == 1)
-            {
-                h = 0;
-            }
-        }
+        //if (_isSpeedDash)
+        //{
+        //    if (h == 1)
+        //    {
+        //        h = 0;
+        //    }
+        //}
 
         var horizontalRotation = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up);
         velo = horizontalRotation * new Vector3(h, 0, v).normalized;

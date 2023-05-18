@@ -101,7 +101,10 @@ public class ZipMove : IPlayerAction
 
         if (Mathf.Abs(_playerControl.PlayerT.rotation.y - targetRotation.y) > 0.1f)
         {
-            _playerControl.PlayerT.rotation = Quaternion.RotateTowards(_playerControl.PlayerT.rotation, targetRotation, rotationSpeed);
+            Quaternion setRotation =  Quaternion.RotateTowards(_playerControl.PlayerT.rotation, targetRotation, rotationSpeed);
+            setRotation.x = 0;
+            setRotation.z = 0;
+            _playerControl.PlayerT.rotation = setRotation;
         }
     }
 

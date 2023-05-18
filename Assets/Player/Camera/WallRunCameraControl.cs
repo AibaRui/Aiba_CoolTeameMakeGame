@@ -165,34 +165,39 @@ public class WallRunCameraControl : MonoBehaviour
             }
 
             //ƒJƒƒ‰‚ðŒü‚©‚¹‚½‚¢•ûŒü‚Ì‰ñ“]
-            Quaternion lookRotation = Quaternion.LookRotation(lookDirection, Vector3.up);
-            float targetAngle = lookRotation.eulerAngles.y;
 
-            //Œ»Ý‚ÌŠp“x
-            float currentAngle = _wallRunPOV.m_HorizontalAxis.Value;
-
-            //V‚µ‚¢Šp“x‚ðì¬
-            float newAngle = Mathf.MoveTowardsAngle(currentAngle, targetAngle, _horizontalMaxSpeed * Time.deltaTime);
-
-            //Œ»Ý‚ÌŠp“x‚ÆAŒü‚©‚¹‚½‚¢Šp“x‚Ì·‚ªˆê’è’l‚ÉŽû‚Ü‚é‚Ü‚ÅXV
-            if (Mathf.Abs(lookRotation.eulerAngles.y - _wallRunPOV.m_HorizontalAxis.Value) > 0.5f)
+            if (lookDirection != Vector3.zero)
             {
-                _wallRunPOV.m_HorizontalAxis.Value = newAngle;
-            }
+                Quaternion lookRotation = Quaternion.LookRotation(lookDirection, Vector3.up);
 
-            //c•ûŒü‚Ì‰ñ“]‚ÌÝ’è
-            if (_cameraControl.PlayerControl.WallRun.MoveDir == WallRun.MoveDirection.Up)
-            {
-                if (_wallRunPOV.m_VerticalAxis.Value > -60)
+                float targetAngle = lookRotation.eulerAngles.y;
+
+                //Œ»Ý‚ÌŠp“x
+                float currentAngle = _wallRunPOV.m_HorizontalAxis.Value;
+
+                //V‚µ‚¢Šp“x‚ðì¬
+                float newAngle = Mathf.MoveTowardsAngle(currentAngle, targetAngle, _horizontalMaxSpeed * Time.deltaTime);
+
+                //Œ»Ý‚ÌŠp“x‚ÆAŒü‚©‚¹‚½‚¢Šp“x‚Ì·‚ªˆê’è’l‚ÉŽû‚Ü‚é‚Ü‚ÅXV
+                if (Mathf.Abs(lookRotation.eulerAngles.y - _wallRunPOV.m_HorizontalAxis.Value) > 0.5f)
                 {
-                    _wallRunPOV.m_VerticalAxis.Value -= _upperMaxSpeed * Time.deltaTime;
+                    _wallRunPOV.m_HorizontalAxis.Value = newAngle;
                 }
-            }
-            else
-            {
-                if (_wallRunPOV.m_VerticalAxis.Value < 25)
+
+                //c•ûŒü‚Ì‰ñ“]‚ÌÝ’è
+                if (_cameraControl.PlayerControl.WallRun.MoveDir == WallRun.MoveDirection.Up)
                 {
-                    _wallRunPOV.m_VerticalAxis.Value += _upperMaxSpeed * Time.deltaTime;
+                    if (_wallRunPOV.m_VerticalAxis.Value > -60)
+                    {
+                        _wallRunPOV.m_VerticalAxis.Value -= _upperMaxSpeed * Time.deltaTime;
+                    }
+                }
+                else
+                {
+                    if (_wallRunPOV.m_VerticalAxis.Value < 25)
+                    {
+                        _wallRunPOV.m_VerticalAxis.Value += _upperMaxSpeed * Time.deltaTime;
+                    }
                 }
             }
         }

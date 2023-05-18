@@ -202,7 +202,10 @@ public class WallRunCheck : IPlayerAction
 
         //bool isHit = Physics.BoxCast(_playerControl.PlayerT.position + addPos, _boxSizeFront, _playerControl.PlayerT.transform.forward, out raycast, _playerControl.PlayerT.rotation, 0.2f, _wallLayer);
 
-        bool isHit = Physics.Raycast(_playerControl.PlayerT.position, _playerControl.PlayerT.transform.forward, out raycast, 2, _wallLayer);
+
+        bool isHit = Physics.Raycast(_playerControl.PlayerT.position, _playerControl.PlayerT.forward, out raycast, 2, _wallLayer);
+
+        Debug.DrawRay(_playerControl.PlayerT.position, _playerControl.PlayerT.forward * 10, Color.red);
 
         if (isHit)
         {

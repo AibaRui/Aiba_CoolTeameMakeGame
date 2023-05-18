@@ -33,7 +33,24 @@ public class RunState : PlayerStateBase
         {
             _stateMachine.PlayerController.Avoid.SetAvoidDir();
             _stateMachine.TransitionTo(_stateMachine.AvoidState);
+            return;
         }   //回避
+
+        //上昇、降下
+        if (!_stateMachine.PlayerController.GroundCheck.IsHit())
+        {
+            if (_stateMachine.PlayerController.Rb.velocity.y > 0)
+            {
+                _stateMachine.TransitionTo(_stateMachine.StateUpAir);
+            }      //上昇
+            else
+            {
+                _stateMachine.TransitionTo(_stateMachine.StateDownAir);
+            }   //降下
+            return;
+        }
+
+
 
         //歩き
         if ((_stateMachine.PlayerController.InputManager.HorizontalInput != 0 || _stateMachine.PlayerController.InputManager.VerticalInput != 0)

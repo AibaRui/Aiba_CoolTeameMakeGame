@@ -17,7 +17,7 @@ public class StateWallRun : PlayerStateBase
         //WallRun‚ÌAnimator‚ğİ’è
         _stateMachine.PlayerController.AnimControl.WallRunSet(true);
 
-
+        Debug.Log("WAll");
     }
 
     public override void Exit()

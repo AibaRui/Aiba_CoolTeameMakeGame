@@ -306,7 +306,7 @@ public class WallRun : IPlayerAction
         }
 
         //Player‚Ì‰ñ“]
-        CharactorRotateToMoveDirection(h);
+          CharactorRotateToMoveDirection(h);
 
         float angle = Vector3.Angle(_useMoveDir, moveDir);
 

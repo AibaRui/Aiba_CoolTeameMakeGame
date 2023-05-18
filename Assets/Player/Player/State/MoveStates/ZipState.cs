@@ -43,11 +43,17 @@ public class ZipState : PlayerStateBase
         //Zip‚Ì—LŒøŽžŠÔ‚ðŒv‘ª
         _stateMachine.PlayerController.ZipMove.CountFrotZipTime();
 
+        if (_stateMachine.PlayerController.GroundCheck.IsHit())
+        {
+            _stateMachine.TransitionTo(_stateMachine.StateIdle);
+            return;
+        }
 
-
-        if(_stateMachine.PlayerController.WallRunCheck.CheckWallFront())
+        if (_stateMachine.PlayerController.WallRunCheck.CheckWallFront())
         {
             _stateMachine.TransitionTo(_stateMachine.StateWallIdle);
+
+            return;
         }
 
         if (_stateMachine.PlayerController.ZipMove.IsEndFrontZip)
