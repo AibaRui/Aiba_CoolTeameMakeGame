@@ -42,6 +42,16 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _CFloat: 15
+    - _CGSmoothstepEdge1: 1
+    - _CGSmoothstepEdge2: 0.05
+    - _CLengthScale: 1
+    - _CLerp: 0.13
+    - _CSmoothstepEdge1: 0.5
+    - _CSmoothstepEdge2: 1.5
+    - _CTimeScale: 7
+    - _GGradientScale: 5
+    - _GGradientTime: 0.22
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors: []
