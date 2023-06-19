@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 [System.Serializable]
 public abstract class PlayerStateBase : IState
 {
+    [NonSerialized]
     protected PlayerStateMachine _stateMachine = null;
 
     /// <summary>StateMacine‚ğƒZƒbƒg‚·‚éŠÖ”</summary>

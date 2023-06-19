@@ -38,6 +38,8 @@ public class PlayerStateMachine : StateMachine
     private AvoidState _stateAvoid = default;
     [SerializeField]
     private WallRunUpZipState _stateWallRunUpZip = default;
+    [SerializeField]
+    private StateWallStep _stateWallRunStep = default;
 
     private PlayerControl _playerController = null;
 
@@ -59,6 +61,7 @@ public class PlayerStateMachine : StateMachine
     public AttackState AttackState => _stateAttack;
     public AvoidState AvoidState => _stateAvoid;
     public WallRunUpZipState WallRunUpZipState => _stateWallRunUpZip;
+    public StateWallStep WallRunStep => _stateWallRunStep;
 
 
     #endregion
@@ -89,6 +92,7 @@ public class PlayerStateMachine : StateMachine
         _stateAttack.Init(this);
         _stateAvoid.Init(this);
         _stateWallRunUpZip.Init(this);
+        _stateWallRunStep.Init(this);
     }
 
 }

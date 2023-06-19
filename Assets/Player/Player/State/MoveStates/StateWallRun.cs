@@ -54,6 +54,15 @@ public class StateWallRun : PlayerStateBase
         //各動作のクールタイム
         _stateMachine.PlayerController.CoolTimes();
 
+        //段差確認
+        _stateMachine.PlayerController.WallRunStep.CheckWallStep();
+
+        //段差登りに移行
+        if(_stateMachine.PlayerController.WallRunStep.IsHitStep)
+        {
+            _stateMachine.TransitionTo(_stateMachine.WallRunStep);
+            return;
+        }
 
         if(_stateMachine.PlayerController.WallRunUpZip.CheckUpZipPosition()&& _stateMachine.PlayerController.InputManager.IsJumping)
         {
