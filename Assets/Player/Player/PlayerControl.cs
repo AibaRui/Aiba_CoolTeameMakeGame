@@ -35,6 +35,7 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private SearchSwingPoint _searchSwingPoint;
     [SerializeField] private ZipMove _zipMove;
     [SerializeField] private WallRun _wallRun;
+    [SerializeField] private WallRunStepCheck _wallRunStep;
     [SerializeField] private WallRunUpZip _wallRunUpZip;
     [SerializeField] private WallRunCheck _wallRunCheck;
     [SerializeField] private Grapple _grapple;
@@ -74,7 +75,7 @@ public class PlayerControl : MonoBehaviour
     public Avoid Avoid => _avoid;
     public PlayerEffectControl EffectControl => _effectControl;
     public WallRunUpZip WallRunUpZip => _wallRunUpZip;
-
+    public WallRunStepCheck WallRunStep => _wallRunStep;
 
     public SetUp SetUp => _setUp;
 
@@ -101,6 +102,7 @@ public class PlayerControl : MonoBehaviour
         _setUp.Init(this);
         _effectControl.Init(this);
         _wallRunUpZip.Init(this);
+        _wallRunStep.Init(this);
     }
 
     void Start()

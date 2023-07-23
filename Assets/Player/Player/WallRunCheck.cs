@@ -42,7 +42,6 @@ public class WallRunCheck : IPlayerAction
 
     private RaycastHit _hit;
 
-
     public RaycastHit Hit => _hit;
 
     private bool _isWallHitRight = false;
@@ -125,9 +124,6 @@ public class WallRunCheck : IPlayerAction
         if (isHit)
         {
             _hit = raycast;
-
-
-
         }
 
         _wallCrossRight = Vector3.Cross(_hit.normal, Vector3.up);
@@ -224,19 +220,11 @@ public class WallRunCheck : IPlayerAction
     {
         if (_isGizmo)
         {
-
             Gizmos.color = Color.white;
             Debug.DrawRay(player.position, player.transform.forward);
 
-
             Gizmos.color = Color.yellow;
             Gizmos.matrix = Matrix4x4.TRS(player.position, player.rotation, player.localScale);
-            //前側
-            //Gizmos.DrawCube(_frontPos, _boxSizeFront);
-            //右側
-            //Gizmos.DrawCube(_rightPos, _boxSizeSide);
-            //左側
-            //Gizmos.DrawCube(_leftPos, _boxSizeSide);
 
             Gizmos.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one);
         }

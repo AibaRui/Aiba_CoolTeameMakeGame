@@ -18,6 +18,8 @@ public class Swing : IPlayerAction
     [Header("前に加える力")]
     [SerializeField] private float _addFrontPowerMove = 5;
 
+    [Header("高さ")]
+    [SerializeField] private float _hight = 8f;
 
     [Header("クールタイム")]
     [SerializeField] private float _downTime = 2f;
@@ -116,7 +118,7 @@ public class Swing : IPlayerAction
     public void SwingSetting()
     {
 
-        if(_playerControl.Rb.velocity.y>0)
+        if (_playerControl.Rb.velocity.y > 0)
         {
             _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, -20, _playerControl.Rb.velocity.z);
 
@@ -326,7 +328,7 @@ public class Swing : IPlayerAction
 
     public bool CheckLine()
     {
-        if (swingPoint.y - 6 <= _playerControl.PlayerT.position.y)
+        if (swingPoint.y - _hight <= _playerControl.PlayerT.position.y)
         {
             _isSamLine = true;
             return true;

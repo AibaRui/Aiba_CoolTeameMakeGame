@@ -57,6 +57,12 @@ public class PlayerAnimationControl
 
     }
 
+    public void WallRunStep(bool isStep)
+    {
+        _playerControl.Anim.SetBool("IsWallRunStep", isStep);
+    }
+
+
     public void WallRunZipStart(bool isZipFront)
     {
         if(isZipFront)

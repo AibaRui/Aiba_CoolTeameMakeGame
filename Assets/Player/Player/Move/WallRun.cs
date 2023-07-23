@@ -8,6 +8,9 @@ public class WallRun : IPlayerAction
     [Header("歩く速度")]
     [SerializeField] private float _moveSpeed = 4;
 
+    [Header("進行方向のの回転の速さ")]
+    [SerializeField] private float _rotateMoveDirSpeed = 50;
+
     [Header("無移動時のプレイヤーの回転の速さ")]
     [SerializeField] private float _rotateSpeed = 200;
 
@@ -23,7 +26,7 @@ public class WallRun : IPlayerAction
     private MoveDirection _moveDirection = MoveDirection.Up;
 
 
-
+    public float MoveSpeed => _moveSpeed;
 
     public bool IsEndNoMove => _isEndNoMove;
     public Vector3 UseMoveDir => _useMoveDir;
@@ -262,71 +265,89 @@ public class WallRun : IPlayerAction
         }
 
         float h = _playerControl.InputManager.HorizontalInput;
-        float v = _playerControl.InputManager.VerticalInput;
 
 
-        Vector3 moveDir = default;
+        Vector3 targetMoveDir = default;
 
         if (_moveDirection == MoveDirection.Up)
         {
             if (h > 0.2f)
             {
-                moveDir = wallForward;
+                targetMoveDir = wallForward;
             }
             else if (h < -0.2f)
             {
-                moveDir = -wallForward;
+                targetMoveDir = -wallForward;
             }
             else
             {
-                moveDir = Vector3.up;
+                targetMoveDir = Vector3.up;
             }
         }
         else if (_moveDirection == MoveDirection.Right)
         {
             if (h < 0)
             {
-                moveDir = Vector3.up;
+                targetMoveDir = Vector3.up;
             }
             else
             {
-                moveDir = wallForward;
+                targetMoveDir = wallForward;
             }
         }
         else if (_moveDirection == MoveDirection.Left)
         {
             if (h > 0f)
             {
-                moveDir = Vector3.up;
+                targetMoveDir = Vector3.up;
             }
             else
             {
-                moveDir = -wallForward;
+                targetMoveDir = -wallForward;
             }
         }
 
         //Playerの回転
-          CharactorRotateToMoveDirection(h);
+        CharactorRotateToMoveDirection(h);
 
-        float angle = Vector3.Angle(_useMoveDir, moveDir);
+        //移動方向の回転の速さ
+        float rotationAngle = Time.deltaTime * _rotateMoveDirSpeed;
 
-        float rotationAngle = Time.deltaTime * 200f;
 
-        if ((_useMoveDir != moveDir))
+        //_useMoveDirが現在使用している移動方向
+        //moveDirが目標の移動方向
+
+        //指定された回転 rotation と最大角度 rotationAngle を考慮して、ベクトル _useMoveDir を回転させる処理を行っている
+        if ((_useMoveDir != targetMoveDir))
         {
-            Quaternion rotation = Quaternion.FromToRotation(_useMoveDir, moveDir);
+            //現在のベクトル(_useMoveDir)から、目標のベクトル(moveDir)へ、回転するために必要なクォータニオンを計算。
+            Quaternion rotation = Quaternion.FromToRotation(_useMoveDir, targetMoveDir);
+
             _useMoveDir = Quaternion.RotateTowards(Quaternion.identity, rotation, rotationAngle) * _useMoveDir;
+
+
+            //Quaternion r = Quaternion.Euler(_useMoveDir);
+
+            //_useMoveDir = Quaternion.RotateTowards(r, rotation, rotationAngle) * _useMoveDir;
         }
 
-        //  Debug.DrawRay(_playerControl.PlayerT.position, _useMoveDir * 50, Color.green);
-        //Debug.DrawRay(_playerControl.PlayerT.position, _playerControl.Rb.velocity.normalized * 40,Color.white);
+        //壁の方へ押し寄せる力(壁にくっつかせるため)
+        float addWallPower = 1;
 
-        _playerControl.Rb.velocity = (_useMoveDir * _moveSpeed) + -dir * 1;
+        //一定距離離れていたら強く力をくわえる
+        if (Vector3.Distance(_playerControl.PlayerT.position, _playerControl.WallRunCheck.Hit.point) > 0.7f)
+        {
+            addWallPower = 10;
+        }
+
+        _playerControl.Rb.velocity = (_useMoveDir * _moveSpeed) + -dir * addWallPower;
 
         if (_playerControl.Rb.velocity.y < 0)
         {
             _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, 0, _playerControl.Rb.velocity.z);
         }
+        //  Debug.DrawRay(_playerControl.PlayerT.position, _useMoveDir * 50, Color.green);
+        //Debug.DrawRay(_playerControl.PlayerT.position, _playerControl.Rb.velocity.normalized * 40,Color.white);
     }
 
     public void LastJump(bool isMove)

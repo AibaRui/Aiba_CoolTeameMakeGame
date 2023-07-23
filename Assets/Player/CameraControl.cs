@@ -325,7 +325,7 @@ public class CameraControl : MonoBehaviour
     public void SwingCameraYValues(float velocityY, float down, float up, float changeSpeed)
     {
         //スクリーン上でのプレイヤーの位置の変更
-        if (velocityY > 0)
+        if (velocityY > 6)
         {
             Vector3 v = new Vector3(0, velocityY, 0);
             if (_swingCameraFraming.m_CameraDistance > _firstSwingCameraDistance + 0.5f)
@@ -339,11 +339,11 @@ public class CameraControl : MonoBehaviour
 
             if (_swingCameraFraming.m_TrackedObjectOffset.y > _maxUpOffSet)
             {
-                Debug.Log($"最大:{_maxUpOffSet} 現在{_swingCameraFraming.m_TrackedObjectOffset.y}");
+               // Debug.Log($"最大:{_maxUpOffSet} 現在{_swingCameraFraming.m_TrackedObjectOffset.y}");
                 _swingCameraFraming.m_TrackedObjectOffset.y -= Time.deltaTime * 1.8f;
             }
         }   //位置を下の方に下げる
-        else if (velocityY < 0)
+        else if (velocityY < 6)
         {
             //カメラの距離を離す
             Vector3 v = new Vector3(0, velocityY, 0);
