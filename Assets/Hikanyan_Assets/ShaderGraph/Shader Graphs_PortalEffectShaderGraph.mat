@@ -47,11 +47,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Float: 0.11
+    - _EdgeSize: 0.11
+    - _Float: 0.09
     - _Float_1: 50
+    - _NoiseScale: 50
     - _QueueControl: 0
     - _QueueOffset: 0
     m_Colors:
-    - _Color: {r: 0.02957153, g: 0, b: 4, a: 0}
+    - _Color: {r: 0.67924523, g: 0.67924523, b: 0.67924523, a: 0}
     - _Color_1: {r: 0.7490196, g: 0.7490196, b: 0.7490196, a: 0}
+    - _EdgeColor: {r: 0.02957153, g: 0, b: 4, a: 0}
   m_BuildTextureStacks: []
