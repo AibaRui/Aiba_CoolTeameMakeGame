@@ -17,7 +17,9 @@ public class EnemyWeakPointHp : MonoBehaviour, IDamageble
     [Header("弱点の場所")]
     [SerializeField] Transform _enemyTarget;
 
-    private RectTransform _parentUI;
+    [SerializeField] private List<ParticleSystem> _hitParticle = new List<ParticleSystem>();
+
+    [SerializeField] private RectTransform _parentUI;
 
     private EnemyControl _enemyControl;
 
@@ -57,13 +59,22 @@ public class EnemyWeakPointHp : MonoBehaviour, IDamageble
         //スライダーの値の更新
         _hpSlider.value = _nowHp;
 
-        //ダメージのアニメーションを再生
-        _enemyControl.EnemyAnimator.Play("Damage");
+
+
+        foreach (var a in _hitParticle)
+        {
+            a.Play();
+        }
 
         //Hpが0になったら部位破壊。このオブジェクトを消して
         //Hpコントローラーに通知を送る
         if (_nowHp <= 0)
         {
+
+            //ダメージのアニメーションを再生
+            _enemyControl.EnemyAnimator.SetBool("IsDamage", true);
+            _enemyControl.IsDamage = true;
+
             _enemyHpControl.DeadWealkPoint();
             Destroy(this.gameObject);
         }
