@@ -72,7 +72,7 @@ public class SearchSwingPoint : IPlayerAction
                     if (lastCheckRight)
                     {
                         return true;
-                    }   
+                    }
                     else
                     {
                         return BoxCheck(-1, horizontalRotation);
@@ -83,7 +83,7 @@ public class SearchSwingPoint : IPlayerAction
             {
                 return firstCheck;
             }   //１回目で右側に当たっていたら右側を返す
-        }   
+        }
         //左側の入力があった場合。確認方法は同じ
         else if (_playerControl.InputManager.HorizontalInput < 0)
         {
@@ -199,8 +199,27 @@ public class SearchSwingPoint : IPlayerAction
                 if (distance >= _minWireLong)
                 {
                     _isCanHit = true;
-                    _swingPosition = hit.point;
 
+
+                    //[-----高さの設定と正面の遠さ-----]
+                    float fowardLong = 20;
+
+                    if (_playerControl.GroundCheck.IsHitSwingGround())
+                    {
+                        if (_playerControl.Rb.velocity.y < _playerControl.Swing.HighSpeedFallspeedY)
+                        {
+                            _swingPosition.y = _playerControl.PlayerT.position.y + 10;
+                        }
+                        else
+                        {
+                            _swingPosition.y = _playerControl.PlayerT.position.y + 10;
+                            fowardLong = 10;
+                        }
+                    }   //地面に近い場合
+                    else
+                    {
+                        _swingPosition = hit.point;
+                    }   //地面から遠かった場合
 
 
                     Vector3 d = new Vector3(_playerControl.PlayerT.position.x, _swingPosition.y, _playerControl.PlayerT.position.z);
@@ -208,7 +227,7 @@ public class SearchSwingPoint : IPlayerAction
                     Vector3 f = Camera.main.transform.forward;
                     f.y = 0;
 
-                    Vector3 dirPlayer = d + f * 20;
+                    Vector3 dirPlayer = d + f * fowardLong;
 
                     _realSwingPoint = dirPlayer;
 
@@ -306,7 +325,7 @@ public class SearchSwingPoint : IPlayerAction
 
             Gizmos.matrix = Matrix4x4.TRS(player.position, cameraR, player.localScale);
 
-            Gizmos.DrawCube(a.Dir, _boxSize);
+            Gizmos.DrawCube(a.Dir, _boxSize / 2);
 
             Gizmos.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, Vector3.one);
         }

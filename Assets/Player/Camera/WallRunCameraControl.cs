@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 
-public class WallRunCameraControl : MonoBehaviour
+[System.Serializable]
+public class WallRunCameraControl
 {
     [Header("上向きにする時速さ")]
-    [SerializeField] private float _upperMaxSpeed = 1;
+    [SerializeField] private float _upperMaxSpeed = 70;
 
     [Header("左右に向かせる速さ")]
-    [SerializeField] private float _horizontalMaxSpeed = 40;
+    [SerializeField] private float _horizontalMaxSpeed = 50;
 
     [Header("止まっているときのカメラの距離")]
     [SerializeField] private float _idleCameraDistance = 5;
@@ -21,42 +22,51 @@ public class WallRunCameraControl : MonoBehaviour
     [SerializeField] private float _reSetCameraDistanceTime = 3;
 
     [Header("止まってからカメラの距離を変更する速度")]
-    [SerializeField] private float _reSetCameraDistanceSpeed = 10;
+    [SerializeField] private float _reSetCameraDistanceSpeed = 5;
 
     [Header("動いてからカメラの距離を変更する速度")]
     [SerializeField] private float _setCameraDistanceSpeed = 10;
 
 
     [Header("-----X軸のOffsetの移動についての設定-----")]
-
-    [Header("OffSetの変更速度")]
-    [SerializeField] private float _offSetXChangeSpeed = 50f;
+    [Header("移動する際のOffSetの変更速度")]
+    [SerializeField] private float _offSetXChangeSpeedOnMove = 2f;
+    [Header("止まる際のOffSetの変更速度")]
+    [SerializeField] private float _offSetXChangeSpeedOnStop = 2f;
 
     [Header("初期状態のOffSet")]
     [SerializeField] private float _startOffSetX = 0f;
-
     [Header("壁が左側の時の最大OffSet")]
-    [SerializeField] private float _leftWallMaxOffSetX = -3f;
-
+    [SerializeField] private float _leftWallMaxOffSetX = 3f;
     [Header("壁が右側の時の最大OffSet")]
-    [SerializeField] private float _rightWallMaxOffSetX = 3f;
+    [SerializeField] private float _rightWallMaxOffSetX = -3f;
+
+    [Header("-----Y軸のOffsetの移動についての設定-----")]
+    [Header("OffSetの変更速度")]
+    [SerializeField] private float _offSetYChangeSpeed = 2f;
+    [Header("初期値のOffSetY")]
+    [SerializeField] private float _defultOffSetY = 1f;
+    [Header("移動時のOffSetY")]
+    [SerializeField] private float _setOffSetY = 2f;
+
+
 
     private float _reSetCameraDistanceTimeCount = 0;
 
-    [SerializeField] private CameraControl _cameraControl;
+    private CameraControl _cameraControl;
 
     private float _upperSpeed = 0;
 
     private CinemachinePOV _wallRunPOV;
     private CinemachineFramingTransposer _wallRunFraming;
 
-    void Start()
+    public void Init(CameraControl cameraControl)
     {
-        _wallRunPOV = _cameraControl.WallRunCameraController.GetCinemachineComponent<CinemachinePOV>();
-        _wallRunFraming = _cameraControl.WallRunCameraController.GetCinemachineComponent<CinemachineFramingTransposer>();
+        _cameraControl = cameraControl;
+
+        _wallRunPOV = _cameraControl.SwingCinemachinePOV;
+        _wallRunFraming = _cameraControl.SwingCameraFraming;
     }
-
-
 
     /// <summary>Idle時、カメラを元に戻す</summary>
     public void WallIdleCamera()
@@ -94,17 +104,72 @@ public class WallRunCameraControl : MonoBehaviour
     {
         if (_wallRunFraming.m_TrackedObjectOffset.x > _startOffSetX)
         {
-            if (Mathf.Abs(_wallRunFraming.m_TrackedObjectOffset.x - _startOffSetX) < 0.01f) return;
+            _wallRunFraming.m_TrackedObjectOffset.x -= Time.deltaTime * _offSetXChangeSpeedOnStop;
 
-            _wallRunFraming.m_TrackedObjectOffset.x -= Time.deltaTime * _offSetXChangeSpeed;
-
+            if (_wallRunFraming.m_TrackedObjectOffset.x < _startOffSetX)
+            {
+                _wallRunFraming.m_TrackedObjectOffset.x = _startOffSetX;
+            }
         }
         else if (_wallRunFraming.m_TrackedObjectOffset.x < _startOffSetX)
         {
-            if (Mathf.Abs(_wallRunFraming.m_TrackedObjectOffset.x - _startOffSetX) < 0.01f) return;
+            _wallRunFraming.m_TrackedObjectOffset.x += Time.deltaTime * _offSetXChangeSpeedOnStop;
 
-            _wallRunFraming.m_TrackedObjectOffset.x += Time.deltaTime * _offSetXChangeSpeed;
+            if (_wallRunFraming.m_TrackedObjectOffset.x > _startOffSetX)
+            {
+                _wallRunFraming.m_TrackedObjectOffset.x = _startOffSetX;
+            }
         }
+    }
+
+    public void SetOffsetY(bool isMove)
+    {
+        if (!isMove)
+        {
+            if (_reSetCameraDistanceTimeCount >= _reSetCameraDistanceTime)
+            {
+                if (_wallRunFraming.m_TrackedObjectOffset.y > _defultOffSetY)
+                {
+                    _wallRunFraming.m_TrackedObjectOffset.y -= Time.deltaTime * _offSetYChangeSpeed;
+
+                    if (_wallRunFraming.m_TrackedObjectOffset.y < _defultOffSetY)
+                    {
+                        _wallRunFraming.m_TrackedObjectOffset.y = _defultOffSetY;
+                    }
+                }
+                else if (_wallRunFraming.m_TrackedObjectOffset.y < _defultOffSetY)
+                {
+                    _wallRunFraming.m_TrackedObjectOffset.y += Time.deltaTime * _offSetYChangeSpeed;
+
+                    if (_wallRunFraming.m_TrackedObjectOffset.y > _defultOffSetY)
+                    {
+                        _wallRunFraming.m_TrackedObjectOffset.y = _defultOffSetY;
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (_wallRunFraming.m_TrackedObjectOffset.y > _setOffSetY)
+            {
+                _wallRunFraming.m_TrackedObjectOffset.y -= Time.deltaTime * _offSetYChangeSpeed;
+
+                if (_wallRunFraming.m_TrackedObjectOffset.y < _setOffSetY)
+                {
+                    _wallRunFraming.m_TrackedObjectOffset.y = _setOffSetY;
+                }
+            }
+            else if (_wallRunFraming.m_TrackedObjectOffset.y < _setOffSetY)
+            {
+                _wallRunFraming.m_TrackedObjectOffset.y += Time.deltaTime * _offSetYChangeSpeed;
+
+                if (_wallRunFraming.m_TrackedObjectOffset.y > _setOffSetY)
+                {
+                    _wallRunFraming.m_TrackedObjectOffset.y = _setOffSetY;
+                }
+            }
+        }
+
     }
 
     public void XOffSetControlWallRun()
@@ -113,30 +178,35 @@ public class WallRunCameraControl : MonoBehaviour
         {
             if (_wallRunFraming.m_TrackedObjectOffset.x < _leftWallMaxOffSetX)
             {
-                _wallRunFraming.m_TrackedObjectOffset.x += Time.deltaTime * _offSetXChangeSpeed;
+                _wallRunFraming.m_TrackedObjectOffset.x += Time.deltaTime * _offSetXChangeSpeedOnMove;
             }
         }
         else if (_cameraControl.PlayerControl.WallRun.MoveDir == WallRun.MoveDirection.Left)
         {
             if (_wallRunFraming.m_TrackedObjectOffset.x > _rightWallMaxOffSetX)
             {
-                _wallRunFraming.m_TrackedObjectOffset.x -= Time.deltaTime * _offSetXChangeSpeed;
+                _wallRunFraming.m_TrackedObjectOffset.x -= Time.deltaTime * _offSetXChangeSpeedOnMove;
             }
         }
         else
         {
             if (_wallRunFraming.m_TrackedObjectOffset.x > _startOffSetX)
             {
-                if (Mathf.Abs(_wallRunFraming.m_TrackedObjectOffset.x - _startOffSetX) < 0.01f) return;
+                _wallRunFraming.m_TrackedObjectOffset.x -= Time.deltaTime * _offSetXChangeSpeedOnMove;
 
-                _wallRunFraming.m_TrackedObjectOffset.x -= Time.deltaTime * _offSetXChangeSpeed ;
-
+                if (_wallRunFraming.m_TrackedObjectOffset.x < _startOffSetX)
+                {
+                    _wallRunFraming.m_TrackedObjectOffset.x = _startOffSetX;
+                }
             }
             else if (_wallRunFraming.m_TrackedObjectOffset.x < _startOffSetX)
             {
-                if (Mathf.Abs(_wallRunFraming.m_TrackedObjectOffset.x - _startOffSetX) < 0.01f) return;
+                _wallRunFraming.m_TrackedObjectOffset.x += Time.deltaTime * _offSetXChangeSpeedOnMove;
 
-                _wallRunFraming.m_TrackedObjectOffset.x += Time.deltaTime * _offSetXChangeSpeed ;
+                if (_wallRunFraming.m_TrackedObjectOffset.x > _startOffSetX)
+                {
+                    _wallRunFraming.m_TrackedObjectOffset.x = _startOffSetX;
+                }
             }
         }
     }
@@ -206,6 +276,8 @@ public class WallRunCameraControl : MonoBehaviour
         if (_wallRunFraming.m_CameraDistance < _moveCameraDistance)
         {
             _wallRunFraming.m_CameraDistance += Time.deltaTime * _setCameraDistanceSpeed;
+
+            if (_wallRunFraming.m_CameraDistance > _moveCameraDistance) _wallRunFraming.m_CameraDistance = _moveCameraDistance;
         }
     }
 

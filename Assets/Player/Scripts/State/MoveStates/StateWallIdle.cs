@@ -45,6 +45,9 @@ public class StateWallIdle : PlayerStateBase
         _stateMachine.PlayerController.CameraControl.WallRunCameraControl.WallIdleCamera();
 
         _stateMachine.PlayerController.CameraControl.WallRunCameraControl.XOffSetWallIdle();
+
+        //Yé≤ÇÃoffsetÇÃê›íË
+        _stateMachine.PlayerController.CameraControl.WallRunCameraControl.SetOffsetY(false);
     }
 
     public override void Update()

@@ -5,80 +5,106 @@ using UnityEngine;
 [System.Serializable]
 public class Swing : IPlayerAction
 {
-
-    [Header("クールタイム")]
-    [SerializeField] private float _coolTime = 1f;
-
     [Header("速度制限")]
     [SerializeField] private Vector3 _limitSpeed;
-
-    [Header("何もしないときに前に加える力")]
-    [SerializeField] private float _addFrontPowerNoMove = 3;
-
-    [Header("前に加える力")]
-    [SerializeField] private float _addFrontPowerMove = 5;
-
-    [Header("高さ")]
-    [SerializeField] private float _hight = 8f;
-
-    [Header("クールタイム")]
+    [Header("Swingのクールタイム")]
+    [SerializeField] private float _coolTime = 1f;
+    [Header("降下させる時間。Swingの振り子の時間")]
     [SerializeField] private float _downTime = 2f;
+    [Header("プレイヤーとワイヤーの高さが同じとする高さの補佐")]
+    [SerializeField] private float _hight = 8f;
+    [Header("早い速度降下した、とする速度Y")]
+    [SerializeField] private float _highSpeedFallspeedY;
 
-    private float _countDownTime = 0;
+    public float HighSpeedFallspeedY => _highSpeedFallspeedY;
 
-    private bool _isDown = false;
+    [Header("[=====加速度_設定=====]")]
+    [Header("入力無しの時に前に加える力")]
+    [SerializeField] private float _addFrontPowerNoMove = 3;
+    [Header("入力ありの時に前に加える力")]
+    [SerializeField] private float _addFrontPowerMove = 5;
+    [Header("降下が終わった後の上方向に加える力")]
+    [SerializeField] private float _addUpPowerEndIsDown = 30;
+    [Header("降下が終わった後の前方に加える力")]
+    [SerializeField] private float _addFrontPowerEndIsDown = 20;
 
-    [Header("地面に近い際の上に加える力")]
+    [Header("地面近くでSwingを始めた時に、上に加える力")]
     [SerializeField] private float _addUpPowerNearGround = 5;
 
-    [Header("空中で上に加える力")]
-    [SerializeField] private float _addUpPower = 5;
+    [Header("地面近くでSwingを始めた時に、前に加える力")]
+    [SerializeField] private float _addFrontPowerNearGround = 5;
 
-    [Header("空中で上に加える時間")]
-    private float _addUpTime = 2;
+    [Header("降下して地面近くでSwingを始めた時に、上に加える力")]
+    [SerializeField] private float _addUpPowerNearGroundHighFall = 5;
 
-    [Header("最後にジャンプさせる方向")]
-    [SerializeField] private Vector3 _addJumpDir;
+    [Header("降下して地面近くでSwingを始めた時に、前に加える力")]
+    [SerializeField] private float _addFrontPowerNearGroundHighFall = 60;
 
-    [Header("最後にジャンプさせる力")]
+
+    [Header("[======最後のジャンプ設定======]")]
+    [Header("離した時のジャンプ力")]
     [SerializeField] private float _addJumpPower = 4.5f;
-
-    [Header("前方にジャンプさせる方向")]
-    [SerializeField] private Vector3 _addJumpFrontDir;
-
-    [Header("前方にジャンプさせる力")]
-    [SerializeField] private float _addJumpFrontPower = 30f;
-
-    [Header("上にジャンプさせる方向")]
-    [SerializeField] private Vector3 _addJumpUpDir;
-
-    [Header("上にジャンプさせる力")]
+    [Header("ジャンプボタンを押したとき_前方の力")]
+    [SerializeField] private float _addJumpFrontPower = 5f;
+    [Header("ジャンプボタンを押したとき_上方向の力")]
+    [SerializeField] private float _addJumpFrontUpPower = 7f;
+    [Header("最大限まで登った時")]
     [SerializeField] private float _addJumpUpPower = 30f;
 
-    [Header("Swing中に地面につきそうになった時に加える方向")]
-    [SerializeField] private Vector3 _addForceDirNearGroundOnSwing;
+    [Header("降下して地面近くでSwingを始めた時に、最後のジャンプで上に加える力")]
+    [SerializeField] private float _addJumpUpPowerNearGroundHighFall = 20;
 
-    [Header("Swing前に地面につきそうになった時に加える力")]
-    [SerializeField] private Vector3 _addForceNearGroundNoSwing;
-
-    private float _addUpTimeCount = 0;
-
+    [Header("[======Jointの設定======]")]
     [Header("Test用、固定")]
     [SerializeField] private Vector3 _swingHitPos = default;
-
     [Header("バネの強さ")]
     [SerializeField] private float _springPower = 4.5f;
-
     [Header("ダンパ-の強さ")]
     [SerializeField] private float _damperPower = 7;
-
     [Header("ダンパ-の強さ")]
     [SerializeField] private float _massScale = 4.5f;
 
 
+    [Header("[=====ワイヤーの描画設定=====]")]
+    [Header("ワイヤーを描画するまでの時間")]
+    [SerializeField] private float _dorwWireTime = 0.4f;
+    [Header("ワイヤーの描画速度")]
+    [SerializeField] private float _drowWireSpeed = 100;
+
+    /// <summary>Swingの降下をし終えたかどうか</summary>
+    private bool _isDown = false;
+    /// <summary>地面に近いところでSwingをしたかどうか </summary>
+    private bool _isFirstNearGround = false;
+    /// <summary>高速で落下して、地面に近いところでSwingをしたかどうか </summary>
+    private bool _isFirstNearGroundOnHighSpeed = false;
+    /// <summary>ワイヤーを描画するかどうか</summary>
+    private bool _isDrowWire;
+    /// <summary>Swingを使用しるまでのクールタイムを計測 </summary>
+    private float _countCoolTime = 0;
+    /// <summary>ワイヤーを描画するまでの時間を計算する</summary>
+    private float _countDrowWireTime = 0;
+
+
+    private float _setWireLongPercent;
+
+    private float _countDownTime = 0;
+
+
+
+    private float _addUpTimeCount = 0;
+
+
+
+
+    float distanceFromPoint;
+    Vector3 velo;
+    Quaternion _targetRotation;
     private bool _isAddEnd = false;
 
-    private float _countCoolTime = 0;
+    private bool _isSetEndMaxDis = false;
+
+
+    private Vector3 _loapPoint;
 
     private bool _isSamLine = false;
 
@@ -89,27 +115,21 @@ public class Swing : IPlayerAction
     private bool _isSwingNow = false;
 
     private float _wireLong;
+
+
     public bool IsSamLime => _isSamLine;
     public bool IsSwingNow => _isSwingNow;
     public bool IsCanSwing => _isCanSwing;
-
-    float distanceFromPoint;
-    Vector3 velo;
-    Quaternion _targetRotation;
-
-    private bool _isFirstNearGround = false;
+    public bool IsFirstNearGround => _isFirstNearGround;
+    public bool IsFirstNearGroundHighFall => _isFirstNearGroundOnHighSpeed;
 
 
-    private bool _isSetEndMaxDis = false;
-
-
-    private Vector3 _loapPoint;
 
 
     /// <summary>Swingの速度制限</summary>
     public void SetSpeedSwing()
     {
-        _playerControl.VelocityLimit.SetLimit(_limitSpeed.x, _limitSpeed.y, _limitSpeed.z);
+        _playerControl.VelocityLimit.SetLimit(_limitSpeed.x, _limitSpeed.y, -50, _limitSpeed.z);
     }
 
 
@@ -120,11 +140,28 @@ public class Swing : IPlayerAction
         //コントローラーを振動させる
         _playerControl.ControllerVibrationManager.StartVibration();
 
-
-        if (_playerControl.Rb.velocity.y > 0)
+        //スウィング開始時に地面に近かったら、y軸速度を0にする
+        if (_playerControl.GroundCheck.IsHitSwingGround())
         {
-            _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, -20, _playerControl.Rb.velocity.z);
-
+            if (_playerControl.Rb.velocity.y <= _highSpeedFallspeedY)
+            {
+                _isFirstNearGroundOnHighSpeed = true;
+                _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, 0, _playerControl.Rb.velocity.z);
+                _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, -5, _playerControl.Rb.velocity.z);
+            }
+            else
+            {
+                _isFirstNearGround = true;
+                _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, 0, _playerControl.Rb.velocity.z);
+                _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, -5, _playerControl.Rb.velocity.z);
+            }
+        }
+        else
+        {
+            if (_playerControl.Rb.velocity.y > 0)
+            {
+                _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, -20, _playerControl.Rb.velocity.z);
+            }   //連続で使用したさいに、強制的に降下させる用
         }
 
         _isSwingNow = true;
@@ -132,14 +169,6 @@ public class Swing : IPlayerAction
         //重力を無くす
         _playerControl.Rb.useGravity = false;
         _isAddEnd = false;
-
-        //スウィング開始時に地面に近かったら、y軸速度を0にする
-        if (_playerControl.GroundCheck.IsHitSwingGround())
-        {
-            _isFirstNearGround = true;
-            _isDown = true;
-            _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, 0, _playerControl.Rb.velocity.z);
-        }
 
         _addUpTimeCount += Time.deltaTime;
         _isSamLine = false;
@@ -150,7 +179,6 @@ public class Swing : IPlayerAction
         //アンカーの着地点。
         // var r = Camera.main.transform.TransformDirection(_swingHitPos);
         // swingPoint = r + _playerControl.PlayerT.position;
-
 
         swingPoint = _playerControl.SearchSwingPoint.RealSwingPoint;
 
@@ -172,10 +200,8 @@ public class Swing : IPlayerAction
         float anckerToPlayer = Vector3.Distance(_playerControl.transform.position, swingPoint);
         float anckerToGround = swingPoint.y - _playerControl.GroundCheck.IsSwingPlayerToGroundOfLong();
 
-
         _playerControl.Joint.maxDistance = distanceFromPoint * 1f;
         _playerControl.Joint.minDistance = distanceFromPoint * 0.6f;
-
 
         _wireLong = distanceFromPoint;
 
@@ -193,21 +219,49 @@ public class Swing : IPlayerAction
         //currentGrapplePosition = gunTip.position;
     }
 
-
-    public void DrawLope()
+    /// <summary>ワイヤーを描画するまでの時間を計算する</summary>
+    public void CountDrowWireTime()
     {
-        if (_playerControl.Joint == null)
+        if (_isDrowWire) return;
+
+        _countDrowWireTime += Time.deltaTime;
+
+        if (_countDrowWireTime > _dorwWireTime)
+        {
+            _isDrowWire = true;
+        }
+    }
+
+    /// <summary>ワイヤーを描画する</summary>
+    public void DrowWire()
+    {
+        if (_playerControl.Joint == null || !_isDrowWire)
         {
             return;
         }
-        //線を引く位置を決める
-        //0は線を引く開始点
-        //１は線を引く終了点
-        _playerControl.LineRenderer.positionCount = 2;
 
+        _setWireLongPercent += _drowWireSpeed * Time.deltaTime;
+        if (_setWireLongPercent > 1)
+        {
+            _setWireLongPercent = 1;
+        }
+
+        float step = Vector3.Distance(_playerControl.Hads.position, _loapPoint) * _setWireLongPercent;
+        Vector3 setPoint = Vector3.MoveTowards(_playerControl.Hads.position, _loapPoint, step);
 
         _playerControl.LineRenderer.SetPosition(0, _playerControl.Hads.position);
-        _playerControl.LineRenderer.SetPosition(1, _loapPoint);
+        _playerControl.LineRenderer.SetPosition(1, setPoint);
+    }
+
+    /// <summary>ワイヤーを描画する前の初期設定</summary>
+    public void FirstSettingDrawLope()
+    {
+        if (_playerControl.Joint == null) return;
+
+        _setWireLongPercent = 0;
+        _playerControl.LineRenderer.positionCount = 2;
+        _playerControl.LineRenderer.SetPosition(0, _playerControl.Hads.position);
+        _playerControl.LineRenderer.SetPosition(1, _playerControl.Hads.position);
     }
 
     /// <summary>スウィング中止</summary>
@@ -219,6 +273,9 @@ public class Swing : IPlayerAction
         //LineRendrerを消す
         _playerControl.LineRenderer.positionCount = 0;
 
+        _countDrowWireTime = 0;
+        _isDrowWire = false;
+
         //Jointを消す
         _playerControl.DestroyJoint();
         //Swing不可
@@ -227,7 +284,7 @@ public class Swing : IPlayerAction
         _isSwingNow = false;
 
         _isFirstNearGround = false;
-
+        _isFirstNearGroundOnHighSpeed = false;
 
         _playerControl.Rb.useGravity = true;
 
@@ -236,13 +293,8 @@ public class Swing : IPlayerAction
         _isSetEndMaxDis = false;
     }
 
-
-    /// <summary>Swing中の移動</summary>
-    public void AddSpeed()
+    public void SwingRotation()
     {
-        //コントローラーの振動を止める
-        _playerControl.ControllerVibrationManager.DoVibration();
-
         //入力を受け取る
         float h = _playerControl.InputManager.HorizontalInput;
         float v = _playerControl.InputManager.VerticalInput;
@@ -268,37 +320,46 @@ public class Swing : IPlayerAction
             _targetRotation = Quaternion.LookRotation(Camera.main.transform.forward, Vector3.up);
             _playerControl.PlayerT.rotation = Quaternion.RotateTowards(_playerControl.PlayerT.rotation, _targetRotation, rotationSpeed);
         }
+    }
+
+    /// <summary>Swing中の移動</summary>
+    public void AddSpeed()
+    {
+        //コントローラーの振動
+        _playerControl.ControllerVibrationManager.DoVibration();
+
+        //入力を受け取る
+        float h = _playerControl.InputManager.HorizontalInput;
+        float v = _playerControl.InputManager.VerticalInput;
+
+        var horizontalRotation = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up);
 
         //速度を加える方向
         Vector3 addDir = default;
-
         //加える速度
         float speed = 0;
 
         //地面に近いかどうかを確認
-        if (_playerControl.GroundCheck.IsHitSwingGround())
+        if (_playerControl.GroundCheck.IsHitSwingGroundInSwing())
         {
-            if (_isFirstNearGround == false)
+            if (_isDown == false)
             {
                 if (_playerControl.Rb.velocity.y < 0)
                 {
                     _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, 0, _playerControl.Rb.velocity.z);
                 }
-                _playerControl.Rb.useGravity = false;
 
                 _playerControl.Joint.maxDistance = distanceFromPoint * 1f;
                 _playerControl.Joint.minDistance = distanceFromPoint * 1f;
 
                 _isDown = true;
-                _isFirstNearGround = true;
             }
         }
-
 
         if (v != 0 || h != 0)
         {
             //地面に近いかどうかを確認
-            if (_playerControl.GroundCheck.IsHitSwingGround())
+            if (_playerControl.GroundCheck.IsHitSwingGroundInSwing())
             {
                 v = v * 0.5f;
             }
@@ -314,13 +375,21 @@ public class Swing : IPlayerAction
             speed = _addFrontPowerNoMove;
         } //入力なしの場合
 
-
-
-        if (_isDown)
+        if (_isFirstNearGround)
         {
-            _playerControl.Rb.AddForce(Vector3.up * 30);
-            speed += 20;
+            _playerControl.Rb.AddForce(Vector3.up * _addUpPowerNearGround);
+            speed += _addFrontPowerNearGround;
         }
+        else if (_isFirstNearGroundOnHighSpeed)
+        {
+            _playerControl.Rb.AddForce(Vector3.up * _addUpPowerNearGroundHighFall);
+            speed += _addFrontPowerNearGroundHighFall;
+        }
+        else if (_isDown)
+        {
+            _playerControl.Rb.AddForce(Vector3.up * _addUpPowerEndIsDown);
+            speed += _addFrontPowerEndIsDown;
+        }   //Swingの降下が終わっっていたら
         else
         {
             _countDownTime += Time.deltaTime;
@@ -330,7 +399,7 @@ public class Swing : IPlayerAction
                 _playerControl.Joint.maxDistance = distanceFromPoint * 1f;
                 _playerControl.Joint.minDistance = distanceFromPoint * 1f;
             }
-        }
+        }   //Swingの降下が終わっていない
 
         _playerControl.Rb.AddForce(addDir.normalized * speed);
     }
@@ -384,11 +453,26 @@ public class Swing : IPlayerAction
 
     public void LastJumpFront()
     {
-        _playerControl.Rb.AddForce(_playerControl.PlayerT.forward.normalized * _addJumpFrontPower, ForceMode.Impulse);
+        float power = _addJumpFrontUpPower;
+
+        if (_isFirstNearGroundOnHighSpeed)
+        {
+            power += _addJumpUpPowerNearGroundHighFall;
+        }
+
+
+        _playerControl.Rb.AddForce((_playerControl.PlayerT.forward.normalized * _addJumpFrontPower) + (Vector3.up * power), ForceMode.Impulse);
     }
 
     public void LastJumpUp()
     {
-        _playerControl.Rb.AddForce(_playerControl.PlayerT.forward.normalized + Vector3.up * _addJumpUpPower, ForceMode.Impulse);
+        float power = _addJumpUpPower;
+
+        if (_isFirstNearGroundOnHighSpeed)
+        {
+            power += _addJumpUpPowerNearGroundHighFall;
+        }
+
+        _playerControl.Rb.AddForce((Vector3.up * power), ForceMode.Impulse);
     }
 }

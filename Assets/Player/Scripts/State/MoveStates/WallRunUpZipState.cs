@@ -9,7 +9,7 @@ public class WallRunUpZipState : PlayerStateBase
     {
         _stateMachine.PlayerController.WallRunUpZip.UpZipStart();
 
-        _stateMachine.PlayerController.VelocityLimit.SetLimit(25, 50, 25);
+        _stateMachine.PlayerController.VelocityLimit.SetLimit(25, 50,-10, 25);
     }
 
     public override void Exit()
@@ -55,6 +55,9 @@ public class WallRunUpZipState : PlayerStateBase
             if (_stateMachine.PlayerController.WallRunUpZip.IsZipToFront)
             {
                 _stateMachine.PlayerController.Rb.useGravity = true;
+
+                //WallRun‚ÌAnimator‚ðÝ’è
+                _stateMachine.PlayerController.AnimControl.WallRunSet(false);
 
                 if (_stateMachine.PlayerController.Rb.velocity.y>0)
                 {

@@ -5,12 +5,6 @@ using Cinemachine;
 
 public class PlayerControl : MonoBehaviour
 {
-    [SerializeField] private CinemachineBrain _CameraBrain;
-
-    [SerializeField] private CinemachineVirtualCamera _camera;
-
-    [SerializeField] private CinemachineVirtualCamera _cameraGrapple;
-
     [SerializeField] private Animator _anim;
 
     [SerializeField] private Transform _playerT;
@@ -22,19 +16,22 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private LineRenderer _lineRenderer;
 
     [SerializeField] private Rigidbody _rb;
-
+    [SerializeField] private InputManager _inputManager;
     [SerializeField] private CameraControl _cameraControl;
-
+    [SerializeField] private PlayerAudioManager _playerAudioManager;
     [SerializeField] private ControllerVibrationManager _controllerVibrationManager;
     [SerializeField] private PlayerStateMachine _stateMachine = default;
     [SerializeField] private PlayerMove _playerMove;
-    [SerializeField] private InputManager _inputManager;
+
     [SerializeField] private PlayerAnimationControl _animControl;
     [SerializeField] private GroundCheck _groundCheck;
     [SerializeField] private Swing _swing;
     [SerializeField] private VelocityLimit _velocityLimit;
     [SerializeField] private SearchSwingPoint _searchSwingPoint;
+    [Header("=======Zip‚Ì“®‚«‚ÌÝ’è========")]
     [SerializeField] private ZipMove _zipMove;
+    [Header("=======Zip‚ÌLine‚Ì“®‚«========")]
+    [SerializeField] private ZipLineRenderer _zipLineRenderer;
     [SerializeField] private WallRun _wallRun;
     [SerializeField] private WallRunStepCheck _wallRunStep;
     [SerializeField] private WallRunUpZip _wallRunUpZip;
@@ -46,6 +43,10 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private PlayerEffectControl _effectControl;
     [SerializeField] private AimAssist _assist;
 
+    private CinemachineBrain _CameraBrain;
+    private CinemachineVirtualCamera _camera;
+    private CinemachineVirtualCamera _cameraGrapple;
+
     private SpringJoint _joint;
 
     public ControllerVibrationManager ControllerVibrationManager => _controllerVibrationManager;
@@ -54,6 +55,7 @@ public class PlayerControl : MonoBehaviour
     public CinemachineBrain CameraBrain => _CameraBrain;
     public InputManager InputManager => _inputManager;
 
+    public PlayerAudioManager PlayerAudioManager => _playerAudioManager;
     public PlayerMove Move => _playerMove;
     public Swing Swing => _swing;
     public CinemachineVirtualCamera Camera => _camera;
@@ -80,6 +82,7 @@ public class PlayerControl : MonoBehaviour
     public WallRunStepCheck WallRunStep => _wallRunStep;
     public AimAssist AimAssist => _assist;
     public SetUp SetUp => _setUp;
+    public ZipLineRenderer ZipLineRenderer => _zipLineRenderer;
 
     float h = 0;
     float v = 0;
@@ -106,6 +109,7 @@ public class PlayerControl : MonoBehaviour
         _wallRunUpZip.Init(this);
         _wallRunStep.Init(this);
         _assist.Init(this);
+        _zipLineRenderer.Init(this);
     }
 
     void Start()
@@ -130,17 +134,15 @@ public class PlayerControl : MonoBehaviour
 
         _animControl.AnimSet();
 
-
+        _playerAudioManager.LoopAudio.SettingLoopAudio();
         _effectControl.ConcentrationLineEffect();
-        _assist.Targetting(); 
+        _assist.Targetting();
         _assist.AssistUISetting();
     }
 
     private void FixedUpdate()
     {
         _stateMachine.FixedUpdate();
-
-
     }
 
     private void LateUpdate()

@@ -11,7 +11,10 @@ public class UpAirState : PlayerStateBase
         _stateMachine.PlayerController.CameraControl.UseSwingCamera();
 
 
-        _stateMachine.PlayerController.VelocityLimit.SetLimit(25, 20, 25);
+        _stateMachine.PlayerController.VelocityLimit.SetLimit(25, 20, -25, 25);
+
+        //風の音の設定
+        _stateMachine.PlayerController.PlayerAudioManager.LoopAudio.PlayWindAudio(false);
     }
 
     public override void Exit()
@@ -37,11 +40,25 @@ public class UpAirState : PlayerStateBase
     {
         //カメラの時間
         _stateMachine.PlayerController.CameraControl.CountTime();
+
+        //ステータス設定
+        _stateMachine.PlayerController.CameraControl.SwingCameraControl.CheckStatas();
+
         //カメラの傾きを戻す
-        _stateMachine.PlayerController.CameraControl.AirCameraYValue(_stateMachine.PlayerController.Rb.velocity.y);
+        _stateMachine.PlayerController.CameraControl.SwingCameraControl.SetAirCameraDistance(_stateMachine.PlayerController.Rb.velocity.y);
+        _stateMachine.PlayerController.CameraControl.SwingCameraControl.SetAirCameraOffsetY(_stateMachine.PlayerController.Rb.velocity.y);
+        _stateMachine.PlayerController.CameraControl.SwingCameraControl.SetAirCameraVerticalAxis(_stateMachine.PlayerController.Rb.velocity.y);
+
+        //カメラのX軸のOffsetを戻す
+        _stateMachine.PlayerController.CameraControl.SwingCameraControl.ResetOffSetX();
+
+
 
         //カメラをプレイヤーの後ろに自動的に向ける。X軸
         _stateMachine.PlayerController.CameraControl.SwingEndCameraAutoFollow();
+
+        //FOV設定
+        _stateMachine.PlayerController.CameraControl.SwingCameraControl.ChangeFOV(true, _stateMachine.PlayerController.Rb.velocity.y);
 
         //カメラを傾ける。X軸
         _stateMachine.PlayerController.CameraControl.SwingCameraValueX(false);
@@ -49,30 +66,10 @@ public class UpAirState : PlayerStateBase
 
     public override void Update()
     {
-
-
-
-
-
         //各動作のクールタイム
         _stateMachine.PlayerController.CoolTimes();
 
         _stateMachine.PlayerController.Move.DownSpeedOfSppedDash();
-
-
-
-        //if (_stateMachine.PlayerController.InputManager.IsSetUp > 0)
-        //{
-
-        //    _stateMachine.TransitionTo(_stateMachine.StateGrappleSetUp);
-        //}   //構え
-
-        if (_stateMachine.PlayerController.InputManager.IsAvoid && _stateMachine.PlayerController.Avoid.IsCanAvoid)
-        {
-            _stateMachine.PlayerController.Avoid.SetAvoidDir();
-            _stateMachine.TransitionTo(_stateMachine.AvoidState);
-        }   //回避
-
 
         if (_stateMachine.PlayerController.InputManager.IsAttack)
         {
@@ -82,26 +79,12 @@ public class UpAirState : PlayerStateBase
             }
         }   //攻撃ステート
 
-        ////壁が当たったら、WallRun状態に
-        //if (_stateMachine.PlayerController.WallRunCheck.CheckWall())
-        //{
-        //    if (_stateMachine.PlayerController.InputManager.HorizontalInput != 0 || _stateMachine.PlayerController.InputManager.VerticalInput != 0)
-        //    {
-        //        _stateMachine.TransitionTo(_stateMachine.StateWallRun);
-        //    }    //WallRunへ移行
-        //    else
-        //    {
-        //        _stateMachine.TransitionTo(_stateMachine.StateWallIdle);
-        //    } 　//WallIdleへ移行
-        ////}
-
         //Zip
         if (_stateMachine.PlayerController.InputManager.IsJumping && _stateMachine.PlayerController.ZipMove.IsCanZip)
         {
             _stateMachine.TransitionTo(_stateMachine.StateZip);
             return;
         }
-
 
         if (_stateMachine.PlayerController.SearchSwingPoint.Search())
         {
@@ -119,6 +102,28 @@ public class UpAirState : PlayerStateBase
             return;
         }
 
+        //if (_stateMachine.PlayerController.InputManager.IsSetUp > 0)
+        //{
 
+        //    _stateMachine.TransitionTo(_stateMachine.StateGrappleSetUp);
+        //}   //構え
+
+        //if (_stateMachine.PlayerController.InputManager.IsAvoid && _stateMachine.PlayerController.Avoid.IsCanAvoid)
+        //{
+        //    _stateMachine.PlayerController.Avoid.SetAvoidDir();
+        //    _stateMachine.TransitionTo(_stateMachine.AvoidState);
+        //}   //回避
+        ////壁が当たったら、WallRun状態に
+        //if (_stateMachine.PlayerController.WallRunCheck.CheckWall())
+        //{
+        //    if (_stateMachine.PlayerController.InputManager.HorizontalInput != 0 || _stateMachine.PlayerController.InputManager.VerticalInput != 0)
+        //    {
+        //        _stateMachine.TransitionTo(_stateMachine.StateWallRun);
+        //    }    //WallRunへ移行
+        //    else
+        //    {
+        //        _stateMachine.TransitionTo(_stateMachine.StateWallIdle);
+        //    } 　//WallIdleへ移行
+        ////}
     }
 }

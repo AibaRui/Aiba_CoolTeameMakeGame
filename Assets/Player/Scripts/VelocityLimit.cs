@@ -8,7 +8,9 @@ public class VelocityLimit : IPlayerAction
 {
     private float _limitX = 10;
 
-    private float _limitY = 10;
+    private float _limitPlusY = 10;
+
+    private float _limitMinusY = -10;
 
     private float _limitZ = 10;
 
@@ -19,10 +21,11 @@ public class VelocityLimit : IPlayerAction
 
     public bool IsSpeedUp { get => _isSpeedUp; set => _isSpeedUp = value; }
 
-    public void SetLimit(float x, float y, float z)
+    public void SetLimit(float x, float plusY,float minusY, float z)
     {
         _limitX = x;
-        _limitY = y;
+        _limitPlusY = plusY;
+        _limitMinusY = minusY;
         _limitZ = z;
     }
 
@@ -57,7 +60,7 @@ public class VelocityLimit : IPlayerAction
 
             if (Vector3.Magnitude(speedRb) < Vector3.Magnitude(limit))
             {
-                SetLimit(25, 30, 25);
+                SetLimit(25, 30,-30, 25);
                 _isSpeedUp = false;
             }
         }
@@ -76,14 +79,16 @@ public class VelocityLimit : IPlayerAction
                 _playerControl.Rb.velocity = new Vector3(-_limitX, _playerControl.Rb.velocity.y, _playerControl.Rb.velocity.z);
             }
 
-            if (_playerControl.Rb.velocity.y > _limitY)
+            if (_playerControl.Rb.velocity.y > _limitPlusY)
             {
-                _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, _limitY, _playerControl.Rb.velocity.z);
+                _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, _limitPlusY, _playerControl.Rb.velocity.z);
             }
-            else if (_playerControl.Rb.velocity.y < -_limitY)
+            else if (_playerControl.Rb.velocity.y < _limitMinusY)
             {
-                _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, -_limitY, _playerControl.Rb.velocity.z);
+                _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, _limitMinusY, _playerControl.Rb.velocity.z);
             }
+
+
 
             if (_playerControl.Rb.velocity.z > _limitZ)
             {

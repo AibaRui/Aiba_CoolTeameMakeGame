@@ -7,22 +7,33 @@ public class ZipState : PlayerStateBase
 {
     public override void Enter()
     {
-        //前方に飛ぶ
-        _stateMachine.PlayerController.ZipMove.FrontZip();
+        _stateMachine.PlayerController.Rb.useGravity = false;
 
-        //演出
-        _stateMachine.PlayerController.ZipMove.SetCameraDistance();
+        //Zipの初期設定
+        _stateMachine.PlayerController.ZipMove.ZipFirstSetting();
+
+        //LineRenderer設定
+        _stateMachine.PlayerController.ZipLineRenderer.StartZipLine();
 
         //アニメーションの設定
-        _stateMachine.PlayerController.AnimControl.FrontZip();
+        _stateMachine.PlayerController.AnimControl.ZipAnim.FrontZip();
+        _stateMachine.PlayerController.AnimControl.ZipAnim.SetZip(true);
 
         _stateMachine.PlayerController.EffectControl.ZipSet(true);
     }
 
     public override void Exit()
     {
+        _stateMachine.PlayerController.Rb.useGravity = true;
+
+        //アニメーション設定
+        _stateMachine.PlayerController.AnimControl.ZipAnim.SetZip(false);
+
         //FrontZipのタイマーをリセット
         _stateMachine.PlayerController.ZipMove.EndZip();
+
+        //LineRenderer設定
+        _stateMachine.PlayerController.ZipLineRenderer.ResetZipLine();
 
         _stateMachine.PlayerController.EffectControl.ZipSet(false);
     }
@@ -31,11 +42,15 @@ public class ZipState : PlayerStateBase
     {
         //プレイヤーの角度を変更
         _stateMachine.PlayerController.ZipMove.ZipSetPlayerRotation();
+        _stateMachine.PlayerController.ZipLineRenderer.MedalPosition();
     }
 
     public override void LateUpdate()
     {
-        _stateMachine.PlayerController.CameraControl.ZipCamera();
+        _stateMachine.PlayerController.CameraControl.ZipCameraControl.ZipCamera();
+
+        //LineRenderer設定
+        _stateMachine.PlayerController.ZipLineRenderer.SetZipLineWave();
     }
 
     public override void Update()
@@ -45,14 +60,19 @@ public class ZipState : PlayerStateBase
 
         if (_stateMachine.PlayerController.GroundCheck.IsHit())
         {
+            //Swingのカメラの値のリセット
+            _stateMachine.PlayerController.CameraControl.SwingCameraControl.ResetValues();
+
             _stateMachine.TransitionTo(_stateMachine.StateIdle);
             return;
         }
 
         if (_stateMachine.PlayerController.WallRunCheck.CheckWallFront())
         {
-            _stateMachine.TransitionTo(_stateMachine.StateWallIdle);
+            //Swingのカメラの値のリセット
+            _stateMachine.PlayerController.CameraControl.SwingCameraControl.ResetValues();
 
+            _stateMachine.TransitionTo(_stateMachine.StateWallIdle);
             return;
         }
 

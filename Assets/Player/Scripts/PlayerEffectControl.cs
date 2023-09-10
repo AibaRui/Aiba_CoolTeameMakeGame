@@ -18,6 +18,10 @@ public class PlayerEffectControl
     [Header("Zip")]
     [SerializeField] private GameObject _zipImage;
 
+    [SerializeField] private bool _isOnEffect;
+
+    [SerializeField] private ExampleUsage _exampleUsage;
+
     private PlayerControl _playerControl;
 
     private Color _concentrationLineeffectColor;
@@ -31,6 +35,8 @@ public class PlayerEffectControl
     /// <summary>èWíÜê¸ÇÃä«óù</summary>
     public void ConcentrationLineEffect()
     {
+        if (!_isOnEffect) return;
+
         Vector3 speed = _playerControl.Rb.velocity;
         speed.y = 0;
 
@@ -40,6 +46,8 @@ public class PlayerEffectControl
             {
                 return;
             }
+
+           // if (!_exampleUsage.isEnabled) _exampleUsage.isEnabled = true;
 
             var setColor = _concentrationLineeffectImage.color;
             setColor.a += Time.deltaTime;
@@ -59,6 +67,8 @@ public class PlayerEffectControl
             {
                 return;
             }
+
+            //if (_exampleUsage.isEnabled) _exampleUsage.isEnabled = false;
 
             var setColor = _concentrationLineeffectImage.color;
             setColor.a -= Time.deltaTime;

@@ -45,7 +45,7 @@ public class Grapple : IPlayerAction
     /// <summary>Swingの速度制限</summary>
     public void SetSpeedGrapple()
     {
-        _playerControl.VelocityLimit.SetLimit(_limitSpeed.x, _limitSpeed.y, _limitSpeed.z);
+        _playerControl.VelocityLimit.SetLimit(_limitSpeed.x, _limitSpeed.y,-10, _limitSpeed.z);
     }
 
     /// <summary>グラップルのワイヤーの着地点を探す</summary>

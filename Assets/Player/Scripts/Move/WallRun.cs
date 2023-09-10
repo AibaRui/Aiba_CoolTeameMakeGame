@@ -17,6 +17,12 @@ public class WallRun : IPlayerAction
     [Header("移動時のプレイヤーの回転の速さ")]
     [SerializeField] private float _moveRotateSpeed = 20;
 
+    [Header("最後のジャンプの強さ_移動時")]
+    [SerializeField] private float _lastJumpPower = 10;
+
+    [Header("最後のジャンプの強さ_止まってる時")]
+    [SerializeField] private float _lastJumpPowerNoMove = 5;
+
     private float _noMoveTimeCount = 0;
 
     private bool _isEndNoMove = false;
@@ -231,20 +237,22 @@ public class WallRun : IPlayerAction
         float angleRight = Quaternion.Angle(_playerControl.PlayerT.rotation, rightRotation);
         float angleLeft = Quaternion.Angle(_playerControl.PlayerT.rotation, leftRotation);
 
-        if (angleUp <= 70)
+        if (angleUp < 70)
         {
             _moveDirection = MoveDirection.Up;
             _playerControl.AnimControl.WallRunUpSet(true);
         }
-        else if (angleRight <= 40)
+        else if (angleRight < 40)
         {
             _moveDirection = MoveDirection.Right;
             _playerControl.AnimControl.WallRunUpSet(false);
+            _playerControl.AnimControl.SetWallRunHitRight(true);
         }
-        else if (angleLeft <= 70)
+        else if (angleLeft < 70)
         {
             _moveDirection = MoveDirection.Left;
             _playerControl.AnimControl.WallRunUpSet(false);
+            _playerControl.AnimControl.SetWallRunHitRight(false);
         }
 
         // Debug.Log(_moveDirection);
@@ -360,13 +368,13 @@ public class WallRun : IPlayerAction
             }
             else
             {
-                Vector3 dir = _playerControl.Rb.velocity.normalized + _playerControl.WallRunCheck.Hit.normal;
-                _playerControl.Rb.AddForce(dir * 5, ForceMode.Impulse);
+                Vector3 dir = Vector3.up + _playerControl.WallRunCheck.Hit.normal;
+                _playerControl.Rb.AddForce(dir * _lastJumpPower, ForceMode.Impulse);
             }
         }
         else
         {
-            _playerControl.Rb.AddForce(_playerControl.WallRunCheck.Hit.normal * 5, ForceMode.Impulse);
+            _playerControl.Rb.AddForce(_playerControl.WallRunCheck.Hit.normal * _lastJumpPowerNoMove, ForceMode.Impulse);
         }
 
         _playerControl.ModelT.rotation = _playerControl.PlayerT.rotation;

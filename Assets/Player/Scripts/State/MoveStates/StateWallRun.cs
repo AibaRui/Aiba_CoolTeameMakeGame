@@ -7,6 +7,9 @@ public class StateWallRun : PlayerStateBase
 {
     public override void Enter()
     {
+        //Swingのカメラの値のリセット
+        _stateMachine.PlayerController.CameraControl.SwingCameraControl.ResetValues();
+
         //カメラをWallRun用に変更
         _stateMachine.PlayerController.CameraControl.UseWallRunCamera();
 
@@ -40,6 +43,9 @@ public class StateWallRun : PlayerStateBase
         _stateMachine.PlayerController.CameraControl.WallRunCameraControl.WallRunCameraFollow();
 
         _stateMachine.PlayerController.CameraControl.WallRunCameraControl.XOffSetControlWallRun();
+
+        //Y軸のoffsetの設定
+        _stateMachine.PlayerController.CameraControl.WallRunCameraControl.SetOffsetY(true);
     }
 
     public override void Update()
@@ -87,7 +93,7 @@ public class StateWallRun : PlayerStateBase
             _stateMachine.PlayerController.WallRun.LastJump(true);
 
             //移行
-            _stateMachine.TransitionTo(_stateMachine.StateJump);
+            _stateMachine.TransitionTo(_stateMachine.StateUpAir);
 
         }    //WallRunへ移行
     }

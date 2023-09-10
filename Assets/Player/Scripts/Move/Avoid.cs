@@ -38,7 +38,7 @@ public class Avoid
 
     public void SetSpeedLimit()
     {
-        _playerControl.VelocityLimit.SetLimit(_speedLimit.x, _speedLimit.y, _speedLimit.z);
+        _playerControl.VelocityLimit.SetLimit(_speedLimit.x, _speedLimit.y,-10, _speedLimit.z);
     }
 
     /// <summary>回避のクールタイムを数える</summary>

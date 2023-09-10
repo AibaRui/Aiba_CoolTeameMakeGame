@@ -36,6 +36,8 @@ public class ControllerVibrationManager : MonoBehaviour
 
     public void DoVibration()
     {
+        if (gamepad == null) return;
+
         if (_nowPower <= _maxPower)
         {
             _nowPower += Time.deltaTime;
@@ -51,6 +53,8 @@ public class ControllerVibrationManager : MonoBehaviour
 
     public void StopVibration()
     {
+        if (gamepad == null) return;
+
         if (gamepad != null)
         {
             _nowPower = _minPower;

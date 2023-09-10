@@ -5,13 +5,23 @@ using UnityEngine;
 [System.Serializable]
 public class PlayerAnimationControl
 {
+    [Header("Swingのアニメーション設定")]
+    [SerializeField] private SwingAnim _swingAnim;
 
+    [Header("Zipのアニメーション設定")]
+    [SerializeField] private ZipAnim _zipAnim;
 
     private PlayerControl _playerControl;
+
+    public ZipAnim ZipAnim => _zipAnim;
+    public SwingAnim SwingAnim => _swingAnim;
+    public PlayerControl PlayerControl => _playerControl;
 
     public void Init(PlayerControl playerControl)
     {
         _playerControl = playerControl;
+        _swingAnim.Init(this);
+        _zipAnim.Init(this);
     }
 
     public void AnimSet()
@@ -26,17 +36,6 @@ public class PlayerAnimationControl
     public void Avoid()
     {
         _playerControl.Anim.Play("AvoidGroundFront");
-    }
-
-    public void FrontZip()
-    {
-
-        _playerControl.Anim.SetTrigger("FrontZip");
-    }
-
-    public void Swing(bool a)
-    {
-        _playerControl.Anim.SetBool("IsSwing", a);
     }
 
     public void WallRunSet(bool isHit)
@@ -57,6 +56,11 @@ public class PlayerAnimationControl
 
     }
 
+    public void SetWallRunHitRight(bool isRight)
+    {
+        _playerControl.Anim.SetBool("IsWallRunRight", isRight);
+    }
+
     public void WallRunStep(bool isStep)
     {
         _playerControl.Anim.SetBool("IsWallRunStep", isStep);
@@ -65,7 +69,7 @@ public class PlayerAnimationControl
 
     public void WallRunZipStart(bool isZipFront)
     {
-        if(isZipFront)
+        if (isZipFront)
         {
             _playerControl.Anim.Play("WallRun_UpZipToFrontUp");
         }

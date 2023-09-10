@@ -104,7 +104,6 @@ public class PlayerMove : IPlayerAction
 
     public void Move(MoveType moveType)
     {
-
         //移動方向の転換速度
         float turnSpeed = 0;
 
@@ -164,9 +163,10 @@ public class PlayerMove : IPlayerAction
 
     public void AirMove()
     {
-        if(_playerControl.Rb.velocity.y< _vibrationSpeed)
+        if (_playerControl.Rb.velocity.y < _vibrationSpeed)
         {
             _playerControl.ControllerVibrationManager.DoVibration();
+            _playerControl.PlayerAudioManager.LoopAudio.PlayWindAudio(true);
         }   //コントローラーの振動
 
         float h = _playerControl.InputManager.HorizontalInput;
@@ -207,7 +207,6 @@ public class PlayerMove : IPlayerAction
         else
         {
             speed = _airMoveSpeed;
-
         }
 
         _playerControl.Rb.AddForce((velo * speed) + Vector3.down * _gravity);

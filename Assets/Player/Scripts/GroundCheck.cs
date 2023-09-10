@@ -19,12 +19,17 @@ public class GroundCheck
     private Vector3 _sizeBoxNearGround;
 
 
-    [Header("Swing中の地面のチェック")]
+    [Header("Swing開始時の地面のチェック")]
     [SerializeField]
     private Vector3 _offsetBoxSwing;
     [SerializeField]
     private Vector3 _sizeBoxSwing;
 
+    [Header("Swing中の地面のチェック")]
+    [SerializeField]
+    private Vector3 _offsetBoxSwingInSwing;
+    [SerializeField]
+    private Vector3 _sizeBoxSwingInSwing;
 
 
 
@@ -117,6 +122,17 @@ public class GroundCheck
         return Physics.CheckBox(new Vector3(posX, posY, posz), _sizeBoxSwing, Quaternion.identity, _targetLayer);
     }
 
+
+    public bool IsHitSwingGroundInSwing()
+    {
+        var posX = _playerControl.PlayerT.position.x + _offsetBoxSwingInSwing.x;
+        var posY = _playerControl.PlayerT.position.y + _offsetBoxSwingInSwing.y;
+        var posz = _playerControl.PlayerT.position.z + _offsetBoxSwingInSwing.z;
+
+        return Physics.CheckBox(new Vector3(posX, posY, posz), _sizeBoxSwingInSwing, Quaternion.identity, _targetLayer);
+    }
+
+
     /// <summary>地面までの距離とワイヤーの長さを比べる</summary>
     /// <param name="wireHitPoint"></param>
     /// <returns></returns>
@@ -148,22 +164,27 @@ public class GroundCheck
             var posXs = origin.position.x + _offsetBoxSwing.x;
             var posYs = origin.position.y + _offsetBoxSwing.y;
             var posZs = origin.position.z + _offsetBoxSwing.z;
-            Gizmos.DrawWireCube(new Vector3(posXs, posYs, posZs), _sizeBoxSwing);
-            
+            Gizmos.DrawWireCube(new Vector3(posXs, posYs, posZs), _sizeBoxSwing/2);
+
+            Gizmos.color = Color.cyan;
+            var posXss = origin.position.x + _offsetBoxSwingInSwing.x;
+            var posYss = origin.position.y + _offsetBoxSwingInSwing.y;
+            var posZss = origin.position.z + _offsetBoxSwingInSwing.z;
+            Gizmos.DrawWireCube(new Vector3(posXss, posYss, posZss), _sizeBoxSwingInSwing / 2);
 
 
             Gizmos.color = Color.green;
             var posXNearGround = origin.position.x + _offsetBoxNearGround.x;
             var posYNearGround = origin.position.y + _offsetBoxNearGround.y;
             var posZNearGround = origin.position.z + _offsetBoxNearGround.z;
-            Gizmos.DrawWireCube(new Vector3(posXNearGround, posYNearGround, posZNearGround), _sizeBoxNearGround);
+            Gizmos.DrawWireCube(new Vector3(posXNearGround, posYNearGround, posZNearGround), _sizeBoxNearGround / 2);
 
 
             Gizmos.color = Color.red;
             var posX = origin.position.x + _offset.x;
             var posY = origin.position.y + _offset.y;
             var posz = origin.position.z + _offset.z;
-            Gizmos.DrawCube(new Vector3(posX, posY, posz), _size);
+            Gizmos.DrawCube(new Vector3(posX, posY, posz), _size / 2);
 
 
             //Gizmos.color = Color.yellow;

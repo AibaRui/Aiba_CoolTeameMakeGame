@@ -8,6 +8,9 @@ public class ZipMove : IPlayerAction
     [Header("FrontZipの回数制限")]
     [SerializeField] private float _frontZipDoMaxCount = 2;
 
+    [Header("FrontZipの実行するまでの時間")]
+    [SerializeField] private float _frontZipWaitTime = 0.4f;
+
     [Header("FrontZipの実行時間")]
     [SerializeField] private float _frontZipTime = 1;
 
@@ -19,7 +22,6 @@ public class ZipMove : IPlayerAction
 
     [Header("1回目、地面に近いときに前方に加速する力")]
     [SerializeField] private float _frontZipSpeedFirstNearGround = 5;
-
 
     [Header("2回目に前方に加速する力")]
     [SerializeField] private float _frontZipSpeedSecond = 2;
@@ -35,9 +37,13 @@ public class ZipMove : IPlayerAction
 
     private float _frontZipTimeCount = 0;
 
+    private float _frontZipWaitTimeCount = 0;
+
     private bool _isEndFrontZip = false;
 
     private int _frontZipDoCount = 0;
+
+    private bool _isZip = false;
 
     private bool _isCanZip = false;
 
@@ -48,10 +54,20 @@ public class ZipMove : IPlayerAction
     Quaternion targetRotation;
 
     /// <summary>前方に加速する</summary>
-    public void FrontZip()
+    public void ZipFirstSetting()
     {
-        _playerControl.VelocityLimit.SetLimit(_limitSpeed.x, _limitSpeed.y, _limitSpeed.z);
+        _playerControl.VelocityLimit.SetLimit(_limitSpeed.x, _limitSpeed.y, -10, _limitSpeed.z);
+        _playerControl.Rb.velocity = Vector3.zero;
 
+        //向きのベクトル設定
+        Vector3 dir = Camera.main.transform.forward;
+        dir.y = 0;
+        targetRotation = Quaternion.Euler(dir);
+    }
+
+    /// <summary>Zip時の速度</summary>
+    public void ZipAddVelocity()
+    {
         //カメラのY軸の角度
         var horizontalRotation = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up);
 
@@ -75,33 +91,49 @@ public class ZipMove : IPlayerAction
             _playerControl.Rb.AddForce(dir * _frontZipSpeedSecond, ForceMode.Impulse);
         }   //2回目移行は遅い
 
-
-
-
-
         if (_frontZipDoCount <= _frontZipDoMaxCount)
         {
             _isCanZip = false;
         }
     }
 
+    /// <summary>Zipの実行時間を計測する</summary>
     public void CountFrotZipTime()
     {
-        _frontZipTimeCount += Time.deltaTime;
-
-        if (_frontZipTimeCount >= _frontZipTime)
+        if (!_isZip)
         {
-            _isEndFrontZip = true;
+            _frontZipWaitTimeCount += Time.deltaTime;
+
+            if (_frontZipWaitTimeCount >= _frontZipWaitTime)
+            {
+                _isZip = true;
+                _playerControl.AnimControl.ZipAnim.SetDoZip(true);
+                _playerControl.PlayerAudioManager.ZipAudio.ZipAudioPlay();
+                _playerControl.PlayerAudioManager.MantAudio.PlayMant();
+                ZipAddVelocity();
+            }
+        }
+        else
+        {
+            _frontZipTimeCount += Time.deltaTime;
+
+            if (_frontZipTimeCount >= _frontZipTime)
+            {
+                _isEndFrontZip = true;
+            }
         }
     }
 
+
+
+    /// <summary>Zip中のプレイヤーの角度設定</summary>
     public void ZipSetPlayerRotation()
     {
         var rotationSpeed = 300 * Time.deltaTime;
 
         if (Mathf.Abs(_playerControl.PlayerT.rotation.y - targetRotation.y) > 0.1f)
         {
-            Quaternion setRotation =  Quaternion.RotateTowards(_playerControl.PlayerT.rotation, targetRotation, rotationSpeed);
+            Quaternion setRotation = Quaternion.RotateTowards(_playerControl.PlayerT.rotation, targetRotation, rotationSpeed);
             setRotation.x = 0;
             setRotation.z = 0;
             _playerControl.PlayerT.rotation = setRotation;
@@ -116,11 +148,17 @@ public class ZipMove : IPlayerAction
         //Zip終了のBoolを次のZipの為にリセット
         _isEndFrontZip = false;
 
+        _isZip = false;
+
+        _frontZipWaitTimeCount = 0;
+
         //Zip実行時間計測用のタイマーをリセット
         _frontZipTimeCount = 0;
 
         //回数を増加
         _frontZipDoCount++;
+
+        _playerControl.AnimControl.ZipAnim.SetDoZip(false);
     }
 
 
@@ -131,24 +169,5 @@ public class ZipMove : IPlayerAction
         _frontZipDoCount = 0;
         //Zipを実行可能にする
         _isCanZip = true;
-    }
-
-
-    public void SetCameraDistance()
-    {
-        targetRotation = Quaternion.LookRotation(Camera.main.transform.forward, Vector3.up);
-
-        float cameraDistance = 0;
-
-        if (_frontZipDoCount == 0)
-        {
-            cameraDistance = _firstCameraDistance;
-        }
-        else
-        {
-            cameraDistance = _otherCameraDistance;
-        }
-
-        _playerControl.CameraControl.ZipMoveCamera(cameraDistance);
     }
 }

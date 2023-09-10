@@ -9,6 +9,9 @@ public class JumpState : PlayerStateBase
     {
         _stateMachine.PlayerController.AnimControl.Jump();
         _stateMachine.PlayerController.Move.Jump();
+
+        //ƒWƒƒƒ“ƒv‰¹
+        _stateMachine.PlayerController.PlayerAudioManager.GroundAudio.JumpAudioPlay();
     }
 
     public override void Exit()
