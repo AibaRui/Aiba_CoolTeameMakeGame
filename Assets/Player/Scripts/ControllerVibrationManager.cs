@@ -22,7 +22,6 @@ public class ControllerVibrationManager : MonoBehaviour
     private void Start()
     {
         gamepad = Gamepad.current;
-
     }
 
 

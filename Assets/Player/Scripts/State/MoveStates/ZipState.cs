@@ -41,7 +41,7 @@ public class ZipState : PlayerStateBase
     public override void FixedUpdate()
     {
         //プレイヤーの角度を変更
-        _stateMachine.PlayerController.ZipMove.ZipSetPlayerRotation();
+        _stateMachine.PlayerController.ZipMove.ZipMove.ZipSetPlayerRotation();
         _stateMachine.PlayerController.ZipLineRenderer.MedalPosition();
     }
 

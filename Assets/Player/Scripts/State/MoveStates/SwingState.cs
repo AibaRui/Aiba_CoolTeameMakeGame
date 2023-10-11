@@ -18,7 +18,7 @@ public class SwingState : PlayerStateBase
         _stateMachine.PlayerController.PlayerAudioManager.SwingAudio.WireFireSounds();
 
         //ロープの描画設定
-        _stateMachine.PlayerController.Swing.FirstSettingDrawLope();
+        _stateMachine.PlayerController.Swing.SwingJointSetting.FirstSettingDrawLope();
 
         //風の音の設定
         _stateMachine.PlayerController.PlayerAudioManager.LoopAudio.PlayWindAudio(true);
@@ -32,10 +32,6 @@ public class SwingState : PlayerStateBase
 
         //Swing終了時のカメラの再設定
         _stateMachine.PlayerController.CameraControl.SwingEndSetCamera();
-
-        //FrontZipを実行可能にする
-        _stateMachine.PlayerController.ZipMove.SetCanZip();
-
 
         if (_stateMachine.PlayerController.PlayerT.eulerAngles.y > 180)
         {
@@ -58,7 +54,7 @@ public class SwingState : PlayerStateBase
 
     public override void LateUpdate()
     {
-        _stateMachine.PlayerController.Swing.DrowWire();
+        _stateMachine.PlayerController.Swing.SwingJointSetting.DrowWire();
 
 
         //カメラの回転速度を計算する
@@ -84,11 +80,14 @@ public class SwingState : PlayerStateBase
         _stateMachine.PlayerController.CoolTimes();
 
         //ワイヤーを描画するまでの時間を計測
-        _stateMachine.PlayerController.Swing.CountDrowWireTime();
+        _stateMachine.PlayerController.Swing.SwingJointSetting.CountDrowWireTime();
 
         //壁が当たったら、WallRun状態に
         if (_stateMachine.PlayerController.WallRunCheck.CheckWalAlll())
         {
+            //FrontZipを実行可能にする
+            _stateMachine.PlayerController.ZipMove.SetCanZip();
+
             if (_stateMachine.PlayerController.InputManager.HorizontalInput != 0 || _stateMachine.PlayerController.InputManager.VerticalInput != 0)
             {
 
@@ -121,6 +120,9 @@ public class SwingState : PlayerStateBase
         //アンカーの着地点より高く上がったら
         if (_stateMachine.PlayerController.Swing.CheckLine())
         {
+            //FrontZipを実行可能にする
+            _stateMachine.PlayerController.ZipMove.SetCanZip();
+
             //アニメーション設定(Swing終了ジャンプのタイプ分け)
             _stateMachine.PlayerController.AnimControl.SwingAnim.SetSwingEndType(1);
 
@@ -137,7 +139,6 @@ public class SwingState : PlayerStateBase
 
             //ジャンプして終わる
             _stateMachine.PlayerController.Swing.StopSwing(true);
-
 
             //ジャンプして終わる
             _stateMachine.PlayerController.Move.IsUseSpeedDash();
@@ -157,6 +158,8 @@ public class SwingState : PlayerStateBase
 
             return;
         }
+
+
 
         //Swingのボタンを離したら
         if (_stateMachine.PlayerController.InputManager.IsSwing < 0.6f)
@@ -195,8 +198,11 @@ public class SwingState : PlayerStateBase
         }
 
         //Swing中にジャンプ押したら
-        if (_stateMachine.PlayerController.InputManager.IsJumping)
+        if (_stateMachine.PlayerController.InputManager.IsJumping && _stateMachine.PlayerController.Swing.IsDown)
         {
+            //FrontZipを実行可能にする
+            _stateMachine.PlayerController.ZipMove.SetCanZip();
+
             //アニメーション設定(Swing終了ジャンプのタイプ分け)
             _stateMachine.PlayerController.AnimControl.SwingAnim.SetSwingEndType(2);
             _stateMachine.PlayerController.AnimControl.SwingAnim.SetJumpEndType();
@@ -214,9 +220,6 @@ public class SwingState : PlayerStateBase
             //ジャンプして終わる
             _stateMachine.PlayerController.Swing.StopSwing(true);
 
-            //スピードの加減速
-            // _stateMachine.PlayerController.Move.IsUseSpeedDash();
-
             //空中で前方に加速する、ということを伝える
             _stateMachine.PlayerController.VelocityLimit.DoSpeedUp();
 
@@ -231,5 +234,41 @@ public class SwingState : PlayerStateBase
             else _stateMachine.TransitionTo(_stateMachine.StateDownAir);
         }
 
+        //Swing中にジャンプ押したら
+        if (_stateMachine.PlayerController.InputManager.IsJumping && !_stateMachine.PlayerController.Swing.IsDown)
+        {
+            //FrontZipを実行可能にする
+            _stateMachine.PlayerController.ZipMove.SetCanZip();
+
+            //アニメーション設定(Swing終了ジャンプのタイプ分け)
+            _stateMachine.PlayerController.AnimControl.SwingAnim.SetSwingEndType(2);
+            _stateMachine.PlayerController.AnimControl.SwingAnim.SetJumpEndType();
+
+            //ジャンプ音
+            _stateMachine.PlayerController.PlayerAudioManager.SwingAudio.FrontJumpSounds();
+            //マントの音
+            _stateMachine.PlayerController.PlayerAudioManager.MantAudio.PlayMant();
+
+            //_stateMachine.PlayerController.CameraControl.SwingEndTranspectorUp();
+
+            //ジャンプ処理
+            _stateMachine.PlayerController.Swing.LastJump();
+
+            //ジャンプして終わる
+            _stateMachine.PlayerController.Swing.StopSwing(true);
+
+            //空中で前方に加速する、ということを伝える
+            _stateMachine.PlayerController.VelocityLimit.DoSpeedUp();
+
+            //カメラの追従を始める
+            _stateMachine.PlayerController.CameraControl.SwingCameraControl.EndFollow();
+
+            //上昇して終了
+            _stateMachine.PlayerController.CameraControl.SwingCameraControl.SetUpEndOffSet(false, true, _stateMachine.PlayerController.Rb.velocity.y);
+
+            //推移。(Y速度によって水位先を変える)
+            if (_stateMachine.PlayerController.Rb.velocity.y > 0) _stateMachine.TransitionTo(_stateMachine.StateUpAir);
+            else _stateMachine.TransitionTo(_stateMachine.StateDownAir);
+        }
     }
 }

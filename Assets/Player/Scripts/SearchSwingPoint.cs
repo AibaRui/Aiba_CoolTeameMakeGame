@@ -15,8 +15,6 @@ public class SearchSwingPoint : IPlayerAction
 
     [SerializeField] private List<SwingDirPos> _boxPos = new List<SwingDirPos>();
 
-
-
     [Header("自身の左側にワイヤーを飛ばす位置")]
     [SerializeField] private List<SwingDirPos> _swingPosLeft = new List<SwingDirPos>();
 
@@ -32,6 +30,10 @@ public class SearchSwingPoint : IPlayerAction
     [SerializeField] private Transform _Cpos;
 
     [SerializeField] private LayerMask _layer;
+
+
+    public float MaxWireLong => _maxWireLong;
+    public float MinWireLong => _minWireLong;
 
     /// <summary>Swingが出来るかどうか</summary>
     private bool _isCanHit;

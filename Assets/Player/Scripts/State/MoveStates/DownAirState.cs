@@ -19,6 +19,7 @@ public class DownAirState : PlayerStateBase
         //コントローラーの振動
         _stateMachine.PlayerController.ControllerVibrationManager.StopVibration();
         _stateMachine.PlayerController.Move.ReSetTime();
+        _stateMachine.PlayerController.CameraControl.EndSwingCamera();
     }
 
     public override void FixedUpdate()

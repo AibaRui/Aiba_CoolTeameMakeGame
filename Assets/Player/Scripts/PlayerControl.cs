@@ -25,12 +25,15 @@ public class PlayerControl : MonoBehaviour
 
     [SerializeField] private PlayerAnimationControl _animControl;
     [SerializeField] private GroundCheck _groundCheck;
-    [SerializeField] private Swing _swing;
+
     [SerializeField] private VelocityLimit _velocityLimit;
+    [Header("=======Swing_========")]
+    [SerializeField] private Swing _swing;
+    [Header("=======Swing_Point’T‚µ========")]
     [SerializeField] private SearchSwingPoint _searchSwingPoint;
-    [Header("=======Zip‚Ì“®‚«‚Ìİ’è========")]
-    [SerializeField] private ZipMove _zipMove;
-    [Header("=======Zip‚ÌLine‚Ì“®‚«========")]
+    [Header("=======Zip_“®‚«‚Ìİ’è========")]
+    [SerializeField] private Zip _zipMove;
+    [Header("=======Zip_LineRender========")]
     [SerializeField] private ZipLineRenderer _zipLineRenderer;
     [SerializeField] private WallRun _wallRun;
     [SerializeField] private WallRunStepCheck _wallRunStep;
@@ -71,7 +74,7 @@ public class PlayerControl : MonoBehaviour
     public LineRenderer LineRenderer => _lineRenderer;
     public VelocityLimit VelocityLimit { get => _velocityLimit; set => _velocityLimit = value; }
     public SearchSwingPoint SearchSwingPoint => _searchSwingPoint;
-    public ZipMove ZipMove => _zipMove;
+    public Zip ZipMove => _zipMove;
     public WallRun WallRun => _wallRun;
     public Grapple Grapple => _grapple;
     public Attack Attack => _attack;

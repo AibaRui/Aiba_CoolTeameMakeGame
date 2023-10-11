@@ -74,6 +74,9 @@ public class CameraControl : MonoBehaviour
 
     public CinemachineVirtualCamera WallRunCameraController => _wallRunControllerCamera;
 
+    public CinemachinePOV _groundCameraPOV;
+
+    public CinemachinePOV GroundCameraPOV => _groundCameraPOV;
 
     private bool _isUpEnd = false;
 
@@ -98,6 +101,8 @@ public class CameraControl : MonoBehaviour
     /// <summary>一定時間カメラ操作をコントローラーでしていないかどうか</summary>
     public bool IsDontCameraMove => _isDontCameraMove;
 
+
+
     public CinemachineVirtualCamera SwingCamera => _swingControllerCamera;
     public CinemachinePOV SwingCinemachinePOV => _swingCinemachinePOV;
     public CinemachineFramingTransposer SwingCameraFraming { get => _swingCameraFraming; set => _swingCameraFraming = value; }
@@ -111,6 +116,7 @@ public class CameraControl : MonoBehaviour
         UpdateCameraSettings();
         _swingCinemachinePOV = _swingControllerCamera.GetCinemachineComponent<CinemachinePOV>();
         _swingCameraFraming = _swingControllerCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
+        _groundCameraPOV = controllerCamera.GetCinemachineComponent<CinemachinePOV>();
         _swingCameraControl.Init(this);
         _wallRunCamera.Init(this);
         _zipCameraControl.Init(this);
@@ -287,6 +293,11 @@ public class CameraControl : MonoBehaviour
 
         ////Swing時のカメラのOffsetを戻す
         //_swingCameraFraming.m_TrackedObjectOffset.y = _firstOffSet;
+    }
+
+    public void EndSwingCamera()
+    {
+        _groundCameraPOV.m_HorizontalAxis.Value = _swingCinemachinePOV.m_HorizontalAxis.Value;
     }
 
     public void UseSwingCamera()

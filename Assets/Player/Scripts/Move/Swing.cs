@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class Swing : IPlayerAction
+public class Swing
 {
     [Header("速度制限")]
     [SerializeField] private Vector3 _limitSpeed;
@@ -16,7 +16,11 @@ public class Swing : IPlayerAction
     [Header("早い速度降下した、とする速度Y")]
     [SerializeField] private float _highSpeedFallspeedY;
 
-    public float HighSpeedFallspeedY => _highSpeedFallspeedY;
+
+    [Header("=====ワイヤーの設定=====")]
+    [SerializeField] private SwingJoint _swingJoint;
+
+
 
     [Header("[=====加速度_設定=====]")]
     [Header("入力無しの時に前に加える力")]
@@ -27,49 +31,30 @@ public class Swing : IPlayerAction
     [SerializeField] private float _addUpPowerEndIsDown = 30;
     [Header("降下が終わった後の前方に加える力")]
     [SerializeField] private float _addFrontPowerEndIsDown = 20;
-
     [Header("地面近くでSwingを始めた時に、上に加える力")]
     [SerializeField] private float _addUpPowerNearGround = 5;
-
     [Header("地面近くでSwingを始めた時に、前に加える力")]
     [SerializeField] private float _addFrontPowerNearGround = 5;
-
     [Header("降下して地面近くでSwingを始めた時に、上に加える力")]
     [SerializeField] private float _addUpPowerNearGroundHighFall = 5;
-
     [Header("降下して地面近くでSwingを始めた時に、前に加える力")]
     [SerializeField] private float _addFrontPowerNearGroundHighFall = 60;
 
 
     [Header("[======最後のジャンプ設定======]")]
-    [Header("離した時のジャンプ力")]
+    [Header("離した時のジャンプ力_前")]
     [SerializeField] private float _addJumpPower = 4.5f;
+    [Header("離した時のジャンプ力_上")]
+    [SerializeField] private float _addJumpPowerUp = 4.5f;
+
     [Header("ジャンプボタンを押したとき_前方の力")]
     [SerializeField] private float _addJumpFrontPower = 5f;
     [Header("ジャンプボタンを押したとき_上方向の力")]
     [SerializeField] private float _addJumpFrontUpPower = 7f;
     [Header("最大限まで登った時")]
     [SerializeField] private float _addJumpUpPower = 30f;
-
     [Header("降下して地面近くでSwingを始めた時に、最後のジャンプで上に加える力")]
     [SerializeField] private float _addJumpUpPowerNearGroundHighFall = 20;
-
-    [Header("[======Jointの設定======]")]
-    [Header("Test用、固定")]
-    [SerializeField] private Vector3 _swingHitPos = default;
-    [Header("バネの強さ")]
-    [SerializeField] private float _springPower = 4.5f;
-    [Header("ダンパ-の強さ")]
-    [SerializeField] private float _damperPower = 7;
-    [Header("ダンパ-の強さ")]
-    [SerializeField] private float _massScale = 4.5f;
-
-
-    [Header("[=====ワイヤーの描画設定=====]")]
-    [Header("ワイヤーを描画するまでの時間")]
-    [SerializeField] private float _dorwWireTime = 0.4f;
-    [Header("ワイヤーの描画速度")]
-    [SerializeField] private float _drowWireSpeed = 100;
 
     /// <summary>Swingの降下をし終えたかどうか</summary>
     private bool _isDown = false;
@@ -77,34 +62,17 @@ public class Swing : IPlayerAction
     private bool _isFirstNearGround = false;
     /// <summary>高速で落下して、地面に近いところでSwingをしたかどうか </summary>
     private bool _isFirstNearGroundOnHighSpeed = false;
-    /// <summary>ワイヤーを描画するかどうか</summary>
-    private bool _isDrowWire;
     /// <summary>Swingを使用しるまでのクールタイムを計測 </summary>
     private float _countCoolTime = 0;
-    /// <summary>ワイヤーを描画するまでの時間を計算する</summary>
-    private float _countDrowWireTime = 0;
 
-
-    private float _setWireLongPercent;
 
     private float _countDownTime = 0;
 
+    private float _distanceFromPoint;
 
+    private Vector3 velo;
 
-    private float _addUpTimeCount = 0;
-
-
-
-
-    float distanceFromPoint;
-    Vector3 velo;
-    Quaternion _targetRotation;
-    private bool _isAddEnd = false;
-
-    private bool _isSetEndMaxDis = false;
-
-
-    private Vector3 _loapPoint;
+    private Quaternion _targetRotation;
 
     private bool _isSamLine = false;
 
@@ -114,17 +82,24 @@ public class Swing : IPlayerAction
 
     private bool _isSwingNow = false;
 
-    private float _wireLong;
-
-
+    public bool IsDown => _isDown;
     public bool IsSamLime => _isSamLine;
     public bool IsSwingNow => _isSwingNow;
     public bool IsCanSwing => _isCanSwing;
     public bool IsFirstNearGround => _isFirstNearGround;
     public bool IsFirstNearGroundHighFall => _isFirstNearGroundOnHighSpeed;
+    public SwingJoint SwingJointSetting => _swingJoint;
+    public float HighSpeedFallspeedY => _highSpeedFallspeedY;
 
+    private PlayerControl _playerControl = null;
 
-
+    /// <summary>StateMacineをセットする関数</summary>
+    /// <param name="stateMachine"></param>
+    public void Init(PlayerControl playerControl)
+    {
+        _playerControl = playerControl;
+        _swingJoint.Init(this, playerControl);
+    }
 
     /// <summary>Swingの速度制限</summary>
     public void SetSpeedSwing()
@@ -168,101 +143,32 @@ public class Swing : IPlayerAction
 
         //重力を無くす
         _playerControl.Rb.useGravity = false;
-        _isAddEnd = false;
 
-        _addUpTimeCount += Time.deltaTime;
         _isSamLine = false;
-        //swing/grappleの設定クラスに自身のjointを渡す
-        _playerControl.Joint = _playerControl.gameObject.AddComponent<SpringJoint>();
-        // _playerController.PlayerSwingAndGrappleSetting.Joint = _joint;
 
-        //アンカーの着地点。
-        // var r = Camera.main.transform.TransformDirection(_swingHitPos);
-        // swingPoint = r + _playerControl.PlayerT.position;
+
+        float y = _playerControl.SearchSwingPoint.RealSwingPoint.y - _playerControl.PlayerT.position.y;
+
+        if (y < _playerControl.SearchSwingPoint.MinWireLong)
+        {
+            _playerControl.SearchSwingPoint.RealSwingPoint = new Vector3(_playerControl.SearchSwingPoint.RealSwingPoint.x, _playerControl.PlayerT.transform.position.y + _playerControl.SearchSwingPoint.MinWireLong, _playerControl.SearchSwingPoint.RealSwingPoint.y);
+        }
+
 
         swingPoint = _playerControl.SearchSwingPoint.RealSwingPoint;
 
-        // _loapPoint = _playerControl.SearchSwingPoint.RealSwingPoint;
-        _loapPoint = _playerControl.SearchSwingPoint.SwingPos;
 
-        //Anchor(jointをつけているオブジェクトのローカル座標  ////例)自分についてる命綱の位置)
-        //connectedAnchor(アンカーのついてる点のワールド座標　////例)アンカーの先。バンジージャンプの橋の、支えているところ)
 
-        //autoConfigureConnectedAnchorはジョイントをつけた時はOnになっており、AnchorとconnectedAnchor(アンカーの接地点)が同じ
-        //つまり自分の居る位置にアンカーを刺してそこでぶら下がっている状態。なのでオフにする
 
-        _playerControl.Joint.autoConfigureConnectedAnchor = false;
-        _playerControl.Joint.connectedAnchor = swingPoint;
+        Vector3 loapPoint = _playerControl.SearchSwingPoint.SwingPos;
 
         //自分とアンカーの位置の間(ジョイント)の長さ。
-        distanceFromPoint = Vector3.Distance(_playerControl.transform.position, swingPoint);
+        _distanceFromPoint = Vector3.Distance(_playerControl.transform.position, swingPoint);
 
-        float anckerToPlayer = Vector3.Distance(_playerControl.transform.position, swingPoint);
-        float anckerToGround = swingPoint.y - _playerControl.GroundCheck.IsSwingPlayerToGroundOfLong();
-
-        _playerControl.Joint.maxDistance = distanceFromPoint * 1f;
-        _playerControl.Joint.minDistance = distanceFromPoint * 0.6f;
-
-        _wireLong = distanceFromPoint;
-
-        //ばねの強さ(のび縮みのしやすさ)
-        _playerControl.Joint.spring = _springPower;
-
-        //(springの減る量)バネがビヨーンと伸びるのを繰り返してから動かなくなるまでの時間。値が多いほど短くなる
-        _playerControl.Joint.damper = _damperPower;
-
-        //質量
-        _playerControl.Joint.massScale = _massScale;
-
-        //_tipPos = _playerController.PlayerSwingAndGrappleSetting.PredictionHit.point;
-        //current(意味:現在)
-        //currentGrapplePosition = gunTip.position;
+        //Jointの設定をする
+        _swingJoint.SetStarSwingtJoint(swingPoint, _distanceFromPoint, loapPoint);
     }
 
-    /// <summary>ワイヤーを描画するまでの時間を計算する</summary>
-    public void CountDrowWireTime()
-    {
-        if (_isDrowWire) return;
-
-        _countDrowWireTime += Time.deltaTime;
-
-        if (_countDrowWireTime > _dorwWireTime)
-        {
-            _isDrowWire = true;
-        }
-    }
-
-    /// <summary>ワイヤーを描画する</summary>
-    public void DrowWire()
-    {
-        if (_playerControl.Joint == null || !_isDrowWire)
-        {
-            return;
-        }
-
-        _setWireLongPercent += _drowWireSpeed * Time.deltaTime;
-        if (_setWireLongPercent > 1)
-        {
-            _setWireLongPercent = 1;
-        }
-
-        float step = Vector3.Distance(_playerControl.Hads.position, _loapPoint) * _setWireLongPercent;
-        Vector3 setPoint = Vector3.MoveTowards(_playerControl.Hads.position, _loapPoint, step);
-
-        _playerControl.LineRenderer.SetPosition(0, _playerControl.Hads.position);
-        _playerControl.LineRenderer.SetPosition(1, setPoint);
-    }
-
-    /// <summary>ワイヤーを描画する前の初期設定</summary>
-    public void FirstSettingDrawLope()
-    {
-        if (_playerControl.Joint == null) return;
-
-        _setWireLongPercent = 0;
-        _playerControl.LineRenderer.positionCount = 2;
-        _playerControl.LineRenderer.SetPosition(0, _playerControl.Hads.position);
-        _playerControl.LineRenderer.SetPosition(1, _playerControl.Hads.position);
-    }
 
     /// <summary>スウィング中止</summary>
     public void StopSwing(bool isJump)
@@ -270,14 +176,9 @@ public class Swing : IPlayerAction
         //コントローラーの振動を止める
         _playerControl.ControllerVibrationManager.StopVibration();
 
-        //LineRendrerを消す
-        _playerControl.LineRenderer.positionCount = 0;
+        //Joint、ワイヤー描写の停止
+        _swingJoint.StopJoint();
 
-        _countDrowWireTime = 0;
-        _isDrowWire = false;
-
-        //Jointを消す
-        _playerControl.DestroyJoint();
         //Swing不可
         _isCanSwing = false;
 
@@ -290,7 +191,6 @@ public class Swing : IPlayerAction
 
         _countDownTime = 0;
         _isDown = false;
-        _isSetEndMaxDis = false;
     }
 
     public void SwingRotation()
@@ -349,8 +249,7 @@ public class Swing : IPlayerAction
                     _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, 0, _playerControl.Rb.velocity.z);
                 }
 
-                _playerControl.Joint.maxDistance = distanceFromPoint * 1f;
-                _playerControl.Joint.minDistance = distanceFromPoint * 1f;
+                _swingJoint.SetJointDistance(_distanceFromPoint, _distanceFromPoint);
 
                 _isDown = true;
             }
@@ -396,8 +295,7 @@ public class Swing : IPlayerAction
             if (_downTime < _countDownTime)
             {
                 _isDown = true;
-                _playerControl.Joint.maxDistance = distanceFromPoint * 1f;
-                _playerControl.Joint.minDistance = distanceFromPoint * 1f;
+                _swingJoint.SetJointDistance(_distanceFromPoint, _distanceFromPoint);
             }
         }   //Swingの降下が終わっていない
 
@@ -438,17 +336,7 @@ public class Swing : IPlayerAction
 
     public void LastJump()
     {
-        //  Debug.Log("ラスト:普通にジャンプ");
-        float h = _playerControl.InputManager.HorizontalInput;
-        float v = _playerControl.InputManager.VerticalInput;
-
-        var horizontalRotation = Quaternion.AngleAxis(Camera.main.transform.eulerAngles.y, Vector3.up);
-
-        velo = horizontalRotation * new Vector3(h, 30, v).normalized;
-
-        _playerControl.Rb.AddForce(velo * _addJumpPower, ForceMode.Impulse);
-
-        _playerControl.Rb.useGravity = true;
+        _playerControl.Rb.AddForce((_playerControl.PlayerT.forward.normalized * _addJumpPower) + (Vector3.up * _addJumpPowerUp), ForceMode.Impulse);
     }
 
     public void LastJumpFront()
@@ -459,7 +347,6 @@ public class Swing : IPlayerAction
         {
             power += _addJumpUpPowerNearGroundHighFall;
         }
-
 
         _playerControl.Rb.AddForce((_playerControl.PlayerT.forward.normalized * _addJumpFrontPower) + (Vector3.up * power), ForceMode.Impulse);
     }

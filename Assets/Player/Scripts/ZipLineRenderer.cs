@@ -17,6 +17,8 @@ public class ZipLineRenderer
     [Header("メダルを飛ばす速度")]
     [SerializeField] private float _speed = 20;
 
+    [Header("ワイヤーの最大距離")]
+    [SerializeField] private float _wireDistanceMax = 70;
 
 
     /// <summary>目標地点</summary>
@@ -51,7 +53,7 @@ public class ZipLineRenderer
         //位置を設定
         Vector3 dir = Camera.main.transform.forward;
         dir.y = 0;
-        _targetPos = _playerControl.PlayerT.position + (dir * 50);
+        _targetPos = _playerControl.PlayerT.position + (dir * _wireDistanceMax);
     }
 
     public void MedalPosition()

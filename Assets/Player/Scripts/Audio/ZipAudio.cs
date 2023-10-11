@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class ZipAudio 
+public class ZipAudio
 {
 
-    [Header("Zip‚µ‚½Žž‚Ì‰¹")]
-    [SerializeField] private AudioClip _zipAudio;
+    [Header("Zip‚ÌƒRƒCƒ“‚ðŒ‚‚Á‚½Žž‚Ì‰¹")]
+    [SerializeField] private List<AudioClip> _zipAudioFire = new List<AudioClip>();
+
+    [Header("•—‚Ì‰¹")]
+    [SerializeField] private List<AudioClip> _zipAudio = new List<AudioClip>();
 
     private PlayerAudioManager _playerAudioManager;
 
@@ -16,10 +19,24 @@ public class ZipAudio
         _playerAudioManager = playerAudioManager;
     }
 
+    public void ZipCoinFire()
+    {
+        if (_zipAudioFire == null) return;
+
+        foreach (var clip in _zipAudioFire)
+        {
+            _playerAudioManager.PlayDeplicateAudio(clip);
+        }
+    }
+
     public void ZipAudioPlay()
     {
         if (_zipAudio == null) return;
-        _playerAudioManager.PlayDeplicateAudio(_zipAudio);
+
+        foreach (var clip in _zipAudio)
+        {
+            _playerAudioManager.PlayDeplicateAudio(clip);
+        }
     }
 
 }
