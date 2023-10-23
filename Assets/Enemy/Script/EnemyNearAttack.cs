@@ -37,12 +37,12 @@ public class EnemyNearAttack : MonoBehaviour
     {
         if(_isCanAttack)
         {
-            float distance = Vector3.Distance(_player.transform.position, _enemyControl.EnemyBody.transform.position);
+            int r = Random.Range(0, 3);
 
-            if (distance < 20)
-            {
-                _enemyControl.EnemyAnimator.Play("Attack");
-            }
+            _enemyControl.EnemyAnimator.SetInteger("AttackKind", r);
+
+            _enemyControl.EnemyAnimator.SetBool("IsAttack", true);
+            _isCanAttack = false;
         }
     }
 

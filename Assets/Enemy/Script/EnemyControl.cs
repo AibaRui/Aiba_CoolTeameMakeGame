@@ -19,6 +19,11 @@ public class EnemyControl : MonoBehaviour
 
     [SerializeField] private EnemyNearAttack _attack;
     [SerializeField] private EnemyLongAttack _longAttack;
+
+    private bool _isDamage;
+
+    public bool IsDamage { get => _isDamage; set => _isDamage = value; }
+
     private bool _isDead;
 
     public bool IsDead => _isDead;
@@ -36,9 +41,13 @@ public class EnemyControl : MonoBehaviour
     {
         if (!_isDead)
         {
-            _move.Move();
-            _attack.Attack();
-            _longAttack.Attack();
+            // _move.Move();
+            if (!_isDamage)
+            {
+                _attack.Attack();
+            }
+
+            // _longAttack.Attack();
         }
     }
 
@@ -47,4 +56,18 @@ public class EnemyControl : MonoBehaviour
         _isDead = true;
         _anim.Play("Dead");
     }
+
+    public void EndDamage()
+    {
+        _anim.SetBool("IsDamage", false);
+        _anim.SetBool("IsAttack", false);
+
+        _isDamage = false;
+    }
+
+    public void EndAttack()
+    {
+        _anim.SetBool("IsAttack", false);
+    }
+
 }

@@ -14,7 +14,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 1950
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
@@ -47,13 +47,13 @@ Material:
     - _CGSmoothstepEdge2: 0.05
     - _CLengthScale: 1
     - _CLerp: 0.13
-    - _CSmoothstepEdge1: 0.5
-    - _CSmoothstepEdge2: 1.5
+    - _CSmoothstepEdge1: 0.54
+    - _CSmoothstepEdge2: 2.03
     - _CTimeScale: 7
     - _GGradientScale: 5
     - _GGradientTime: 0.22
     - _QueueControl: 0
-    - _QueueOffset: 0
+    - _QueueOffset: -50
     m_Colors: []
   m_BuildTextureStacks: []
 --- !u!114 &6416445973737355553

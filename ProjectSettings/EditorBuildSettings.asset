@@ -6,6 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/NewBoss.unity
+    guid: e56ec24bd202396429fd710c70654f4d
+  - enabled: 1
+    path: Assets/Scenes/Game.unity
+    guid: a1ef5241737720c4db56108d55aabe39
+  - enabled: 1
+    path: Assets/Scenes/BossMap.unity
+    guid: 5f935d0fb6c6091428643f3a7815c545
+  - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   m_configObjects: {}
