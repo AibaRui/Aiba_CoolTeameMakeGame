@@ -1,4 +1,4 @@
-CBUFFER_START(UnityPerDraw)
+CBUFFER_START(UnityPerMaterial)
 
 float4    _MainColor;
 float4    _MainTex_ST;
