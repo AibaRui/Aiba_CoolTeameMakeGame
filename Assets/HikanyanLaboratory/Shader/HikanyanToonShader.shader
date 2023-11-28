@@ -38,9 +38,9 @@ Shader "Hikanyan/HikanyanToonShader"
         _EmissionTex ("Emission Texture", 2D) = "white" {}
         [HDR] _EmissionColor ("Emission Color", Color) = (1,1,1,1)
         _EmissionStrength ("Emission Strength", Float) = 1
-        
-        
-         StencilRef ("StencilRef", Int) = 0
+
+
+        StencilRef ("StencilRef", Int) = 0
         [Enum(UnityEngine.Rendering.CompareFunction)]
         StencilComp ("StencilComp", Int) = 0
         [Enum(UnityEngine.Rendering.StencilOp)]

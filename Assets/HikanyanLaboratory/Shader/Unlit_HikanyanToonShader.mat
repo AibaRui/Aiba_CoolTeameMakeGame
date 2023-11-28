@@ -26,7 +26,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 6962418d9eb0b8f43856c28d682f35e3, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MatCap:
@@ -35,9 +35,20 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - Culling: 0
+    - StencilComp: 0
+    - StencilFail: 0
+    - StencilPass: 0
+    - StencilReadMask: 0
+    - StencilRef: 0
+    - StencilWriteMask: 0
+    - StencilZFail: 0
     - _EmissionStrength: 1
+    - _LambertThresh: 0.59
     - _OutlineWidth: 1
     - _RimPower: 1
+    - _ZTest: 2
+    - _ZWrite: 1
     m_Colors:
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
     - _MainColor: {r: 1, g: 1, b: 1, a: 1}
