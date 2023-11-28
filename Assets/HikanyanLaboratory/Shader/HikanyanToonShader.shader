@@ -4,7 +4,7 @@ Playerと背景のShader
 ToonShaderをBaseにして作成
 
 影の範囲
-
+_UseShadow
 マットキャップ
 部分的に光沢をつけることができるテクスチャ
 リムライト
@@ -23,23 +23,45 @@ Shader "Hikanyan/HikanyanToonShader"
 {
     Properties
     {
+        //----------------------------------------------------------------------------------------------------------------------
+        // Main
+        [Main]
         _MainTex ("Texture", 2D) = "white" {}
+        [MainColor]
         _MainColor ("Color", Color) = (1,1,1,1)
-
+        //----------------------------------------------------------------------------------------------------------------------
+        // Shadow
+        [Shadow]
+        [Toggle]_UseShadow ("Use Shadow", Float) = 0
+        _ShadowColor ("Shadow Color", Color) = (0,0,0,1)
+        _ShadowPower ("Shadow Power", Range(0.0, 1.0)) = 0.5
+        //----------------------------------------------------------------------------------------------------------------------
+        // Lambert
+        [Lambert]
+        [Toggle]_UseLambert ("Use Lambert", Float) = 0
         _LambertThresh("LambertThresh", Range(0.0, 1.0)) = 0.5
-
+        //----------------------------------------------------------------------------------------------------------------------
+        // Outline
+        [Outline]
+        [Toggle]_UseOutline ("Use Outline", Float) = 0
         _OutlineColor ("Outline Color", Color) = (0,0,0,1)
         _OutlineWidth ("Outline Width", Float) = 1.0
-
+        //----------------------------------------------------------------------------------------------------------------------
+        // MatCap
+        [MatCap]
+        [Toggle]_Use_MatCap ("Use MatCap", Float) = 0
         _MatCap ("MatCap Texture", 2D) = "white" {}
         _RimColor ("Rim Light Color", Color) = (1,1,1,1)
         _RimPower ("Rim Power", Float) = 1
-
+        //----------------------------------------------------------------------------------------------------------------------
+        // Emission
+        [Emission]
+        [Toggle]_Use_Emission ("Use Emission", Float) = 0
         _EmissionTex ("Emission Texture", 2D) = "white" {}
         [HDR] _EmissionColor ("Emission Color", Color) = (1,1,1,1)
         _EmissionStrength ("Emission Strength", Float) = 1
-
-
+        //----------------------------------------------------------------------------------------------------------------------
+        // Stencil
         StencilRef ("StencilRef", Int) = 0
         [Enum(UnityEngine.Rendering.CompareFunction)]
         StencilComp ("StencilComp", Int) = 0
@@ -58,6 +80,7 @@ Shader "Hikanyan/HikanyanToonShader"
         [Enum(Off, 0, On, 1)]
         _ZWrite ("ZWrite", Float) = 1
     }
+
     SubShader
     {
         Tags
@@ -103,12 +126,11 @@ Shader "Hikanyan/HikanyanToonShader"
             #pragma fragment FragmentMain
             #pragma multi_compile_fog
 
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
-            #include "operator.hlsl"
-            #include "core.hlsl"
-            #include "vert.hlsl"
-            #include "frag.hlsl"
+            #include "Includes/UniversalRenderPipeline.hlsl"
+            #include "Includes/core.hlsl"
+            #include "Includes/vert.hlsl"
+            #include "Includes/frag.hlsl"
+            #include "Includes/operator.hlsl"
             ENDHLSL
         }
     }

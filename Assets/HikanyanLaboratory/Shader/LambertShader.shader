@@ -50,8 +50,8 @@ Shader "Hikanyan/CharacterToonLambert"
             float4 _MainTex_ST;
             float _LambertThresh;
             
-            #include "vert.hlsl"
-            #include "frag.hlsl"
+            #include "Includes/vert.hlsl"
+            #include "Includes/frag.hlsl"
             ENDHLSL
         }
     }
