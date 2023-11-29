@@ -1,3 +1,64 @@
+float Dot2(float2 v)
+{
+    return dot(v, v);
+}
+
+float2 Mod(float2 x, float2 y)
+{
+    return x - y * floor(x / y);
+}
+//OneMinusの計算を行う.
+float OneMinus(float x)
+{
+    return 1.0f - x;
+}
+// Addの計算を行う.
+float Add(float x, float y)
+{
+    return x + y;
+}
+// Subtractの計算を行う.
+float Subtract(float x, float y)
+{
+    return x - y;
+}
+// Multiplyの計算を行う.
+float Multiply(float x, float y)
+{
+    return x * y;
+}
+// Divideの計算を行う.
+float Divide(float x, float y)
+{
+    return x / y;
+}
+// Smoothstepの計算を行う.
+float Smoothstep(float edge0, float edge1, float x)
+{
+    float t = saturate((x - edge0) / (edge1 - edge0));
+    return t * t * (3.0f - 2.0f * t);
+}
+// Lerpの計算を行う.
+float Lerp(float x, float y, float a)
+{
+    return x + (y - x) * a;
+}
+//Absoluteの計算を行う.
+float Absolute(float x)
+{
+    return abs(x);
+}
+//Posterizeの計算を行う.
+float Posterize(float x, float levels)
+{
+    return floor(x * levels) / levels;
+}
+//ホログラムの計算を行う.
+float Hologram(float x, float y, float z, float w)
+{
+    return x * y * z * w;
+}
+
 
 // Baseの計算を行う.
 float4 BaseMain(Vertex2Fragment i): SV_Target
