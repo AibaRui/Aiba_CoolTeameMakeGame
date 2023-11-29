@@ -29,6 +29,12 @@ Shader "Hikanyan/HikanyanToonShader"
         _MainTex ("Texture", 2D) = "white" {}
         [MainColor]
         _MainColor ("Color", Color) = (1,1,1,1)
+        
+        //----------------------------------------------------------------------------------------------------------------------
+        //Quantization
+        [Toggle]_UseColorQuantization ("Use Color Quantization", Float) = 0
+        _QuantizationLevels ("Quantization Levels", Range(1, 16)) = 8
+
         //----------------------------------------------------------------------------------------------------------------------
         // Shadow
         [Shadow]
@@ -40,6 +46,13 @@ Shader "Hikanyan/HikanyanToonShader"
         [Lambert]
         [Toggle]_UseLambert ("Use Lambert", Float) = 0
         _LambertThresh("LambertThresh", Range(0.0, 1.0)) = 0.5
+        //----------------------------------------------------------------------------------------------------------------------
+        // Specular
+        [Toggle]_UseSpecularHighlight ("Use Specular Highlight", Float) = 0
+        _SpecularColor ("Specular Color", Color) = (1, 1, 1, 1)
+        _Shininess ("Shininess", Range(0.0, 100.0)) = 20.0
+
+
         //----------------------------------------------------------------------------------------------------------------------
         // Outline
         [Outline]
@@ -127,10 +140,10 @@ Shader "Hikanyan/HikanyanToonShader"
             #pragma multi_compile_fog
 
             #include "Includes/UniversalRenderPipeline.hlsl"
+            #include "Includes/operator.hlsl"
             #include "Includes/core.hlsl"
             #include "Includes/vert.hlsl"
             #include "Includes/frag.hlsl"
-            #include "Includes/operator.hlsl"
             ENDHLSL
         }
     }

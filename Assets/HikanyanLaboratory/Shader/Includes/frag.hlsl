@@ -1,4 +1,6 @@
-float4 FragmentMain(Vertex2Fragment i): SV_Target
+
+// Baseの計算を行う.
+float4 BaseMain(Vertex2Fragment i): SV_Target
 {
     // Main light情報の取得.
     Light mainLight;
@@ -13,5 +15,27 @@ float4 FragmentMain(Vertex2Fragment i): SV_Target
     float ramp = step(uNormDot, _LambertThresh);
     // mainLight.colorの乗算を影色とする.
     color.rgb = lerp(color, color * mainLight.color, ramp);
+    return color;
+}
+
+//Quantizationを行う.
+float4 QuantizationMain(Vertex2Fragment i): SV_Target
+{
+    float4 color = BaseMain(i);
+
+    // 量子化.
+    color.rgb = floor(color.rgb * _Quantization) / _Quantization;
+    return color;
+}
+
+
+
+
+
+
+float4 FragmentMain(Vertex2Fragment i): SV_Target
+{
+    float4 color = BaseMain(i);
+    
     return color;
 }

@@ -26,30 +26,8 @@ Shader "Hikanyan/CharacterToonLambert"
             #pragma vertex VertexMain
             #pragma fragment FragmentMain
 
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
-
-            struct Appdata_full
-            {
-                float4 vertex : POSITION;
-                float4 tangent : TANGENT;
-                float3 normal : NORMAL;
-                float2 uv : TEXCOORD0;
-            };
-
-            struct Vertex2Fragment
-            {
-                float4 vertex : SV_POSITION;
-                float3 normal : NORMAL;
-                float2 uv : TEXCOORD1;
-            };
-
-            TEXTURE2D(_MainTex);
-            SAMPLER(sampler_MainTex);
-
-            float4 _MainTex_ST;
-            float _LambertThresh;
-            
+            #include "Includes/UniversalRenderPipeline.hlsl"
+            #include "Includes/core.hlsl"
             #include "Includes/vert.hlsl"
             #include "Includes/frag.hlsl"
             ENDHLSL

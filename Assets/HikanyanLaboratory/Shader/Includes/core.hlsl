@@ -3,6 +3,9 @@ CBUFFER_START(UnityPerMaterial)
 float4    _MainColor;
 float4    _MainTex_ST;
 
+bool      _IsQuantization;
+float4    _Quantization;
+
 bool      _IsOutlined;
 float4    _OutlineColor;
 float     _OutlineWidth;
