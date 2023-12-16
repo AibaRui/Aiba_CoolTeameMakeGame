@@ -39,3 +39,4 @@ struct Vertex2Fragment
     float3 normal : NORMAL;
     float2 uv     : TEXCOORD1;
 };
+
