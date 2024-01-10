@@ -50,6 +50,9 @@ public class SwingState : PlayerStateBase
 
         //Swing’†‚Ì‰ñ“]
         _stateMachine.PlayerController.Swing.SwingRotation();
+
+        //¶‰E‰ñ“]İ’è
+        _stateMachine.PlayerController.Swing.SwingRotationSetting.DoModelRotate();
     }
 
     public override void LateUpdate()

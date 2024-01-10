@@ -10,6 +10,9 @@ public class IdleState : PlayerStateBase
     {
         //カメラを近くする
         _stateMachine.PlayerController.CameraControl.RsetCamera();
+
+        //モデルの左右回転をリセット
+        _stateMachine.PlayerController.Swing.SwingRotationSetting.ResetModelRotate();
     }
 
     public override void Exit()

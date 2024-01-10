@@ -92,8 +92,35 @@ public class InputManager : MonoBehaviour
 
     public float CameraVerticalInput => _cameraVerticalInput;
 
+    private bool _rightTrigger = false;
+    private bool _leftTrigger = false;
+
+    public bool RightTrigger => _rightTrigger;
+    public bool LeftTrigger => _leftTrigger;
+
     public void HandleInput()
     {
+        float rightTrigger = Input.GetAxisRaw("RightTrigger");
+        float leftTrigger = Input.GetAxisRaw("LeftTrigger");
+
+        if (rightTrigger>0)
+        {
+            _rightTrigger = true;
+        }
+        else
+        {
+            _rightTrigger= false;
+        }
+
+        if(leftTrigger>0)
+        {
+            _leftTrigger= true;
+        }
+        else
+        {
+            _leftTrigger= false;
+        }
+
         _horizontalInput = 0;
         _verticalInput = 0;
 

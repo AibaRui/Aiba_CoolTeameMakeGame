@@ -40,9 +40,14 @@ public class PlayerStateMachine : StateMachine
     private WallRunUpZipState _stateWallRunUpZip = default;
     [SerializeField]
     private StateWallStep _stateWallRunStep = default;
+    [SerializeField]
+    private PointZipState _statePointZip = default;
+
 
     private PlayerControl _playerController = null;
 
+
+    public PointZipState PointZipState => _statePointZip;
     public IdleState StateIdle => _stateIdle;
     public WalkState StateWalk => _stateWalk;
     public JumpState StateJump => _stateJump;
@@ -93,6 +98,9 @@ public class PlayerStateMachine : StateMachine
         _stateAvoid.Init(this);
         _stateWallRunUpZip.Init(this);
         _stateWallRunStep.Init(this);
+        _statePointZip.Init(this);
     }
+
+
 
 }

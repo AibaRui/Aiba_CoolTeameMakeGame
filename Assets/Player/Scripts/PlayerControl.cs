@@ -13,7 +13,15 @@ public class PlayerControl : MonoBehaviour
 
     [SerializeField] private Transform _hands;
 
+    [SerializeField] private Transform _modelTop;
+    [SerializeField] private Transform _modelDown;
+
     [SerializeField] private LineRenderer _lineRenderer;
+
+    [Header("“–‚½‚è”»’è")]
+    [SerializeField] private CapsuleCollider _collider;
+
+    public CapsuleCollider PlayerCollider => _collider;
 
     [SerializeField] private Rigidbody _rb;
     [SerializeField] private InputManager _inputManager;
@@ -35,6 +43,10 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private Zip _zipMove;
     [Header("=======Zip_LineRender========")]
     [SerializeField] private ZipLineRenderer _zipLineRenderer;
+
+    [Header("===PointZip====")]
+    [SerializeField] private PointZip _pointZip;
+
     [SerializeField] private WallRun _wallRun;
     [SerializeField] private WallRunStepCheck _wallRunStep;
     [SerializeField] private WallRunUpZip _wallRunUpZip;
@@ -52,6 +64,9 @@ public class PlayerControl : MonoBehaviour
 
     private SpringJoint _joint;
 
+    public Transform ModelTop => _modelTop;
+    public Transform ModelDown => _modelDown;
+    public PointZip PointZip => _pointZip;
     public ControllerVibrationManager ControllerVibrationManager => _controllerVibrationManager;
 
     public CameraControl CameraControl => _cameraControl;
@@ -113,6 +128,7 @@ public class PlayerControl : MonoBehaviour
         _wallRunStep.Init(this);
         _assist.Init(this);
         _zipLineRenderer.Init(this);
+        _pointZip.Init(this);
     }
 
     void Start()
@@ -129,6 +145,7 @@ public class PlayerControl : MonoBehaviour
         _wallRunCheck.OnDrawGizmos(PlayerT);
 
         _wallRunUpZip.OnDrawGizmos(PlayerT);
+        _pointZip.PointZipSearch.OnDrawGizmos(PlayerT);
     }
     private void Update()
     {

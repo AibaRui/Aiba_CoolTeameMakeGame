@@ -29,6 +29,9 @@ public class DownAirState : PlayerStateBase
 
         //ë¨ìxÇÃå∏êä
         _stateMachine.PlayerController.VelocityLimit.SlowToSpeedUp();
+
+        //ç∂âEâÒì]ê›íË
+        _stateMachine.PlayerController.Swing.SwingRotationSetting.ResetDoModelRotate();
     }
 
     public override void LateUpdate()
@@ -64,7 +67,12 @@ public class DownAirState : PlayerStateBase
 
         _stateMachine.PlayerController.Move.DownSpeedOfSppedDash();
 
-
+        //PoinZip
+        if (_stateMachine.PlayerController.PointZip.Search())
+        {
+            _stateMachine.TransitionTo(_stateMachine.PointZipState);
+            return;
+        }
 
         if (_stateMachine.PlayerController.InputManager.IsAttack)
         {

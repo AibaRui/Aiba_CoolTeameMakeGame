@@ -32,7 +32,8 @@ public class UpAirState : PlayerStateBase
         //ë¨ìxÇÃå∏êä
         _stateMachine.PlayerController.VelocityLimit.SlowToSpeedUp();
 
-
+        //ç∂âEâÒì]ê›íË
+        _stateMachine.PlayerController.Swing.SwingRotationSetting.ResetDoModelRotate();
 
     }
 
@@ -70,6 +71,13 @@ public class UpAirState : PlayerStateBase
         _stateMachine.PlayerController.CoolTimes();
 
         _stateMachine.PlayerController.Move.DownSpeedOfSppedDash();
+
+        //PoinZip
+        if (_stateMachine.PlayerController.PointZip.Search())
+        {
+            _stateMachine.TransitionTo(_stateMachine.PointZipState);
+            return;
+        }
 
         if (_stateMachine.PlayerController.InputManager.IsAttack)
         {

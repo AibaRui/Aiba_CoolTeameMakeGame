@@ -103,4 +103,21 @@ public class PlayerAnimationControl
     {
         _playerControl.Anim.Play("JumpStart");
     }
+
+
+    public void IsPointZip()
+    {
+        _playerControl.Anim.SetTrigger("IsPointZip");
+    }
+
+    public void IsPointZipMoveEndTrigger()
+    {
+        _playerControl.Anim.SetTrigger("IsPointMoveEnd");
+    }
+
+    public void IsPointZipJump()
+    {
+        _playerControl.Anim.SetTrigger("IsPointZipJump");
+    }
+
 }
