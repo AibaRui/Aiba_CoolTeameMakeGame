@@ -6,14 +6,17 @@ public class PointZipState : PlayerStateBase
 {
     public override void Enter()
     {
-        _stateMachine.PlayerController.VelocityLimit.SetLimit(30, 40, -30, 30);
+        _stateMachine.PlayerController.VelocityLimit.SetLimit(50, 50, -30, 50);
 
         _stateMachine.PlayerController.PointZip.StartPointZip();
     }
 
     public override void Exit()
     {
+        //è„è∏ÇµÇƒèIóπ
+        _stateMachine.PlayerController.CameraControl.SwingCameraControl.SetUpEndOffSet(true, false, _stateMachine.PlayerController.Rb.velocity.y);
 
+        _stateMachine.PlayerController.PointZip.StopPointZip();
     }
 
     public override void FixedUpdate()
@@ -25,6 +28,9 @@ public class PointZipState : PlayerStateBase
     public override void LateUpdate()
     {
         _stateMachine.PlayerController.CameraControl.ZipCameraControl.ZipCamera();
+        _stateMachine.PlayerController.CameraControl.PointZipCameraControl.PointCameraDistanceShorting();
+
+        _stateMachine.PlayerController.PointZip.DrowWire();
     }
 
     public override void Update()

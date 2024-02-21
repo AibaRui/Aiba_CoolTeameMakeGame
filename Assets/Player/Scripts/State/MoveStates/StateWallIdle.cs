@@ -20,7 +20,7 @@ public class StateWallIdle : PlayerStateBase
         _stateMachine.PlayerController.AnimControl.WallRunSet(true);
 
         //モデルの左右回転をリセット
-        _stateMachine.PlayerController.Swing.SwingRotationSetting.ResetModelRotate();
+        _stateMachine.PlayerController.PlayerModelRotation.ResetModelRotate();
     }
 
     public override void Exit()

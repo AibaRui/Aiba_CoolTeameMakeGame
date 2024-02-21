@@ -92,6 +92,9 @@ public class StateWallRun : PlayerStateBase
             //ジャンプ処理
             _stateMachine.PlayerController.WallRun.LastJump(true);
 
+            //Swingの実行待機時間を設定
+            _stateMachine.PlayerController.Swing.SwingLimit.SetSwingLimit(1);
+
             //移行
             _stateMachine.TransitionTo(_stateMachine.StateUpAir);
 

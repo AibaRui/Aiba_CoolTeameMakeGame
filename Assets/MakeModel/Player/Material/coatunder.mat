@@ -23,7 +23,8 @@ Material:
   m_Name: coatunder
   m_Shader: {fileID: 4800000, guid: 51b2dee0ab07bd84d8147601ff89e511, type: 3}
   m_ValidKeywords:
-  - _NORMALMAP
+  - ANTI_FLICKER
+  - _METALLICGLOSSMAP
   - _REQUIRE_UV2
   m_InvalidKeywords:
   - BACKFACE_NORMAL_MODE_MIRROR
@@ -66,11 +67,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseColorMap:
-        m_Texture: {fileID: 2800000, guid: 7b81d4cff0872344184728237818571c, type: 3}
+        m_Texture: {fileID: 2800000, guid: 71641c364a3b1af4389bc9c975e54257, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BaseMap:
-        m_Texture: {fileID: 2800000, guid: 7b81d4cff0872344184728237818571c, type: 3}
+        m_Texture: {fileID: 2800000, guid: 71641c364a3b1af4389bc9c975e54257, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Bump2ndMap:
@@ -190,7 +191,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 7b81d4cff0872344184728237818571c, type: 3}
+        m_Texture: {fileID: 2800000, guid: 71641c364a3b1af4389bc9c975e54257, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MatCap2ndBlendMask:

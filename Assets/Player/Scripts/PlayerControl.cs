@@ -35,6 +35,9 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] private GroundCheck _groundCheck;
 
     [SerializeField] private VelocityLimit _velocityLimit;
+
+    [Header("‰ñ“]Ý’è")]
+    [SerializeField] private PlayerModelRotation _playerModelRotation;
     [Header("=======Swing_========")]
     [SerializeField] private Swing _swing;
     [Header("=======Swing_Point’T‚µ========")]
@@ -64,6 +67,7 @@ public class PlayerControl : MonoBehaviour
 
     private SpringJoint _joint;
 
+    public PlayerModelRotation PlayerModelRotation => _playerModelRotation;
     public Transform ModelTop => _modelTop;
     public Transform ModelDown => _modelDown;
     public PointZip PointZip => _pointZip;
@@ -129,6 +133,7 @@ public class PlayerControl : MonoBehaviour
         _assist.Init(this);
         _zipLineRenderer.Init(this);
         _pointZip.Init(this);
+        _playerModelRotation.Init(this);
     }
 
     void Start()

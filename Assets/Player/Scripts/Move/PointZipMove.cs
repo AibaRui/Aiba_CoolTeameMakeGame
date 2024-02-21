@@ -54,16 +54,23 @@ public class PointZipMove
 
     public void Move()
     {
-        if (!_playerControl.PointZip.IsEndWaitTime || _isMoveEnd) return;
+        if (!_playerControl.PointZip.IsEndWaitTime) return;
 
-        _playerControl.Rb.velocity = _targetDir.normalized * _moveSpeed;
-
-        if (Vector3.Distance(_targetPosition, _playerControl.PlayerT.position) < 1f)
+        if (_isMoveEnd)
         {
-            _isMoveEnd = true;
-            _playerControl.Rb.velocity = Vector3.zero;
+            _playerControl.Rb.velocity = Vector3.down * 3.5f;
+        }
+        else
+        {
+            _playerControl.Rb.velocity = _targetDir.normalized * _moveSpeed;
 
-            _playerControl.AnimControl.IsPointZipMoveEndTrigger();
+            if (Vector3.Distance(_targetPosition, _playerControl.PlayerT.position) < 1f)
+            {
+                _isMoveEnd = true;
+                _playerControl.Rb.velocity = Vector3.zero;
+
+                _playerControl.AnimControl.IsPointZipMoveEndTrigger();
+            }
         }
     }
 
@@ -72,6 +79,7 @@ public class PointZipMove
         Vector3 d = _targetDir;
         _targetDir.y = 0;
         Vector3 dir = d + _lastJumpDir;
+        _playerControl.Rb.velocity = Vector3.zero;
         _playerControl.Rb.AddForce(dir.normalized * _lastjumpPower, ForceMode.Impulse);
     }
 

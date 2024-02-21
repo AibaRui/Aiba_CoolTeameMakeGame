@@ -16,7 +16,8 @@ public class JumpState : PlayerStateBase
 
     public override void Exit()
     {
-
+        //Swing‚ÌÀs‘Ò‹@ŠÔ‚ğİ’è
+        _stateMachine.PlayerController.Swing.SwingLimit.SetSwingLimit(1);
     }
 
     public override void FixedUpdate()

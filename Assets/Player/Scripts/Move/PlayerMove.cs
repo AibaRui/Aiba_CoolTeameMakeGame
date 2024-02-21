@@ -113,12 +113,12 @@ public class PlayerMove : IPlayerAction
         //走り方によって速度を変更
         if (moveType == MoveType.Walk)
         {
-            turnSpeed = 400;
+            turnSpeed = 500;
             moveSpeed = _walkSpeed;
         }
         else
         {
-            turnSpeed = 300;
+            turnSpeed = 400;
             moveSpeed = _runSpeed;
         }
 

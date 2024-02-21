@@ -52,7 +52,7 @@ public class SwingState : PlayerStateBase
         _stateMachine.PlayerController.Swing.SwingRotation();
 
         //ç∂âEâÒì]ê›íË
-        _stateMachine.PlayerController.Swing.SwingRotationSetting.DoModelRotate();
+        _stateMachine.PlayerController.PlayerModelRotation.DoSwingModelRotate();
     }
 
     public override void LateUpdate()
@@ -107,8 +107,6 @@ public class SwingState : PlayerStateBase
 
             _stateMachine.PlayerController.CameraControl.WallRunCameraControl.WallRunEndCamera();
 
-            _stateMachine.TransitionTo(_stateMachine.StateWallRun);
-
             _stateMachine.PlayerController.AnimControl.WallRunTransition();
 
             _stateMachine.PlayerController.Swing.StopSwing(false);
@@ -116,6 +114,9 @@ public class SwingState : PlayerStateBase
             //ïóÇÃâπÇÃê›íË
             _stateMachine.PlayerController.PlayerAudioManager.LoopAudio.PlayWindAudio(false);
 
+            _stateMachine.PlayerController.WallRun.SetFirstAnimation();
+
+            _stateMachine.TransitionTo(_stateMachine.StateWallRun);
             return;
         }
 

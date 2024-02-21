@@ -35,7 +35,10 @@ public class WallRunUpZipState : PlayerStateBase
         {
             _stateMachine.PlayerController.CameraControl.WallRunCameraControl.WallRunZipUpToFrontCameraSet();
         }
+
+        _stateMachine.PlayerController.WallRunUpZip.SetLineRenderer();
     }
+
 
     public override void Update()
     {

@@ -5,8 +5,10 @@ using UnityEngine;
 [System.Serializable]
 public class Swing
 {
-    [Header("回転設定")]
-    [SerializeField] private SwingRotation _swingRotation;
+    [Header("実行時間制限")]
+    [SerializeField] private SwingLimit _swingLimit;
+
+    public SwingLimit SwingLimit => _swingLimit;
 
     [Header("速度制限")]
     [SerializeField] private Vector3 _limitSpeed;
@@ -94,8 +96,6 @@ public class Swing
     public SwingJoint SwingJointSetting => _swingJoint;
     public float HighSpeedFallspeedY => _highSpeedFallspeedY;
 
-    public SwingRotation SwingRotationSetting => _swingRotation;
-
     private PlayerControl _playerControl = null;
 
     /// <summary>StateMacineをセットする関数</summary>
@@ -104,7 +104,7 @@ public class Swing
     {
         _playerControl = playerControl;
         _swingJoint.Init(this, playerControl);
-        _swingRotation.Init(playerControl);
+        _swingLimit.Init(playerControl);
     }
 
     /// <summary>Swingの速度制限</summary>

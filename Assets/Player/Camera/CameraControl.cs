@@ -8,12 +8,16 @@ public class CameraControl : MonoBehaviour
         KeyboardAndMouse, Controller,
     }
 
-    [Header("Swingのカメラ設定")]
+    [Header("Swingのカメラ設定---")]
     [SerializeField] private SwingCameraControl _swingCameraControl;
-    [Header("WallRunカメラの設定")]
+    [Header("WallRunカメラの設定---")]
     [SerializeField] private WallRunCameraControl _wallRunCamera;
-    [Header("Zipのカメラ設定")]
+    [Header("Zipのカメラ設定---")]
     [SerializeField] private ZipCameraControl _zipCameraControl;
+    [Header("PointZipのカメラ設定---")]
+    [SerializeField] private PointZipCamera _pointZipCamera;
+
+    public PointZipCamera PointZipCameraControl => _pointZipCamera;
 
     [Header("Swing、空中時の初期状態のYの角度")]
     [SerializeField] private float _firstYvalue = 0;
@@ -57,26 +61,23 @@ public class CameraControl : MonoBehaviour
 
     [Header("通常時のカメラ")]
     [SerializeField] private CinemachineVirtualCamera controllerCamera;
-
     [Header("Swing、空中移動時のカメラ")]
     [SerializeField] private CinemachineVirtualCamera _swingControllerCamera;
-
     [Header("構え時のカメラ")]
     [SerializeField] private CinemachineVirtualCamera _setUpControllerCamera;
-
     [Header("WallRun用のカメラ")]
     [SerializeField] private CinemachineVirtualCamera _wallRunControllerCamera;
+    [Header("PointZip用のカメラ")]
+    [SerializeField] private CinemachineVirtualCamera _pointZipControllerCamera;
+
+
 
     private CinemachinePOV _swingCinemachinePOV;
-
-
     private CinemachineFramingTransposer _swingCameraFraming;
-
     public CinemachineVirtualCamera WallRunCameraController => _wallRunControllerCamera;
-
     public CinemachinePOV _groundCameraPOV;
-
     public CinemachinePOV GroundCameraPOV => _groundCameraPOV;
+    public CinemachineVirtualCamera PointZipVirtualCamera => _pointZipControllerCamera; 
 
     private bool _isUpEnd = false;
 
@@ -120,6 +121,7 @@ public class CameraControl : MonoBehaviour
         _swingCameraControl.Init(this);
         _wallRunCamera.Init(this);
         _zipCameraControl.Init(this);
+        _pointZipCamera.Init(this);
     }
 
     void Update()
@@ -300,37 +302,34 @@ public class CameraControl : MonoBehaviour
         _groundCameraPOV.m_HorizontalAxis.Value = _swingCinemachinePOV.m_HorizontalAxis.Value;
     }
 
-    public void UseSwingCamera()
+    public void UseCanera(CameraType cameraType)
     {
         controllerCamera.Priority = 0;
         _setUpControllerCamera.Priority = 0;
-
-        _swingControllerCamera.Priority = 50;
-    }
-
-    public void SetUpCamera()
-    {
-        controllerCamera.Priority = 0;
         _swingControllerCamera.Priority = 0;
-        _wallRunControllerCamera.Priority = 0;
+        _pointZipControllerCamera.Priority = 0;
 
-        _setUpControllerCamera.Priority = 50;
+        if (cameraType == CameraType.Idle)
+        {
+            controllerCamera.Priority = 40;
+        }
+        else if (cameraType == CameraType.Setup)
+        {
+            _setUpControllerCamera.Priority = 50;
 
-        //Swing時のカメラのOffsetを戻す
-        _swingCameraFraming.m_TrackedObjectOffset.y = _firstOffSet;
+            //Swing時のカメラのOffsetを戻す
+            _swingCameraFraming.m_TrackedObjectOffset.y = _firstOffSet;
+        }
+        else if (cameraType == CameraType.Swing)
+        {
+            _swingControllerCamera.Priority = 50;
+        }
+        else if (cameraType == CameraType.PointCamera)
+        {
+            _pointZipControllerCamera.Priority = 50;
+            _pointZipCamera.SetCamera();
+        }
     }
-
-    public void RsetCamera()
-    {
-        //controllerCamera.GetCinemachineComponent<CinemachinePOV>().m_VerticalAxis.Value = 
-
-        _swingControllerCamera.Priority = 0;
-        _setUpControllerCamera.Priority = 0;
-        _wallRunControllerCamera.Priority = 0;
-
-        controllerCamera.Priority = 40;
-    }
-
 
     public void SwingEndSetCamera()
     {
@@ -344,3 +343,10 @@ public class CameraControl : MonoBehaviour
 
 }
 
+public enum CameraType
+{
+    Idle,
+    Setup,
+    Swing,
+    PointCamera,
+}

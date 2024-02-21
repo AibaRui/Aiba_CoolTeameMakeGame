@@ -8,7 +8,7 @@ public class DownAirState : PlayerStateBase
     public override void Enter()
     {
         //カメラを遠巻きにする
-        _stateMachine.PlayerController.CameraControl.UseSwingCamera();
+        _stateMachine.PlayerController.CameraControl.UseCanera(CameraType.Swing);
 
         //速度設定
         _stateMachine.PlayerController.VelocityLimit.SetLimit(25, 40, -25, 25);
@@ -31,7 +31,7 @@ public class DownAirState : PlayerStateBase
         _stateMachine.PlayerController.VelocityLimit.SlowToSpeedUp();
 
         //左右回転設定
-        _stateMachine.PlayerController.Swing.SwingRotationSetting.ResetDoModelRotate();
+        _stateMachine.PlayerController.PlayerModelRotation.ResetDoModelRotate();
     }
 
     public override void LateUpdate()
@@ -58,12 +58,18 @@ public class DownAirState : PlayerStateBase
 
         //カメラを傾ける。X軸
         _stateMachine.PlayerController.CameraControl.SwingCameraValueX(false);
+
+        //PointZipのUI
+        _stateMachine.PlayerController.PointZip.PointZipUI.UpdatePointZipUIPosition();
     }
 
     public override void Update()
     {
         //各動作のクールタイム
         _stateMachine.PlayerController.CoolTimes();
+
+        //Swingの実行待機時間の計測
+        _stateMachine.PlayerController.Swing.SwingLimit.CountSwingLimitTime();
 
         _stateMachine.PlayerController.Move.DownSpeedOfSppedDash();
 
@@ -95,6 +101,7 @@ public class DownAirState : PlayerStateBase
         if (_stateMachine.PlayerController.SearchSwingPoint.Search())
         {
             if (_stateMachine.PlayerController.Swing.IsCanSwing &&
+                _stateMachine.PlayerController.Swing.SwingLimit.IsCanSwing &&
                 _stateMachine.PlayerController.InputManager.IsSwing == 1)
             {
                 _stateMachine.TransitionTo(_stateMachine.StateSwing);

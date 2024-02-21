@@ -32,12 +32,12 @@ public class PointZipSearch
     [SerializeField] private Vector3 _offSet;
 
     /// <summary>UIを表示する用のレイがあたったそのままの位置</summary>
-    private Vector3 _uiHitPoint;
+    private Vector3 _rayHitPoint;
 
     /// <summary>移動目標地点</summary>
     private Vector3 _moveTargetPositin;
 
-    public Vector3 UIHitPoint => _uiHitPoint;
+    public Vector3 RayHitPoint => _rayHitPoint;
     public Vector3 MoveTargetPositin => _moveTargetPositin;
 
     private PlayerControl _playerControl = null;
@@ -81,7 +81,7 @@ public class PointZipSearch
             if (!topHit && !downHit)
             {
                 _moveTargetPositin = targetPosition;
-                _uiHitPoint = hit.point;
+                _rayHitPoint = hit.point;
 
                 return true;
             }

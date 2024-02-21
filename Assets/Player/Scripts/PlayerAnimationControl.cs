@@ -110,6 +110,12 @@ public class PlayerAnimationControl
         _playerControl.Anim.SetTrigger("IsPointZip");
     }
 
+    public void IsSetPointZipUp(bool isBool)
+    {
+        _playerControl.Anim.SetBool("IsPointZipStartUp",isBool);
+    }
+
+
     public void IsPointZipMoveEndTrigger()
     {
         _playerControl.Anim.SetTrigger("IsPointMoveEnd");
