@@ -73,6 +73,13 @@ public class DownAirState : PlayerStateBase
 
         _stateMachine.PlayerController.Move.DownSpeedOfSppedDash();
 
+        //É_ÉÅÅ[ÉW
+        if (_stateMachine.PlayerController.PlayerDamage.IsDamage)
+        {
+            _stateMachine.TransitionTo(_stateMachine.DamageState);
+            return;
+        }
+
         //PoinZip
         if (_stateMachine.PlayerController.PointZip.Search())
         {

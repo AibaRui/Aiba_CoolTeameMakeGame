@@ -4,6 +4,23 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
+
+
+    private bool _isCanInput = true;
+
+
+    private bool _isTutorialFrontZip = false;
+
+    private bool _isTutorialSwing = false;
+
+    private bool _isTutorialSelectZip = false;
+
+    private bool _isTutorialSelectZipDo = false;
+
+
+
+    public bool IsCanInput { get => _isCanInput; set => _isCanInput = value; }
+
     /// <summary>キーによる方向</summary>
     private Vector3 inputVector;
     public Vector3 InputVector => inputVector;
@@ -95,31 +112,49 @@ public class InputManager : MonoBehaviour
     private bool _rightTrigger = false;
     private bool _leftTrigger = false;
 
+    [SerializeField] private PlayerStartMovieAndTutorial _tutorial;
+
     public bool RightTrigger => _rightTrigger;
     public bool LeftTrigger => _leftTrigger;
 
     public void HandleInput()
     {
+        //if(_isTutorialFrontZip)
+        //{
+
+        //}
+        //else if(_isTutorialSwing)
+        //{
+
+        //}
+        //else if(_isTu)
+
         float rightTrigger = Input.GetAxisRaw("RightTrigger");
         float leftTrigger = Input.GetAxisRaw("LeftTrigger");
 
-        if (rightTrigger>0)
+        if (rightTrigger > 0)
         {
             _rightTrigger = true;
         }
         else
         {
-            _rightTrigger= false;
+            _rightTrigger = false;
         }
 
-        if(leftTrigger>0)
+        if (leftTrigger > 0)
         {
-            _leftTrigger= true;
+            _leftTrigger = true;
         }
         else
         {
-            _leftTrigger= false;
+            _leftTrigger = false;
         }
+
+        _isSwing = Input.GetAxisRaw("Swing");
+
+        //Swingのチュートリアルが終わるまでは、ここまで受け付ける
+        if (!_tutorial.IsEndSwingTutorial) return;
+
 
         _horizontalInput = 0;
         _verticalInput = 0;
@@ -143,8 +178,8 @@ public class InputManager : MonoBehaviour
 
         _isSetUp = Input.GetAxisRaw("SetUp");
 
-       float _horizontalInputCamera = Input.GetAxisRaw("CameraX");
-       float _verticalInputCamera = Input.GetAxisRaw("CameraY");
+        float _horizontalInputCamera = Input.GetAxisRaw("CameraX");
+        float _verticalInputCamera = Input.GetAxisRaw("CameraY");
 
         _isControlCameraValueChange = new Vector2(_horizontalInputCamera, _verticalInputCamera);
 
@@ -164,8 +199,6 @@ public class InputManager : MonoBehaviour
         _isLeftShiftUp = Input.GetKeyUp(KeyCode.LeftShift);
         _isLeftShift = Input.GetKey(KeyCode.LeftShift);
 
-        _isSwing = Input.GetAxisRaw("Swing");
-
         _isMouseScrol = Input.GetAxis("Mouse ScrollWheel");
 
 
@@ -175,6 +208,8 @@ public class InputManager : MonoBehaviour
 
     private void Update()
     {
+        if (!_isCanInput) return;
+
         HandleInput();
     }
 }

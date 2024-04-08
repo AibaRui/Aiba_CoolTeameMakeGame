@@ -22,9 +22,9 @@ TagManager:
   - EnemyBullet
   - OnlySwing
   - PointZipPoint
-  - 
-  - 
-  - 
+  - BossDamgePos
+  - BossAttack
+  - Boss
   - 
   - 
   - 

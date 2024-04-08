@@ -56,8 +56,7 @@ public class BulletControl : MonoBehaviour
 
         if (damageble != null)
         {
-            damageble?.Damage();
-
+            damageble?.Damage(DamageType.Player);
         }
 
         _isEnd = true;

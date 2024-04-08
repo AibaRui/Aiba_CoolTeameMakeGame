@@ -112,7 +112,7 @@ public class PlayerAnimationControl
 
     public void IsSetPointZipUp(bool isBool)
     {
-        _playerControl.Anim.SetBool("IsPointZipStartUp",isBool);
+        _playerControl.Anim.SetBool("IsPointZipStartUp", isBool);
     }
 
 
@@ -124,6 +124,11 @@ public class PlayerAnimationControl
     public void IsPointZipJump()
     {
         _playerControl.Anim.SetTrigger("IsPointZipJump");
+    }
+
+    public void BigDamageAnim(int i)
+    {
+        _playerControl.Anim.Play("Player_Damage_Big_KnockBack" + (i + 1));
     }
 
 }

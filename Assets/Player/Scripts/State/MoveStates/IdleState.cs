@@ -48,6 +48,13 @@ public class IdleState : PlayerStateBase
         if (_stateMachine.PlayerController.GroundCheck.IsHit())
         {
 
+            //ダメージ
+            if (_stateMachine.PlayerController.PlayerDamage.IsDamage)
+            {
+                _stateMachine.TransitionTo(_stateMachine.DamageState);
+                return;
+            }
+
             if (_stateMachine.PlayerController.InputManager.IsAvoid && _stateMachine.PlayerController.Avoid.IsCanAvoid)
             {
                 _stateMachine.PlayerController.Avoid.SetAvoidDir();

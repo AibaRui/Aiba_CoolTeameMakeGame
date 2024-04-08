@@ -51,7 +51,7 @@ public class EnemyWeakPointHp : MonoBehaviour, IDamageble
     }
 
     /// <summary>ダメージ処理</summary>
-    void IDamageble.Damage()
+    void IDamageble.Damage(DamageType attack)
     {
         //Hpを減らす
         _nowHp--;
