@@ -19,7 +19,7 @@ _UseShadow
 
 
 */
-Shader "Hikanyan/HikanyanToonShader"
+Shader "HikanyanLaboratory/HikanyanToonShader"
 {
     Properties
     {
