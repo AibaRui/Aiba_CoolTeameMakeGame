@@ -78,6 +78,7 @@ public class PlayerDamage
             impulseSource.GenerateImpulse();
 
             _playerControl.AnimControl.BigDamageAnim(0);
+            _playerControl.SpecialHitStop.SetHitStopInfo(0);
         }
     }
 

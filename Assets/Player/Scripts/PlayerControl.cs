@@ -65,7 +65,12 @@ public class PlayerControl : MonoBehaviour,IDamageble
     [SerializeField] private AimAssist _assist;
     [SerializeField] private PlayerDamage _damage;
 
+    [Header("マテリアル変更")]
+    [SerializeField] private PlayerMaterial _materialChange;
+
+    [SerializeField] private SpecialHitStop _specialHitStop;
     [SerializeField] private PlayerStartMovieAndTutorial _tutorial;
+    public SpecialHitStop SpecialHitStop => _specialHitStop;
     public PlayerStartMovieAndTutorial Tutorial => _tutorial;
 
     private CinemachineBrain _CameraBrain;
@@ -74,6 +79,7 @@ public class PlayerControl : MonoBehaviour,IDamageble
 
     private SpringJoint _joint;
 
+    public PlayerMaterial PlayerMaterial => _materialChange;
     public PlayerModelRotation PlayerModelRotation => _playerModelRotation;
     public Transform ModelTop => _modelTop;
     public Transform ModelDown => _modelDown;

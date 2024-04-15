@@ -46,4 +46,14 @@ public class PlayerTimeLineSignal : MonoBehaviour
         _playerControl.PlayerDamage.OnLine(false);
     }
 
+    public void OnMaterialGray()
+    {
+        _playerControl.PlayerMaterial.ChangePlayerMaterial(PlayerMaterialType.GrayScal);
+    }
+
+    public void OffGrayMaterial()
+    {
+        _playerControl.PlayerMaterial.ChangePlayerMaterial(PlayerMaterialType.Nomal);
+    }
+
 }
