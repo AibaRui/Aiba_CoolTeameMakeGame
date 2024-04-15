@@ -48,12 +48,12 @@ public class PlayerTimeLineSignal : MonoBehaviour
 
     public void OnMaterialGray()
     {
-        _playerControl.PlayerMaterial.ChangePlayerMaterial(PlayerMaterialType.GrayScal);
+        _playerControl.PlayerMaterial.ChangePlayerMaterial(ModelMaterialType.GrayScal);
     }
 
     public void OffGrayMaterial()
     {
-        _playerControl.PlayerMaterial.ChangePlayerMaterial(PlayerMaterialType.Nomal);
+        _playerControl.PlayerMaterial.ChangePlayerMaterial(ModelMaterialType.Nomal);
     }
 
 }

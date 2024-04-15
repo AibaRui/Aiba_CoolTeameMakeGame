@@ -43,9 +43,9 @@ public class PlayerMaterial
     [SerializeField] private Material _grayTops;
 
 
-    public void ChangePlayerMaterial(PlayerMaterialType type)
+    public void ChangePlayerMaterial(ModelMaterialType type)
     {
-        if (type == PlayerMaterialType.Nomal)
+        if (type == ModelMaterialType.Nomal)
         {
             _arnmfoot.material= _nArnmfoot;
             _coatunder.material= _nCoatunder;
@@ -53,7 +53,7 @@ public class PlayerMaterial
             _inner.material= _nInner;
             _tops.material = _nTops;
         }
-        else if (type == PlayerMaterialType.GrayScal)
+        else if (type == ModelMaterialType.GrayScal)
         {
             _arnmfoot.material = _grayArnmfoot;
             _coatunder.material = _grayCoatunder;
@@ -66,7 +66,7 @@ public class PlayerMaterial
 }
 
 
-public enum PlayerMaterialType
+public enum ModelMaterialType
 {
     /// <summary>í èÌÇÃÉ}ÉeÉäÉAÉã </summary>
     Nomal,

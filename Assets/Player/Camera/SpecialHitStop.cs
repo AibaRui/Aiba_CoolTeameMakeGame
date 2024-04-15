@@ -54,7 +54,7 @@ public class SpecialHitStop : MonoBehaviour
 
         Camera.main.cullingMask = _setLayerMask;
         _hitStopImages.SetActive(true);
-        _playerControl.PlayerMaterial.ChangePlayerMaterial(PlayerMaterialType.GrayScal);
+        _playerControl.PlayerMaterial.ChangePlayerMaterial(ModelMaterialType.GrayScal);
     }
 
     void Update()
@@ -69,7 +69,7 @@ public class SpecialHitStop : MonoBehaviour
             Camera.main.cullingMask = _defultLayerMask;
             _hitStopImages.SetActive(false);
             Time.timeScale = 1f;
-            _playerControl.PlayerMaterial.ChangePlayerMaterial(PlayerMaterialType.Nomal);
+            _playerControl.PlayerMaterial.ChangePlayerMaterial(ModelMaterialType.Nomal);
             _timeCount = 0;
 
         }
