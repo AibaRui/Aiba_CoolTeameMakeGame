@@ -46,6 +46,28 @@ public class WallRun : IPlayerAction
 
     }
 
+    public void SetFirstAnimation()
+    {
+        if (_playerControl.WallRunCheck.TatchingWall == WallRunCheck.TatchWall.Forward)
+        {
+            _playerControl.AnimControl.WallRunUpSet(true);
+            _playerControl.AnimControl.SetWallRunHitRight(false);
+            Debug.Log("FOWARD");
+        }
+        else if (_playerControl.WallRunCheck.TatchingWall == WallRunCheck.TatchWall.Right)
+        {
+            _playerControl.AnimControl.WallRunUpSet(false);
+            _playerControl.AnimControl.SetWallRunHitRight(true);
+            Debug.Log("RIGHT");
+        }
+        else
+        {
+            _playerControl.AnimControl.WallRunUpSet(false);
+            _playerControl.AnimControl.SetWallRunHitRight(false);
+            Debug.Log("LEFT");
+        }
+    }
+
     public void SetMoveDir(MoveDirection moveDirection)
     {
         _moveDirection = moveDirection;
@@ -229,6 +251,7 @@ public class WallRun : IPlayerAction
             _playerControl.PlayerT.rotation = toAngle;
         }   //äpìxÇ™1ìxà»ì‡Ç…Ç‹Ç≈é˚Ç‹Ç¡ÇΩÇÁèIóπ
 
+
         Quaternion upRotation = Quaternion.LookRotation(-_playerControl.WallRunCheck.WallDir, Vector3.up);
         Quaternion rightRotation = Quaternion.LookRotation(wallCrossRight, Vector3.up);
         Quaternion leftRotation = Quaternion.LookRotation(-wallCrossRight, Vector3.up);
@@ -237,23 +260,27 @@ public class WallRun : IPlayerAction
         float angleRight = Quaternion.Angle(_playerControl.PlayerT.rotation, rightRotation);
         float angleLeft = Quaternion.Angle(_playerControl.PlayerT.rotation, leftRotation);
 
-        if (angleUp < 70)
+        if (angleUp < 60)
         {
             _moveDirection = MoveDirection.Up;
             _playerControl.AnimControl.WallRunUpSet(true);
+            Debug.Log("FRONT_ROTATION");
         }
-        else if (angleRight < 40)
-        {
-            _moveDirection = MoveDirection.Right;
-            _playerControl.AnimControl.WallRunUpSet(false);
-            _playerControl.AnimControl.SetWallRunHitRight(true);
-        }
-        else if (angleLeft < 70)
+        else if (angleLeft < 60)
         {
             _moveDirection = MoveDirection.Left;
             _playerControl.AnimControl.WallRunUpSet(false);
-            _playerControl.AnimControl.SetWallRunHitRight(false);
+            _playerControl.AnimControl.SetWallRunHitRight(true);
+            Debug.Log("LEFT_ROTATION");
         }
+        else if (angleRight < 60)
+        {
+            _moveDirection = MoveDirection.Right;
+            _playerControl.AnimControl.WallRunUpSet(false);
+            _playerControl.AnimControl.SetWallRunHitRight(false);
+            Debug.Log("RIGTH_ROTATION");
+        }
+
 
         // Debug.Log(_moveDirection);
     }
@@ -291,6 +318,9 @@ public class WallRun : IPlayerAction
             {
                 targetMoveDir = Vector3.up;
             }
+
+            //ÉÇÉfÉãÇÃåXÇ´
+            _playerControl.PlayerModelRotation.ResetModelRotate();
         }
         else if (_moveDirection == MoveDirection.Right)
         {
@@ -302,6 +332,9 @@ public class WallRun : IPlayerAction
             {
                 targetMoveDir = wallForward;
             }
+
+            //ÉÇÉfÉãÇÃåXÇ´
+            _playerControl.PlayerModelRotation.DoWallRunModelRotate(true);
         }
         else if (_moveDirection == MoveDirection.Left)
         {
@@ -313,6 +346,9 @@ public class WallRun : IPlayerAction
             {
                 targetMoveDir = -wallForward;
             }
+
+            //ÉÇÉfÉãÇÃåXÇ´
+            _playerControl.PlayerModelRotation.DoWallRunModelRotate(false);
         }
 
         //PlayerÇÃâÒì]

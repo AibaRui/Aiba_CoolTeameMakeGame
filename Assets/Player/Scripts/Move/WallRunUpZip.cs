@@ -37,6 +37,10 @@ public class WallRunUpZip : IPlayerAction
     [Header("上方向のZipした先に何かないかを検査するRayの長さ")]
     [SerializeField] private float _upZipOffSetCheckNoBuildRayLong = 5;
 
+    private float _countWaitTime = 0;
+
+    private bool _isEndUppinng = false;
+
     private bool _isZipToFront = false;
 
     /// <summary>Zipするポイントの情報</summary>
@@ -50,6 +54,8 @@ public class WallRunUpZip : IPlayerAction
 
     /// <summary>Zipする方向</summary>
     private Vector3 _zipDir;
+
+    private Vector3 _wireHitPoint = default;
 
 
     private float _upToFrontPosY;
@@ -66,6 +72,8 @@ public class WallRunUpZip : IPlayerAction
         //boolをリセット
         _isEndZip = false;
 
+        _countWaitTime = 0;
+        _isEndUppinng = false;
 
         //速度をリセット
         _playerControl.Rb.velocity = Vector3.zero;
@@ -84,53 +92,76 @@ public class WallRunUpZip : IPlayerAction
             //壁から少し離れるように速度を加える
             _playerControl.Rb.AddForce(addDir * _addFirstSpeed, ForceMode.Impulse);
 
-            //LineRendrerの設定
-            _playerControl.LineRenderer.positionCount = 2;
-            _playerControl.LineRenderer.SetPosition(0, _playerControl.Hads.position);
-            _playerControl.LineRenderer.SetPosition(1, _upZipHit.point);
-
             //アニメーションの設定
             _playerControl.AnimControl.WallRunZipStart(false);
         }
+
+            //LineRendrerの設定
+            _playerControl.LineRenderer.positionCount = 2;
+            _playerControl.LineRenderer.SetPosition(0, _playerControl.Hads.position);
+            _playerControl.LineRenderer.SetPosition(1, _wireHitPoint);
+    }
+
+    public void SetLineRenderer()
+    {
+        if (_isEndZip) return;
+        _playerControl.LineRenderer.SetPosition(0, _playerControl.Hads.position);
+        _playerControl.LineRenderer.SetPosition(1, _wireHitPoint);
     }
 
     public void DoUpToFrontZip()
     {
-        //プレイヤーを壁の方向を向ける
-        Quaternion _targetRotation = Quaternion.LookRotation(-_playerControl.WallRunCheck.WallDir, Vector3.up);
-        Quaternion toAngle = Quaternion.RotateTowards(_playerControl.PlayerT.rotation, _targetRotation, Time.deltaTime * 400);
-        toAngle.x = 0;
-        toAngle.z = 0;
-
-        //現在の回転と、回転終了との角度を比べる
-        float y = Quaternion.Angle(_targetRotation, _playerControl.PlayerT.rotation);
-
-        //一定値まで回転していなかったら回転させる
-        if (y > 1)
+        if (!_isEndUppinng)
         {
-            _playerControl.PlayerT.rotation = toAngle;
+            //プレイヤーを壁の方向を向ける
+            Quaternion _targetRotation = Quaternion.LookRotation(-_playerControl.WallRunCheck.WallDir, Vector3.up);
+            Quaternion toAngle = Quaternion.RotateTowards(_playerControl.PlayerT.rotation, _targetRotation, Time.deltaTime * 400);
+            toAngle.x = 0;
+            toAngle.z = 0;
+
+            //現在の回転と、回転終了との角度を比べる
+            float y = Quaternion.Angle(_targetRotation, _playerControl.PlayerT.rotation);
+
+            //一定値まで回転していなかったら回転させる
+            if (y > 1)
+            {
+                _playerControl.PlayerT.rotation = toAngle;
+            }
+
+
+            Debug.Log("UppingToFront");
+            //速度を設定
+            _playerControl.Rb.velocity = Vector3.up * 30;
+
+            bool isHit = Physics.Raycast(_playerControl.PlayerT.position + _playerfootOffset, -_playerControl.WallRunCheck.WallDir, _upZipOffSetCheckNoBuildRayLong, _wallLayer);
+
+            if (!isHit)
+            {
+                Debug.Log("EndFrounZip");
+                //
+                _isEndUppinng = true;
+
+                Vector3 dir = (-_playerControl.WallRunCheck.WallDir) + new Vector3(0, 1, 0);
+                //速度をリセット
+                _playerControl.Rb.velocity = (dir * 2);
+
+
+                _playerControl.AnimControl.WallRunZipDo(true);
+            }
         }
-
-
-        Debug.Log("UppingToFront");
-        //速度を設定
-        _playerControl.Rb.velocity = Vector3.up * 30;
-
-        bool isHit = Physics.Raycast(_playerControl.PlayerT.position + _playerfootOffset, -_playerControl.WallRunCheck.WallDir, _upZipOffSetCheckNoBuildRayLong, _wallLayer);
-
-        if (!isHit)
+        else
         {
-            Debug.Log("EndFrounZip");
-            //
-            _isEndZip = true;
+            _countWaitTime += Time.deltaTime;
 
-            //速度をリセット
-            _playerControl.Rb.velocity = Vector3.zero;
+            if (_countWaitTime > 0.28f)
+            {
+                _isEndZip = true;
 
-            //前に力を加える
-            _playerControl.Rb.AddForce(-_playerControl.WallRunCheck.WallDir * 30, ForceMode.Impulse);
+                Vector3 dir = (-_playerControl.WallRunCheck.WallDir) + new Vector3(0, 1, 0);
 
-            _playerControl.AnimControl.WallRunZipDo(true);
+                //前に力を加える
+                _playerControl.Rb.AddForce(dir.normalized * 30, ForceMode.Impulse);
+            }
         }
     }
 
@@ -210,12 +241,49 @@ public class WallRunUpZip : IPlayerAction
         //スタートはプレイヤーの地点+Zip目標地点
         Vector3 rayStart2 = _playerControl.PlayerT.position + _upZipOffSet;
 
-       // bool isHitNoBuold = Physics.Raycast(rayStart2, rayDir, out raycast, _upZipOffSetCheckNoBuildRayLong, _wallLayer);
+        // bool isHitNoBuold = Physics.Raycast(rayStart2, rayDir, out raycast, _upZipOffSetCheckNoBuildRayLong, _wallLayer);
 
         if (isHit)
         {
             //当たっていた場合のみ情報を渡す
             _upZipHit = raycast;
+            _wireHitPoint = raycast.point;
+        }
+        else
+        {
+            int roopCount = 1;
+            RaycastHit rayHit;
+
+            //絶対にHitさせておく
+            Physics.Raycast(_playerControl.PlayerT.position, rayDir, out rayHit, _upZipRayLong, _wallLayer);
+
+            while (true)
+            {
+                Vector3 addY = new Vector3(0, roopCount * 0.5f, 0);
+                //スタートはプレイヤーの地点+Zip目標地点
+                Vector3 checkStart = _playerControl.PlayerT.position + addY;
+
+                //Zip出来るところがあるか探す
+                bool hit = Physics.Raycast(checkStart, rayDir, out rayHit, _upZipRayLong, _wallLayer);
+
+                if (hit)
+                {
+                    _wireHitPoint = rayHit.point;
+                }
+                else
+                {
+                    break;
+                }
+
+                roopCount++;
+
+                //もし当たらなかった際の応急処置
+                if(roopCount>50)
+                {
+                    break;
+                }
+
+            }
         }
 
         if (_playerControl.WallRun.MoveDir == WallRun.MoveDirection.Up)

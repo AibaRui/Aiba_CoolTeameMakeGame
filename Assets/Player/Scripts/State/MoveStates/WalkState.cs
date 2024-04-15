@@ -48,6 +48,9 @@ public class WalkState : PlayerStateBase
             {
                 _stateMachine.TransitionTo(_stateMachine.StateDownAir);
             }   //降下
+
+            //Swingの実行待機時間を設定
+            _stateMachine.PlayerController.Swing.SwingLimit.SetSwingLimit(1);
             return;
         }
 

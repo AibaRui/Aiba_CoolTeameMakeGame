@@ -21,10 +21,10 @@ TagManager:
   - Bullet
   - EnemyBullet
   - OnlySwing
-  - 
-  - 
-  - 
-  - 
+  - PointZipPoint
+  - BossDamgePos
+  - BossAttack
+  - Boss
   - 
   - 
   - 

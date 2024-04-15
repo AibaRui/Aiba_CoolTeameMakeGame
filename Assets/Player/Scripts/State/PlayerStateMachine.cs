@@ -40,9 +40,16 @@ public class PlayerStateMachine : StateMachine
     private WallRunUpZipState _stateWallRunUpZip = default;
     [SerializeField]
     private StateWallStep _stateWallRunStep = default;
-
+    [SerializeField]
+    private PointZipState _statePointZip = default;
+    [SerializeField]
+    private TutorialState _stateTutorial = default;
+    [SerializeField]
+    private DamageState _damageState = default;
     private PlayerControl _playerController = null;
 
+
+    public PointZipState PointZipState => _statePointZip;
     public IdleState StateIdle => _stateIdle;
     public WalkState StateWalk => _stateWalk;
     public JumpState StateJump => _stateJump;
@@ -62,7 +69,8 @@ public class PlayerStateMachine : StateMachine
     public AvoidState AvoidState => _stateAvoid;
     public WallRunUpZipState WallRunUpZipState => _stateWallRunUpZip;
     public StateWallStep WallRunStep => _stateWallRunStep;
-
+    public TutorialState TutorialState => _stateTutorial;
+    public DamageState DamageState => _damageState;
 
     #endregion
     [SerializeField]
@@ -72,7 +80,7 @@ public class PlayerStateMachine : StateMachine
     public void Init(PlayerControl playerController)
     {
         _playerController = playerController;
-        Initialize(_stateIdle);
+        Initialize(_stateTutorial);
     }
 
     protected override void StateInit()
@@ -93,6 +101,11 @@ public class PlayerStateMachine : StateMachine
         _stateAvoid.Init(this);
         _stateWallRunUpZip.Init(this);
         _stateWallRunStep.Init(this);
+        _statePointZip.Init(this);
+        _stateTutorial.Init(this);
+        _damageState.Init(this);
     }
+
+
 
 }

@@ -80,16 +80,19 @@ public class WallRunCheck : IPlayerAction
     {
         if (CheckWallFront())
         {
+            _tatchWall = TatchWall.Forward;
             return true;
         }
 
         if (CheckWallSide(true))
         {
+            _tatchWall = TatchWall.Right;
             return true;
         }
 
         if (CheckWallSide(false))
         {
+            _tatchWall = TatchWall.Left;
             _isWallHitRight = false;
             return true;
         }

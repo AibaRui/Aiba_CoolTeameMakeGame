@@ -24,6 +24,10 @@ public class ControllerVibrationManager : MonoBehaviour
         gamepad = Gamepad.current;
     }
 
+    private void OnDisable()
+    {
+        gamepad.SetMotorSpeeds(0f, 0f);
+    }
 
     public void StartVibration()
     {

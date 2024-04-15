@@ -5,6 +5,11 @@ using UnityEngine;
 [System.Serializable]
 public class Swing
 {
+    [Header("実行時間制限")]
+    [SerializeField] private SwingLimit _swingLimit;
+
+    public SwingLimit SwingLimit => _swingLimit;
+
     [Header("速度制限")]
     [SerializeField] private Vector3 _limitSpeed;
     [Header("Swingのクールタイム")]
@@ -99,6 +104,7 @@ public class Swing
     {
         _playerControl = playerControl;
         _swingJoint.Init(this, playerControl);
+        _swingLimit.Init(playerControl);
     }
 
     /// <summary>Swingの速度制限</summary>
@@ -135,8 +141,13 @@ public class Swing
         {
             if (_playerControl.Rb.velocity.y > 0)
             {
-                _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, -20, _playerControl.Rb.velocity.z);
+                _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, -25, _playerControl.Rb.velocity.z);
             }   //連続で使用したさいに、強制的に降下させる用
+            else
+            {
+                int power = Random.Range(5, 10);
+                _playerControl.Rb.AddForce(Vector3.down * power, ForceMode.Impulse);
+            }
         }
 
         _isSwingNow = true;

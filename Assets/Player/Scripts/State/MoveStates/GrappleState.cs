@@ -8,7 +8,7 @@ public class GrappleState : PlayerStateBase
     public override void Enter()
     {
         //ƒJƒƒ‰‚ğ‰“Šª‚«‚É‚·‚é
-        _stateMachine.PlayerController.CameraControl.UseSwingCamera();
+        _stateMachine.PlayerController.CameraControl.UseCanera(CameraType.Swing);
 
         //‘¬“x§ŒÀ‚ğİ’è
         _stateMachine.PlayerController.Grapple.SetSpeedGrapple();

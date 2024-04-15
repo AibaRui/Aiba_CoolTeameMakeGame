@@ -9,7 +9,10 @@ public class IdleState : PlayerStateBase
     public override void Enter()
     {
         //カメラを近くする
-        _stateMachine.PlayerController.CameraControl.RsetCamera();
+        _stateMachine.PlayerController.CameraControl.UseCanera(CameraType.Idle);
+
+        //モデルの左右回転をリセット
+        _stateMachine.PlayerController.PlayerModelRotation.ResetModelRotate();
     }
 
     public override void Exit()
@@ -44,6 +47,13 @@ public class IdleState : PlayerStateBase
         //  地上での移動
         if (_stateMachine.PlayerController.GroundCheck.IsHit())
         {
+
+            //ダメージ
+            if (_stateMachine.PlayerController.PlayerDamage.IsDamage)
+            {
+                _stateMachine.TransitionTo(_stateMachine.DamageState);
+                return;
+            }
 
             if (_stateMachine.PlayerController.InputManager.IsAvoid && _stateMachine.PlayerController.Avoid.IsCanAvoid)
             {

@@ -8,7 +8,7 @@ public class UpAirState : PlayerStateBase
     public override void Enter()
     {
         //カメラを遠巻きにする
-        _stateMachine.PlayerController.CameraControl.UseSwingCamera();
+        _stateMachine.PlayerController.CameraControl.UseCanera(CameraType.Swing);
 
 
         _stateMachine.PlayerController.VelocityLimit.SetLimit(25, 20, -25, 25);
@@ -20,7 +20,6 @@ public class UpAirState : PlayerStateBase
     public override void Exit()
     {
         _stateMachine.PlayerController.Move.ReSetTime();
-
     }
 
     public override void FixedUpdate()
@@ -32,7 +31,8 @@ public class UpAirState : PlayerStateBase
         //速度の減衰
         _stateMachine.PlayerController.VelocityLimit.SlowToSpeedUp();
 
-
+        //左右回転設定
+        _stateMachine.PlayerController.PlayerModelRotation.ResetDoModelRotate();
 
     }
 
@@ -52,8 +52,6 @@ public class UpAirState : PlayerStateBase
         //カメラのX軸のOffsetを戻す
         _stateMachine.PlayerController.CameraControl.SwingCameraControl.ResetOffSetX();
 
-
-
         //カメラをプレイヤーの後ろに自動的に向ける。X軸
         _stateMachine.PlayerController.CameraControl.SwingEndCameraAutoFollow();
 
@@ -62,6 +60,9 @@ public class UpAirState : PlayerStateBase
 
         //カメラを傾ける。X軸
         _stateMachine.PlayerController.CameraControl.SwingCameraValueX(false);
+
+        //PointZipのUI
+        _stateMachine.PlayerController.PointZip.PointZipUI.UpdatePointZipUIPosition();
     }
 
     public override void Update()
@@ -70,6 +71,24 @@ public class UpAirState : PlayerStateBase
         _stateMachine.PlayerController.CoolTimes();
 
         _stateMachine.PlayerController.Move.DownSpeedOfSppedDash();
+
+        //Swingの実行待機時間の計測
+        _stateMachine.PlayerController.Swing.SwingLimit.CountSwingLimitTime();
+
+
+        //ダメージ
+        if(_stateMachine.PlayerController.PlayerDamage.IsDamage)
+        {
+            _stateMachine.TransitionTo(_stateMachine.DamageState);
+            return;
+        }
+
+        //PoinZip
+        if (_stateMachine.PlayerController.PointZip.Search())
+        {
+            _stateMachine.TransitionTo(_stateMachine.PointZipState);
+            return;
+        }
 
         if (_stateMachine.PlayerController.InputManager.IsAttack)
         {
@@ -89,6 +108,7 @@ public class UpAirState : PlayerStateBase
         if (_stateMachine.PlayerController.SearchSwingPoint.Search())
         {
             if (_stateMachine.PlayerController.Swing.IsCanSwing &&
+                _stateMachine.PlayerController.Swing.SwingLimit.IsCanSwing && 
                 _stateMachine.PlayerController.InputManager.IsSwing == 1)
             {
                 _stateMachine.TransitionTo(_stateMachine.StateSwing);

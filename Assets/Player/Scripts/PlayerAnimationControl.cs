@@ -103,4 +103,32 @@ public class PlayerAnimationControl
     {
         _playerControl.Anim.Play("JumpStart");
     }
+
+
+    public void IsPointZip()
+    {
+        _playerControl.Anim.SetTrigger("IsPointZip");
+    }
+
+    public void IsSetPointZipUp(bool isBool)
+    {
+        _playerControl.Anim.SetBool("IsPointZipStartUp", isBool);
+    }
+
+
+    public void IsPointZipMoveEndTrigger()
+    {
+        _playerControl.Anim.SetTrigger("IsPointMoveEnd");
+    }
+
+    public void IsPointZipJump()
+    {
+        _playerControl.Anim.SetTrigger("IsPointZipJump");
+    }
+
+    public void BigDamageAnim(int i)
+    {
+        _playerControl.Anim.Play("Player_Damage_Big_KnockBack" + (i + 1));
+    }
+
 }

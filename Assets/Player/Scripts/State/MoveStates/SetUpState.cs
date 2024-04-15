@@ -9,7 +9,7 @@ public class SetUpState : PlayerStateBase
     {
         _stateMachine.PlayerController.SetUp.SetUpCamera();
 
-       _stateMachine.PlayerController.CameraControl.SetUpCamera();
+        _stateMachine.PlayerController.CameraControl.UseCanera(CameraType.Setup);
     }
 
     public override void Exit()

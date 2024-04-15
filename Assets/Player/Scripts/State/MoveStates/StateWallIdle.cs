@@ -18,6 +18,9 @@ public class StateWallIdle : PlayerStateBase
 
         //WallRunのAnimatorを設定
         _stateMachine.PlayerController.AnimControl.WallRunSet(true);
+
+        //モデルの左右回転をリセット
+        _stateMachine.PlayerController.PlayerModelRotation.ResetModelRotate();
     }
 
     public override void Exit()
