@@ -50,7 +50,7 @@ Shader "HikanyanLaboratory/GrayScale"
             fixed4 frag (v2f i) : SV_Target
             {
                 fixed4 col = tex2D(_MainTex, i.uv);
-                fixed v = col.r * 0.298912 + col.g * 0.586611 + col.b * 0.114478; 
+                fixed v = col.r * 0.298912 + col.g * 0.586611 + col.b * 0.114478;
                 return fixed4(v, v, v, col.a);
             }
             ENDCG
