@@ -52,6 +52,7 @@ Material:
     - _CTimeScale: 7
     - _GGradientScale: 5
     - _GGradientTime: 0.22
+    - _ImpactRange: 0
     - _QueueControl: 0
     - _QueueOffset: -50
     m_Colors: []
