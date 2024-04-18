@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 
-public class PlayerControl : MonoBehaviour,IDamageble
+public class PlayerControl : MonoBehaviour, IDamageble, IReplaceble
 {
     [Header("ムービー再生中かどうか")]
     [SerializeField] private bool _isMovie = false;
@@ -68,8 +68,21 @@ public class PlayerControl : MonoBehaviour,IDamageble
     [Header("マテリアル変更")]
     [SerializeField] private PlayerMaterial _materialChange;
 
+
+
     [SerializeField] private SpecialHitStop _specialHitStop;
     [SerializeField] private PlayerStartMovieAndTutorial _tutorial;
+
+    [SerializeField] private PlayerPostEffectSetting _playerPostEffectSetting;
+    [SerializeField] private PlayerReplace _playerReplace;
+    public PlayerReplace PlayerReplace => _playerReplace;
+    public PlayerPostEffectSetting PlayerPostEffectSetting => _playerPostEffectSetting;
+
+
+    private PlayerEventType _eventType = PlayerEventType.BossStage_Replace;
+
+    public PlayerEventType EventType => _eventType;
+
     public SpecialHitStop SpecialHitStop => _specialHitStop;
     public PlayerStartMovieAndTutorial Tutorial => _tutorial;
 
@@ -211,4 +224,23 @@ public class PlayerControl : MonoBehaviour,IDamageble
     {
         _damage.Damage(type);
     }
+
+    public void EnterReplaceZone(ReplceType replceType)
+    {
+       _playerReplace.EnterReplaceZone(replceType);
+        _eventType = PlayerEventType.BossStage_Replace;
+    }
+
+    public void ExitReplaceZone(ReplceType replceType)
+    {
+        _playerReplace.ExitReplaceZone();
+    }
+}
+
+public enum PlayerEventType
+{
+    /// <summary>Boss戦時に、一定の高さに戻る</summary>
+    BossStage_Replace,
+
+
 }

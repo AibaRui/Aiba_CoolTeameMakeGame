@@ -14,6 +14,9 @@ public class SwingState : PlayerStateBase
         //アニメーションの設定
         _stateMachine.PlayerController.AnimControl.SwingAnim.Swing(true);
 
+        //画面効果
+        _stateMachine.PlayerController.PlayerPostEffectSetting.OnPostEffect();
+
         //ワイヤーを飛ばす音
         _stateMachine.PlayerController.PlayerAudioManager.SwingAudio.WireFireSounds();
 
@@ -29,6 +32,9 @@ public class SwingState : PlayerStateBase
         //アニメーションの設定
         _stateMachine.PlayerController.AnimControl.SwingAnim.Swing(false);
         _stateMachine.PlayerController.AnimControl.SwingAnim.SetHighFallType();
+
+        //画面効果PostEffect_Off
+        _stateMachine.PlayerController.PlayerPostEffectSetting.OffPostEffect();
 
         //Swing終了時のカメラの再設定
         _stateMachine.PlayerController.CameraControl.SwingEndSetCamera();
@@ -220,43 +226,6 @@ public class SwingState : PlayerStateBase
 
             //ジャンプ処理
             _stateMachine.PlayerController.Swing.LastJumpFront();
-
-            //ジャンプして終わる
-            _stateMachine.PlayerController.Swing.StopSwing(true);
-
-            //空中で前方に加速する、ということを伝える
-            _stateMachine.PlayerController.VelocityLimit.DoSpeedUp();
-
-            //カメラの追従を始める
-            _stateMachine.PlayerController.CameraControl.SwingCameraControl.EndFollow();
-
-            //上昇して終了
-            _stateMachine.PlayerController.CameraControl.SwingCameraControl.SetUpEndOffSet(false, true, _stateMachine.PlayerController.Rb.velocity.y);
-
-            //推移。(Y速度によって水位先を変える)
-            if (_stateMachine.PlayerController.Rb.velocity.y > 0) _stateMachine.TransitionTo(_stateMachine.StateUpAir);
-            else _stateMachine.TransitionTo(_stateMachine.StateDownAir);
-        }
-
-        //Swing中にジャンプ押したら
-        if (_stateMachine.PlayerController.InputManager.IsJumping && !_stateMachine.PlayerController.Swing.IsDown)
-        {
-            //FrontZipを実行可能にする
-            _stateMachine.PlayerController.ZipMove.SetCanZip();
-
-            //アニメーション設定(Swing終了ジャンプのタイプ分け)
-            _stateMachine.PlayerController.AnimControl.SwingAnim.SetSwingEndType(2);
-            _stateMachine.PlayerController.AnimControl.SwingAnim.SetJumpEndType();
-
-            //ジャンプ音
-            _stateMachine.PlayerController.PlayerAudioManager.SwingAudio.FrontJumpSounds();
-            //マントの音
-            _stateMachine.PlayerController.PlayerAudioManager.MantAudio.PlayMant();
-
-            //_stateMachine.PlayerController.CameraControl.SwingEndTranspectorUp();
-
-            //ジャンプ処理
-            _stateMachine.PlayerController.Swing.LastJump();
 
             //ジャンプして終わる
             _stateMachine.PlayerController.Swing.StopSwing(true);

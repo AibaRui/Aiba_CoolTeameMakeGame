@@ -46,9 +46,13 @@ public class PlayerStateMachine : StateMachine
     private TutorialState _stateTutorial = default;
     [SerializeField]
     private DamageState _damageState = default;
+    [SerializeField]
+    private EventState _eventState = default;
+
+
     private PlayerControl _playerController = null;
 
-
+    public EventState EventState => _eventState;
     public PointZipState PointZipState => _statePointZip;
     public IdleState StateIdle => _stateIdle;
     public WalkState StateWalk => _stateWalk;
@@ -104,6 +108,7 @@ public class PlayerStateMachine : StateMachine
         _statePointZip.Init(this);
         _stateTutorial.Init(this);
         _damageState.Init(this);
+        _eventState.Init(this);
     }
 
 
