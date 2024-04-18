@@ -131,4 +131,16 @@ public class PlayerAnimationControl
         _playerControl.Anim.Play("Player_Damage_Big_KnockBack" + (i + 1));
     }
 
+    public void RePlace1(bool isStart)
+    {
+        if (isStart)
+        {
+            _playerControl.Anim.Play("Player_UpRePlace_1_Start");
+        }
+        else
+        {
+            _playerControl.Anim.SetTrigger("NextUp");
+        }
+    }
+
 }

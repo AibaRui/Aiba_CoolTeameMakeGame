@@ -73,10 +73,24 @@ public class DownAirState : PlayerStateBase
 
         _stateMachine.PlayerController.Move.DownSpeedOfSppedDash();
 
+        if(_stateMachine.PlayerController.Rb.velocity.y<-10 && !_stateMachine.PlayerController.PlayerPostEffectSetting.IsEnable)
+        {
+            //画面効果PostEffect_On
+            _stateMachine.PlayerController.PlayerPostEffectSetting.OnPostEffect();
+        }
+
+
         //ダメージ
         if (_stateMachine.PlayerController.PlayerDamage.IsDamage)
         {
             _stateMachine.TransitionTo(_stateMachine.DamageState);
+            return;
+        }
+
+        //位置調整
+        if(_stateMachine.PlayerController.PlayerReplace.IsRemove)
+        {
+            _stateMachine.TransitionTo(_stateMachine.EventState);
             return;
         }
 

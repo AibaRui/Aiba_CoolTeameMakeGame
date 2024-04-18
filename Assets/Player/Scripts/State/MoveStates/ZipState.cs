@@ -20,6 +20,10 @@ public class ZipState : PlayerStateBase
         _stateMachine.PlayerController.AnimControl.ZipAnim.SetZip(true);
 
         _stateMachine.PlayerController.EffectControl.ZipSet(true);
+
+
+        //‰æ–ÊŒø‰ÊPostEffect_On
+        _stateMachine.PlayerController.PlayerPostEffectSetting.OnPostEffect();
     }
 
     public override void Exit()
@@ -36,6 +40,9 @@ public class ZipState : PlayerStateBase
         _stateMachine.PlayerController.ZipLineRenderer.ResetZipLine();
 
         _stateMachine.PlayerController.EffectControl.ZipSet(false);
+
+        //‰æ–ÊŒø‰ÊPostEffect_Off
+        _stateMachine.PlayerController.PlayerPostEffectSetting.OffPostEffect();
     }
 
     public override void FixedUpdate()
