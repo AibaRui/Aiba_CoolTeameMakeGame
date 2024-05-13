@@ -91,6 +91,26 @@ public class SwingState : PlayerStateBase
         //ワイヤーを描画するまでの時間を計測
         _stateMachine.PlayerController.Swing.SwingJointSetting.CountDrowWireTime();
 
+        //Boss戦、接触確認
+        _stateMachine.PlayerController.PlayerBossHit.CheckHittingTime();
+
+        //Boss接触
+        if (_stateMachine.PlayerController.PlayerBossHit.IsHitBoss)
+        {
+            //ジャンプしないで終わる
+            _stateMachine.PlayerController.Swing.StopSwing(false);
+
+            //カメラの追従を始める
+            _stateMachine.PlayerController.CameraControl.SwingCameraControl.EndFollow();
+
+            //スピードの加減の設定
+            _stateMachine.PlayerController.VelocityLimit.DoSpeedUp();
+
+            _stateMachine.PlayerController.CameraControl.SwingCameraControl.SetUpEndOffSet(false, false, _stateMachine.PlayerController.Rb.velocity.y);
+            _stateMachine.TransitionTo((_stateMachine.EventState));
+            return;
+        }
+
         //壁が当たったら、WallRun状態に
         if (_stateMachine.PlayerController.WallRunCheck.CheckWalAlll())
         {

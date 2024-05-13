@@ -143,4 +143,28 @@ public class PlayerAnimationControl
         }
     }
 
+    public void BossHit(PlayerBossHitType type, bool second)
+    {
+        if (type == PlayerBossHitType.Front)
+        {
+            _playerControl.Anim.Play("Player_BossHit_Front");
+        }
+        else if (type == PlayerBossHitType.Up)
+        {
+            _playerControl.Anim.Play("Player_BossHit_Up");
+        }
+        else if (type == PlayerBossHitType.Sliding)
+        {
+            if (second)
+            {
+                _playerControl.Anim.SetTrigger("NextJump");
+            }
+            else
+            {
+                _playerControl.Anim.Play("Player_BossHit_Slide");
+
+            }
+        }
+    }
+
 }

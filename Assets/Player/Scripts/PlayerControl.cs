@@ -69,19 +69,20 @@ public class PlayerControl : MonoBehaviour, IDamageble, IReplaceble
     [SerializeField] private PlayerMaterial _materialChange;
 
 
-
+    [SerializeField] private PlayerBossHit _bossHit;
     [SerializeField] private SpecialHitStop _specialHitStop;
     [SerializeField] private PlayerStartMovieAndTutorial _tutorial;
 
     [SerializeField] private PlayerPostEffectSetting _playerPostEffectSetting;
     [SerializeField] private PlayerReplace _playerReplace;
+    public PlayerBossHit PlayerBossHit => _bossHit;
     public PlayerReplace PlayerReplace => _playerReplace;
     public PlayerPostEffectSetting PlayerPostEffectSetting => _playerPostEffectSetting;
 
 
-    private PlayerEventType _eventType = PlayerEventType.BossStage_Replace;
+    private PlayerBossEventType _eventType = PlayerBossEventType.BossStage_Replace;
 
-    public PlayerEventType EventType => _eventType;
+    public PlayerBossEventType EventType => _eventType;
 
     public SpecialHitStop SpecialHitStop => _specialHitStop;
     public PlayerStartMovieAndTutorial Tutorial => _tutorial;
@@ -227,20 +228,27 @@ public class PlayerControl : MonoBehaviour, IDamageble, IReplaceble
 
     public void EnterReplaceZone(ReplceType replceType)
     {
-       _playerReplace.EnterReplaceZone(replceType);
-        _eventType = PlayerEventType.BossStage_Replace;
+        _playerReplace.EnterReplaceZone(replceType);
+        SetEventType(PlayerBossEventType.BossStage_Replace);
     }
 
     public void ExitReplaceZone(ReplceType replceType)
     {
         _playerReplace.ExitReplaceZone();
     }
+
+    public void SetEventType(PlayerBossEventType eventType)
+    {
+        _eventType = eventType;
+    }
+
 }
 
-public enum PlayerEventType
+public enum PlayerBossEventType
 {
     /// <summary>BossêÌéûÇ…ÅAàÍíËÇÃçÇÇ≥Ç…ñﬂÇÈ</summary>
     BossStage_Replace,
+    BossStage_HitBoss
 
 
 }
