@@ -26,7 +26,7 @@ public class PlayerDamage
     [Header("ダメージのムービー")]
     [SerializeField] private PlayableDirector _movie1;
 
-    [SerializeField] private List<GameObject> _camera;
+   // [SerializeField] private List<GameObject> _camera;
 
 
     [SerializeField] private LineRenderer _lineRenderer;
@@ -77,8 +77,10 @@ public class PlayerDamage
             var impulseSource = _playerControl.gameObject.GetComponent<CinemachineImpulseSource>();
             impulseSource.GenerateImpulse();
 
+            //int i = Random.Range(0, 2);
+
             _playerControl.AnimControl.BigDamageAnim(0);
-            _playerControl.SpecialHitStop.SetHitStopInfo(0);
+            _playerControl.SpecialHitStop.SetHitStopInfo(0,true);
         }
     }
 

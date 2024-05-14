@@ -75,9 +75,18 @@ public class UpAirState : PlayerStateBase
         //Swingの実行待機時間の計測
         _stateMachine.PlayerController.Swing.SwingLimit.CountSwingLimitTime();
 
+        //Boss戦、接触確認
+        _stateMachine.PlayerController.PlayerBossHit.CheckHittingTime();
+
+        //Boss接触
+        if (_stateMachine.PlayerController.PlayerBossHit.IsHitBoss)
+        {
+            _stateMachine.TransitionTo((_stateMachine.EventState));
+            return;
+        }
 
         //ダメージ
-        if(_stateMachine.PlayerController.PlayerDamage.IsDamage)
+        if (_stateMachine.PlayerController.PlayerDamage.IsDamage)
         {
             _stateMachine.TransitionTo(_stateMachine.DamageState);
             return;

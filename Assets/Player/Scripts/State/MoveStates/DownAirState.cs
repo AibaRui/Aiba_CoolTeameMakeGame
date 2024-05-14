@@ -72,6 +72,10 @@ public class DownAirState : PlayerStateBase
         _stateMachine.PlayerController.Swing.SwingLimit.CountSwingLimitTime();
 
         _stateMachine.PlayerController.Move.DownSpeedOfSppedDash();
+        
+        //BossíAÚGŠm”F
+        _stateMachine.PlayerController.PlayerBossHit.CheckHittingTime();
+
 
         if(_stateMachine.PlayerController.Rb.velocity.y<-10 && !_stateMachine.PlayerController.PlayerPostEffectSetting.IsEnable)
         {
@@ -91,6 +95,13 @@ public class DownAirState : PlayerStateBase
         if(_stateMachine.PlayerController.PlayerReplace.IsRemove)
         {
             _stateMachine.TransitionTo(_stateMachine.EventState);
+            return;
+        }   
+
+        //BossÚG
+        if(_stateMachine.PlayerController.PlayerBossHit.IsHitBoss)
+        {
+            _stateMachine.TransitionTo((_stateMachine.EventState));
             return;
         }
 

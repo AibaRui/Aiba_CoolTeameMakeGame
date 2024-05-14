@@ -29185,7 +29185,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07e89cf40250d81499e69cb3049fba7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _tgameSceneName: NewBoss
+  _tgameSceneName: GameScene
 --- !u!4 &1044803175
 Transform:
   m_ObjectHideFlags: 0

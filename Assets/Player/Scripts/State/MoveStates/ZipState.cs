@@ -65,6 +65,16 @@ public class ZipState : PlayerStateBase
         //Zipの有効時間を計測
         _stateMachine.PlayerController.ZipMove.CountFrotZipTime();
 
+        //Boss戦、接触確認
+        _stateMachine.PlayerController.PlayerBossHit.CheckHittingTime();
+
+        //Boss接触
+        if (_stateMachine.PlayerController.PlayerBossHit.IsHitBoss)
+        {
+            _stateMachine.TransitionTo((_stateMachine.EventState));
+            return;
+        }
+
         if (_stateMachine.PlayerController.GroundCheck.IsHit())
         {
             //Swingのカメラの値のリセット

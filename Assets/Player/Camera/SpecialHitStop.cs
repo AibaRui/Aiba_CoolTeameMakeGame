@@ -19,6 +19,9 @@ public class SpecialHitStop : MonoBehaviour
     /// <summary>HitStopの際、描画したい画像</summary>
     private GameObject _hitStopImages;
 
+    /// <summary>描画したい演出</summary>
+    private List<GameObject> _hitStopObjects;
+
     /// <summary>HitStopの実行時間</summary>
     private float _finishTime = 0.7f;
 
@@ -28,10 +31,14 @@ public class SpecialHitStop : MonoBehaviour
     /// <summary>Hitstop実行中かどうか</summary>
     private bool _isHitStop = false;
 
+    private bool _isDoStopTime = false;
+
     /// <summary>HitStopの情報を設定</summary>
     /// <param name="i"></param>
-    public void SetHitStopInfo(int i)
+    public void SetHitStopInfo(int i, bool isDoStopTime)
     {
+        _isDoStopTime = isDoStopTime;
+
         foreach (var a in _specialHitStopInfos)
         {
             if (a.Number == (i + 1))
@@ -39,6 +46,7 @@ public class SpecialHitStop : MonoBehaviour
                 _finishTime = a.HitStopTime;
                 _setLayerMask = a.Layer;
                 _hitStopImages = a.UI;
+                _hitStopObjects = a.Objects;
                 return;
             }
         }
@@ -48,13 +56,34 @@ public class SpecialHitStop : MonoBehaviour
     /// <summary>HitStoo開始</summary>
     public void StartHitStop()
     {
-        Time.timeScale = 0f;
-
-        _isHitStop = true;
+        if (_isDoStopTime)
+        {
+            Time.timeScale = 0f;  
+            _isHitStop = true;
+        }
 
         Camera.main.cullingMask = _setLayerMask;
         _hitStopImages.SetActive(true);
+
+        foreach (var a in _hitStopObjects)
+        {
+            a.SetActive(true);
+        }
+
         _playerControl.PlayerMaterial.ChangePlayerMaterial(ModelMaterialType.GrayScal);
+    }
+
+    public void EndHitStop()
+    {
+        Camera.main.cullingMask = _defultLayerMask;
+        _hitStopImages.SetActive(false);
+        foreach (var a in _hitStopObjects)
+        {
+            a.SetActive(false);
+        }
+        Time.timeScale = 1f;
+        _playerControl.PlayerMaterial.ChangePlayerMaterial(ModelMaterialType.Nomal);
+        _timeCount = 0;
     }
 
     void Update()
@@ -68,6 +97,10 @@ public class SpecialHitStop : MonoBehaviour
         {
             Camera.main.cullingMask = _defultLayerMask;
             _hitStopImages.SetActive(false);
+            foreach (var a in _hitStopObjects)
+            {
+                a.SetActive(false);
+            }
             Time.timeScale = 1f;
             _playerControl.PlayerMaterial.ChangePlayerMaterial(ModelMaterialType.Nomal);
             _timeCount = 0;
@@ -90,11 +123,16 @@ public class SpecialHitStopInfo
     [Header("描画するUI")]
     [SerializeField] private GameObject _UI;
 
+    [Header("表示したい演出オブジェクト")]
+    [SerializeField] private List<GameObject> _objects;
+
     [Header("ヒットストップの実行時間")]
     [SerializeField] private float _hitStopTime = 0.7f;
 
     public int Number => _number;
     public LayerMask Layer => _layer;
     public GameObject UI => _UI;
+
+    public List<GameObject> Objects => _objects;
     public float HitStopTime => _hitStopTime;
 }
