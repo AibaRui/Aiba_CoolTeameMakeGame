@@ -84,7 +84,13 @@ public class PlayerStateMachine : StateMachine
     public void Init(PlayerControl playerController)
     {
         _playerController = playerController;
-        Initialize(_stateTutorial);
+
+        if (_playerController.Tutorial.IsEndTutorial)
+        {
+            Initialize(_stateTutorial);
+        }
+
+
     }
 
     protected override void StateInit()
