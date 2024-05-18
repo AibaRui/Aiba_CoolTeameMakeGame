@@ -13,6 +13,9 @@ public class BulletControl : MonoBehaviour
     [Header("’e")]
     [SerializeField] private GameObject _bullet;
 
+    [Header("’e‚Ì—LŒøŽžŠÔ")]
+    [SerializeField] private float _lifeTime = 8;
+
     [SerializeField] private BulletMove _bulletMove;
 
     private Rigidbody _rb;
@@ -20,6 +23,8 @@ public class BulletControl : MonoBehaviour
     private bool _isEnd;
 
     private GameObject _player;
+
+    private bool _isInit = false;
 
     public GameObject Bullet => _bullet;
     public GameObject Player => _player;
@@ -30,6 +35,7 @@ public class BulletControl : MonoBehaviour
 
     public void Init(GameObject player, GameObject enemy, Vector3 dir)
     {
+        _isInit= true;
         _rb = gameObject.GetComponent<Rigidbody>();
         _rb.useGravity = false;
 
@@ -40,6 +46,7 @@ public class BulletControl : MonoBehaviour
 
     void Update()
     {
+        if (!_isInit) return;
         CheckDis();
         _bulletMove.Move();
     }

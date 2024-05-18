@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class SetUp 
+public class SetUp
 {
     [Header("カメラのPriority")]
     [SerializeField] private int _cameraPriority = 30;
@@ -15,7 +15,7 @@ public class SetUp
 
     private bool _isEndCameraTransition;
 
-    public bool IsEndCameraTransition  =>_isEndCameraTransition;
+    public bool IsEndCameraTransition => _isEndCameraTransition;
 
 
     private PlayerControl _playerControl;
@@ -26,16 +26,49 @@ public class SetUp
     }
 
 
+    public void EnterSetUp()
+    {
+        _playerControl.AnimControl.SetUpSetBool(true);
+
+        //コントローラーを振動させる
+      //  _playerControl.ControllerVibrationManager.StartVibration(VivrationPower.SetUp);
+    }
+
+    public void ExitSetUp()
+    {
+        _playerControl.AnimControl.SetUpSetBool(false);
+
+        //コントローラーを振動させる
+        _playerControl.ControllerVibrationManager.StopVibration();
+
+        //タイムスケールを戻す
+        Time.timeScale = 1f;
+
+        _playerControl.CameraBrain.m_IgnoreTimeScale = false;
+
+        _playerControl.LineRenderer.positionCount = 0;
+
+        Quaternion r = _playerControl.PlayerT.rotation;
+        r.x = 0;
+        r.z = 0;
+
+        _playerControl.PlayerT.rotation = r;
+
+        //準備時間計測用のタイマーをリセット
+        _countTime = 0;
+
+        _isEndCameraTransition = false;
+    }
 
     public void SetUpCamera()
     {
-        Time.timeScale = 0.3f;
+        // Time.timeScale = 0.3f;
         _playerControl.CameraBrain.m_IgnoreTimeScale = true;
     }
 
     public void SetUping()
     {
-        Time.timeScale = 0.3f;
+        //  Time.timeScale = 0.3f;
         _playerControl.PlayerT.transform.forward = _playerControl.CameraGrapple.transform.forward;
 
         if (_countTime > _count)
@@ -52,25 +85,9 @@ public class SetUp
 
     public void SetEnd()
     {
-            //タイムスケールを戻す
-            Time.timeScale = 1f;
 
-            _playerControl.CameraBrain.m_IgnoreTimeScale = false;
-
-            _playerControl.LineRenderer.positionCount = 0;
-
-            Quaternion r = _playerControl.PlayerT.rotation;
-            r.x = 0;
-            r.z = 0;
-
-            _playerControl.PlayerT.rotation = r;
-
-            //準備時間計測用のタイマーをリセット
-            _countTime = 0;
-
-        _isEndCameraTransition = false;
     }
 
 
-    
+
 }

@@ -53,6 +53,8 @@ public class InputManager : MonoBehaviour
     private bool _isAttack;
     public bool IsAttack { get => _isAttack; }
 
+
+
     [Tooltip("回避")]
     private bool _isAvoid;
     public bool IsAvoid { get => _isAvoid; }

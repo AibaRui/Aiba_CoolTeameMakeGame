@@ -105,11 +105,15 @@ public class DownAirState : PlayerStateBase
             return;
         }
 
+
         //PoinZip
-        if (_stateMachine.PlayerController.PointZip.Search())
+        if (!_stateMachine.PlayerController.IsBossButtle)
         {
-            _stateMachine.TransitionTo(_stateMachine.PointZipState);
-            return;
+            if (_stateMachine.PlayerController.PointZip.Search())
+            {
+                _stateMachine.TransitionTo(_stateMachine.PointZipState);
+                return;
+            }
         }
 
         if (_stateMachine.PlayerController.InputManager.IsAttack)
@@ -155,10 +159,11 @@ public class DownAirState : PlayerStateBase
             return;
         }   //ínñ 
 
-        //  if (_stateMachine.PlayerController.InputManager.IsSetUp > 0)
-        // {
-        //      _stateMachine.TransitionTo(_stateMachine.StateGrappleSetUp);
-        // }   //ç\Ç¶
+        if (_stateMachine.PlayerController.InputManager.IsSetUp > 0)
+        {
+            _stateMachine.TransitionTo(_stateMachine.StateGrappleSetUp);
+            return;
+        }   //ç\Ç¶
 
         //if (_stateMachine.PlayerController.InputManager.IsAvoid && _stateMachine.PlayerController.Avoid.IsCanAvoid)
         //{

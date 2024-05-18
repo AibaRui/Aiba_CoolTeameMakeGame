@@ -93,11 +93,15 @@ public class UpAirState : PlayerStateBase
         }
 
         //PoinZip
-        if (_stateMachine.PlayerController.PointZip.Search())
+        if (!_stateMachine.PlayerController.IsBossButtle)
         {
-            _stateMachine.TransitionTo(_stateMachine.PointZipState);
-            return;
+            if (_stateMachine.PlayerController.PointZip.Search())
+            {
+                _stateMachine.TransitionTo(_stateMachine.PointZipState);
+                return;
+            }
         }
+
 
         if (_stateMachine.PlayerController.InputManager.IsAttack)
         {
@@ -105,6 +109,7 @@ public class UpAirState : PlayerStateBase
             {
                 _stateMachine.TransitionTo(_stateMachine.AttackState);
             }
+            return;
         }   //攻撃ステート
 
         //Zip
@@ -117,7 +122,7 @@ public class UpAirState : PlayerStateBase
         if (_stateMachine.PlayerController.SearchSwingPoint.Search())
         {
             if (_stateMachine.PlayerController.Swing.IsCanSwing &&
-                _stateMachine.PlayerController.Swing.SwingLimit.IsCanSwing && 
+                _stateMachine.PlayerController.Swing.SwingLimit.IsCanSwing &&
                 _stateMachine.PlayerController.InputManager.IsSwing == 1)
             {
                 _stateMachine.TransitionTo(_stateMachine.StateSwing);
@@ -131,11 +136,11 @@ public class UpAirState : PlayerStateBase
             return;
         }
 
-        //if (_stateMachine.PlayerController.InputManager.IsSetUp > 0)
-        //{
+        if (_stateMachine.PlayerController.InputManager.IsSetUp > 0)
+        {
 
-        //    _stateMachine.TransitionTo(_stateMachine.StateGrappleSetUp);
-        //}   //構え
+            _stateMachine.TransitionTo(_stateMachine.StateGrappleSetUp);
+        }   //構え
 
         //if (_stateMachine.PlayerController.InputManager.IsAvoid && _stateMachine.PlayerController.Avoid.IsCanAvoid)
         //{

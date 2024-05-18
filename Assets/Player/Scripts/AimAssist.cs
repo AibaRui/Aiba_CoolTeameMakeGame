@@ -78,7 +78,7 @@ public class AimAssist
         }
         else
         {
-            Debug.Log("“G‚ª‚¢‚È‚¢");
+           // Debug.Log("“G‚ª‚¢‚È‚¢");
             _isTargetting = false;
             _targettedObj = null;
         }

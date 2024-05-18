@@ -32,13 +32,13 @@ public class ModelMaterialData
     [SerializeField] private string _name;
 
     [Header("メッシュ")]
-    [SerializeField] private MeshRenderer _mesh;
+    [SerializeField] private SkinnedMeshRenderer _mesh;
     [Header("通常のマテリアル")]
     [SerializeField] private Material _nomalM;
     [Header("グレイスケールのマテリアル")]
     [SerializeField] private Material _grayM;
 
-    public MeshRenderer Mesh => _mesh;
+    public SkinnedMeshRenderer Mesh => _mesh;
     public Material NomalM => _nomalM;
     public Material GrayM => _grayM;
 }

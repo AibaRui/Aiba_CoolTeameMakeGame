@@ -29,11 +29,23 @@ public class ControllerVibrationManager : MonoBehaviour
         gamepad.SetMotorSpeeds(0f, 0f);
     }
 
-    public void StartVibration()
+    public void StartVibration(VivrationPower power)
     {
         if (gamepad != null)
         {
-            gamepad.SetMotorSpeeds(0.2f, 0.2f);
+            if (power == VivrationPower.Swing)
+            {
+                gamepad.SetMotorSpeeds(0.2f, 0.2f);
+            }
+            else if (power == VivrationPower.SetUp)
+            {
+                gamepad.SetMotorSpeeds(0.4f, 0.4f);
+            }
+            else
+            {
+                gamepad.SetMotorSpeeds(0.4f, 0.4f);
+            }
+
         }
     }
 
@@ -67,4 +79,11 @@ public class ControllerVibrationManager : MonoBehaviour
 
 
 
+}
+
+public enum VivrationPower
+{
+    Swing,
+    SetUp,
+    Power,
 }

@@ -119,7 +119,7 @@ public class Swing
     public void SwingSetting()
     {
         //コントローラーを振動させる
-        _playerControl.ControllerVibrationManager.StartVibration();
+        _playerControl.ControllerVibrationManager.StartVibration(VivrationPower.Swing);
 
         //スウィング開始時に地面に近かったら、y軸速度を0にする
         if (_playerControl.GroundCheck.IsHitSwingGround())

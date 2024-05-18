@@ -7,6 +7,8 @@ public class SetUpState : PlayerStateBase
 {
     public override void Enter()
     {
+        _stateMachine.PlayerController.SetUp.EnterSetUp();
+
         _stateMachine.PlayerController.SetUp.SetUpCamera();
 
         _stateMachine.PlayerController.CameraControl.UseCanera(CameraType.Setup);
@@ -14,6 +16,8 @@ public class SetUpState : PlayerStateBase
 
     public override void Exit()
     {
+        _stateMachine.PlayerController.SetUp.ExitSetUp();
+
         _stateMachine.PlayerController.SetUp.SetEnd();
     }
 
@@ -34,20 +38,28 @@ public class SetUpState : PlayerStateBase
 
         if (_stateMachine.PlayerController.InputManager.IsAttack && _stateMachine.PlayerController.Attack.IsCanAttack)
         {
-            _stateMachine.PlayerController.Attack.AttackEnemy();
+            _stateMachine.TransitionTo(_stateMachine.AttackState);
         }   //攻撃
 
         //各動作のクールタイム
         _stateMachine.PlayerController.CoolTimes();
 
-        if (_stateMachine.PlayerController.Grapple.SearchGrapplePoint())
+        //if (_stateMachine.PlayerController.Grapple.SearchGrapplePoint())
+        //{
+        //    //左トリガーが離れるか0になった時
+        //    if (_stateMachine.PlayerController.InputManager.IsSwing > 0)
+        //    {
+        //        _stateMachine.TransitionTo(_stateMachine.StateGrapple);
+        //    }
+        //}   //ワイヤーが当たり、Grapple可能
+
+
+        //ダメージ
+        if (_stateMachine.PlayerController.PlayerDamage.IsDamage)
         {
-            //左トリガーが離れるか0になった時
-            if (_stateMachine.PlayerController.InputManager.IsSwing > 0)
-            {
-                _stateMachine.TransitionTo(_stateMachine.StateGrapple);
-            }
-        }   //ワイヤーが当たり、Grapple可能
+            _stateMachine.TransitionTo(_stateMachine.DamageState);
+            return;
+        }
 
         //左トリガーが離れるか0になった時
         if (_stateMachine.PlayerController.InputManager.IsSetUp == 0)
