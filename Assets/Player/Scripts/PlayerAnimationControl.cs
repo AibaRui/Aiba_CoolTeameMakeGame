@@ -167,4 +167,20 @@ public class PlayerAnimationControl
         }
     }
 
+    public void BossMovieJump()
+    {
+        _playerControl.Anim.Play("Player_BossMovie_Jump");
+    }
+
+
+    public void SetUpSetBool(bool isSet)
+    {
+        _playerControl.Anim.SetBool("IsSetUp", isSet);
+    }
+
+    public void Attack()
+    {
+        _playerControl.Anim.SetTrigger("Attack");
+    }
+
 }

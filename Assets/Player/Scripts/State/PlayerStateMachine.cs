@@ -89,8 +89,14 @@ public class PlayerStateMachine : StateMachine
         {
             Initialize(_stateTutorial);
         }
-
-
+        else if (_playerController.IsBossButtle && _playerController.BossMovie.IsPlayMovie)
+        {
+            Initialize(_eventState);
+        }
+        else
+        {
+            Initialize(_stateIdle);
+        }
     }
 
     protected override void StateInit()

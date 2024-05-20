@@ -116,6 +116,7 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
     {
 
         transform.position = _startPos.position;
+        _playerControl.gameObject.transform.rotation = Quaternion.Euler(0, 270, 0);
 
         _playerControl.Rb.isKinematic = false;
         _isStart = true;
@@ -136,7 +137,7 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
         //チュートリアル用のアニメーション
         _playerControl.Anim.SetBool("IsTutorial", false);
 
-        _playerControl.Rb.velocity = new Vector3(-3, -10, -1);
+        _playerControl.Rb.velocity = new Vector3(-20, -10, -10);
 
         _isEnd = true;
 
@@ -163,10 +164,19 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
             _swingTutorialUI.gameObject.SetActive(true);
         }
 
+        //スロー中の速度設定
+        if (_isFirstTimeScaleDown && !_isInoutSwingButtun)
+        {
+            float t = _countEndMovieTimeToSwingTutorial - 1 / 1;
+            float d = Mathf.Lerp(_playerControl.Rb.velocity.y, -3, t);
+
+            _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, d, _playerControl.Rb.velocity.z);
+        }
+
+
         //さらに1秒経ったら、操作可能にする
         if (_countEndMovieTimeToSwingTutorial > _showUITime && !_isEndSwingTutorial && !_playerControl.InputManager.IsCanInput)
         {
-
             _isEnd = true;
 
             //入力を可能にする
@@ -178,14 +188,6 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
             _playerControl.Anim.speed = 0.2f;
         }
 
-        //スロー中の速度設定
-        if (_isFirstTimeScaleDown && !_isInoutSwingButtun)
-        {
-            float t = _countEndMovieTimeToSwingTutorial - 1 / 1;
-            float d = Mathf.Lerp(_playerControl.Rb.velocity.y, -3, t);
-
-            _playerControl.Rb.velocity = new Vector3(_playerControl.Rb.velocity.x, d, _playerControl.Rb.velocity.z);
-        }
 
 
         if (!_isInoutSwingButtun)
@@ -197,7 +199,7 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
                 _playerControl.Anim.speed = 1f;
 
                 Vector3 dir = transform.forward;
-                _playerControl.Rb.velocity = new Vector3(dir.x * 20, -20, dir.z * 20);
+                _playerControl.Rb.velocity = new Vector3(dir.x * 20, -10, dir.z * 20);
 
                 //SwingのチュートリアルUIを表示
                 // _swingTutorialUI.SetBool("On", false);
@@ -245,17 +247,6 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
                         _swingStartUI.SetActive(true);
                     }
                 }
-
-                if (_playerControl.transform.position.y < _stopSwingY && !_isStopSwingY)
-                {
-                    _isStopSwingY = true;
-                    _saveStopSwingPos = _playerControl.transform.position;
-                    _playerControl.Rb.velocity = Vector3.zero;
-                    _playerControl.Rb.isKinematic = true;
-                    _playerControl.Anim.speed = 0;
-                }
-
-
             }
 
         }

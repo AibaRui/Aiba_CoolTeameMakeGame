@@ -7,6 +7,8 @@ public class SetUpState : PlayerStateBase
 {
     public override void Enter()
     {
+        _stateMachine.PlayerController.SetUp.EnterSetUp();
+
         _stateMachine.PlayerController.SetUp.SetUpCamera();
 
         _stateMachine.PlayerController.CameraControl.UseCanera(CameraType.Setup);
@@ -14,6 +16,8 @@ public class SetUpState : PlayerStateBase
 
     public override void Exit()
     {
+        _stateMachine.PlayerController.SetUp.ExitSetUp();
+
         _stateMachine.PlayerController.SetUp.SetEnd();
     }
 
@@ -31,23 +35,6 @@ public class SetUpState : PlayerStateBase
     {
         //構え状態の
         _stateMachine.PlayerController.SetUp.SetUping();
-
-        if (_stateMachine.PlayerController.InputManager.IsAttack && _stateMachine.PlayerController.Attack.IsCanAttack)
-        {
-            _stateMachine.PlayerController.Attack.AttackEnemy();
-        }   //攻撃
-
-        //各動作のクールタイム
-        _stateMachine.PlayerController.CoolTimes();
-
-        if (_stateMachine.PlayerController.Grapple.SearchGrapplePoint())
-        {
-            //左トリガーが離れるか0になった時
-            if (_stateMachine.PlayerController.InputManager.IsSwing > 0)
-            {
-                _stateMachine.TransitionTo(_stateMachine.StateGrapple);
-            }
-        }   //ワイヤーが当たり、Grapple可能
 
         //左トリガーが離れるか0になった時
         if (_stateMachine.PlayerController.InputManager.IsSetUp == 0)
@@ -68,7 +55,36 @@ public class SetUpState : PlayerStateBase
                 }   //降下
 
             }   //空中にいる場合
-
+            return;
         }
+
+
+        if (_stateMachine.PlayerController.InputManager.IsAttack && _stateMachine.PlayerController.Attack.IsCanAttack)
+        {
+            _stateMachine.TransitionTo(_stateMachine.AttackState);
+            return;
+        }   //攻撃
+
+        //各動作のクールタイム
+        _stateMachine.PlayerController.CoolTimes();
+
+        //if (_stateMachine.PlayerController.Grapple.SearchGrapplePoint())
+        //{
+        //    //左トリガーが離れるか0になった時
+        //    if (_stateMachine.PlayerController.InputManager.IsSwing > 0)
+        //    {
+        //        _stateMachine.TransitionTo(_stateMachine.StateGrapple);
+        //    }
+        //}   //ワイヤーが当たり、Grapple可能
+
+
+        //ダメージ
+        if (_stateMachine.PlayerController.PlayerDamage.IsDamage)
+        {
+            _stateMachine.TransitionTo(_stateMachine.DamageState);
+            return;
+        }
+
+
     }
 }

@@ -7,17 +7,17 @@ public class AttackState : PlayerStateBase
 {
     public override void Enter()
     {
-        _stateMachine.PlayerController.Attack.AttackEnemy();
+        _stateMachine.PlayerController.Attack.AttackEnter();
     }
 
     public override void Exit()
     {
-
+        _stateMachine.PlayerController.Attack.AttackExit();
     }
 
     public override void FixedUpdate()
     {
-
+        _stateMachine.PlayerController.Attack.AttacFixedUpdata();
     }
 
     public override void LateUpdate()
@@ -27,6 +27,10 @@ public class AttackState : PlayerStateBase
 
     public override void Update()
     {
+        _stateMachine.PlayerController.Attack.AttackUpdata();
+
+        if (!_stateMachine.PlayerController.Attack.IsEndAttack) return;
+
         if (_stateMachine.PlayerController.Rb.velocity.y > 0)
         {
             _stateMachine.TransitionTo(_stateMachine.StateUpAir);

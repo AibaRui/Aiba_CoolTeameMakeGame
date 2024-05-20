@@ -72,12 +72,12 @@ public class DownAirState : PlayerStateBase
         _stateMachine.PlayerController.Swing.SwingLimit.CountSwingLimitTime();
 
         _stateMachine.PlayerController.Move.DownSpeedOfSppedDash();
-        
+
         //Boss戦、接触確認
         _stateMachine.PlayerController.PlayerBossHit.CheckHittingTime();
 
 
-        if(_stateMachine.PlayerController.Rb.velocity.y<-10 && !_stateMachine.PlayerController.PlayerPostEffectSetting.IsEnable)
+        if (_stateMachine.PlayerController.Rb.velocity.y < -10 && !_stateMachine.PlayerController.PlayerPostEffectSetting.IsEnable)
         {
             //画面効果PostEffect_On
             _stateMachine.PlayerController.PlayerPostEffectSetting.OnPostEffect();
@@ -92,33 +92,37 @@ public class DownAirState : PlayerStateBase
         }
 
         //位置調整
-        if(_stateMachine.PlayerController.PlayerReplace.IsRemove)
+        if (_stateMachine.PlayerController.PlayerReplace.IsRemove)
         {
             _stateMachine.TransitionTo(_stateMachine.EventState);
             return;
-        }   
+        }
 
         //Boss接触
-        if(_stateMachine.PlayerController.PlayerBossHit.IsHitBoss)
+        if (_stateMachine.PlayerController.PlayerBossHit.IsHitBoss)
         {
             _stateMachine.TransitionTo((_stateMachine.EventState));
             return;
         }
 
+
         //PoinZip
-        if (_stateMachine.PlayerController.PointZip.Search())
+        if (!_stateMachine.PlayerController.IsBossButtle)
         {
-            _stateMachine.TransitionTo(_stateMachine.PointZipState);
-            return;
+            if (_stateMachine.PlayerController.PointZip.Search())
+            {
+                _stateMachine.TransitionTo(_stateMachine.PointZipState);
+                return;
+            }
         }
 
-        if (_stateMachine.PlayerController.InputManager.IsAttack)
-        {
-            if (_stateMachine.PlayerController.Attack.IsCanAttack)
-            {
-                _stateMachine.TransitionTo(_stateMachine.AttackState);
-            }
-        }   //攻撃ステート
+        //if (_stateMachine.PlayerController.InputManager.IsAttack)
+        //{
+        //    if (_stateMachine.PlayerController.Attack.IsCanAttack)
+        //    {
+        //        _stateMachine.TransitionTo(_stateMachine.AttackState);
+        //    }
+        //}   //攻撃ステート
 
         //Zip
         if (_stateMachine.PlayerController.InputManager.IsJumping && _stateMachine.PlayerController.ZipMove.IsCanZip)
@@ -155,10 +159,15 @@ public class DownAirState : PlayerStateBase
             return;
         }   //地面
 
-        //  if (_stateMachine.PlayerController.InputManager.IsSetUp > 0)
-        // {
-        //      _stateMachine.TransitionTo(_stateMachine.StateGrappleSetUp);
-        // }   //構え
+        if (_stateMachine.PlayerController.IsBossButtle)
+        {
+            if (_stateMachine.PlayerController.InputManager.IsSetUp > 0)
+            {
+                _stateMachine.TransitionTo(_stateMachine.StateGrappleSetUp);
+                return;
+            }
+        }   //構え
+
 
         //if (_stateMachine.PlayerController.InputManager.IsAvoid && _stateMachine.PlayerController.Avoid.IsCanAvoid)
         //{
