@@ -132,17 +132,17 @@ public class Attack : IPlayerAction
     {
         _spownBullet = _playerControl.InstantiateObject(_bullet);
         _spownBullet.transform.position = _muzzlePos.position;
+
+        Vector3 dir = Camera.main.transform.forward;
+        _spownBullet.GetComponent<BulletControl>().Init(_playerControl.gameObject, _playerControl.AimAssist.GetLockOnEnemy(), dir);
     }
 
     public void AttackEnemy()
     {
-        Vector3 dir = Camera.main.transform.forward;
-
-
-        _spownBullet.GetComponent<BulletControl>().Init(_playerControl.gameObject, _playerControl.AimAssist.GetLockOnEnemy(), dir);
+        _spownBullet.GetComponent<BulletControl>().StartMove();
 
         _isCanAttack = false;
-         _spownBullet = null;
+        _spownBullet = null;
     }
 
 }

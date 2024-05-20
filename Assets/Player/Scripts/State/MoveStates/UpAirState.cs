@@ -103,14 +103,14 @@ public class UpAirState : PlayerStateBase
         }
 
 
-        if (_stateMachine.PlayerController.InputManager.IsAttack)
-        {
-            if (_stateMachine.PlayerController.Attack.IsCanAttack)
-            {
-                _stateMachine.TransitionTo(_stateMachine.AttackState);
-            }
-            return;
-        }   //攻撃ステート
+        //if (_stateMachine.PlayerController.InputManager.IsAttack)
+        //{
+        //    if (_stateMachine.PlayerController.Attack.IsCanAttack)
+        //    {
+        //        _stateMachine.TransitionTo(_stateMachine.AttackState);
+        //    }
+        //    return;
+        //}   //攻撃ステート
 
         //Zip
         if (_stateMachine.PlayerController.InputManager.IsJumping && _stateMachine.PlayerController.ZipMove.IsCanZip)
@@ -136,10 +136,13 @@ public class UpAirState : PlayerStateBase
             return;
         }
 
-        if (_stateMachine.PlayerController.InputManager.IsSetUp > 0)
+        if (_stateMachine.PlayerController.IsBossButtle)
         {
-
-            _stateMachine.TransitionTo(_stateMachine.StateGrappleSetUp);
+            if (_stateMachine.PlayerController.InputManager.IsSetUp > 0)
+            {
+                _stateMachine.TransitionTo(_stateMachine.StateGrappleSetUp);
+                return;
+            }
         }   //構え
 
         //if (_stateMachine.PlayerController.InputManager.IsAvoid && _stateMachine.PlayerController.Avoid.IsCanAvoid)

@@ -60,6 +60,8 @@ public class SwingJoint
         //つまり自分の居る位置にアンカーを刺してそこでぶら下がっている状態。なのでオフにする
         _playerControl.Joint.autoConfigureConnectedAnchor = false;
 
+        _playerControl.Joint.anchor = Vector3.zero;
+
         _playerControl.Joint.connectedAnchor = hitPoint;
 
         _playerControl.Joint.maxDistance = distanceFromPoint * 1f;

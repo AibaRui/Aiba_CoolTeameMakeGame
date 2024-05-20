@@ -36,9 +36,33 @@ public class SetUpState : PlayerStateBase
         //構え状態の
         _stateMachine.PlayerController.SetUp.SetUping();
 
+        //左トリガーが離れるか0になった時
+        if (_stateMachine.PlayerController.InputManager.IsSetUp == 0)
+        {
+            if (_stateMachine.PlayerController.GroundCheck.IsHit())
+            {
+                _stateMachine.TransitionTo(_stateMachine.StateIdle);
+            }   //地面にいる場合
+            else
+            {
+                if (_stateMachine.PlayerController.Rb.velocity.y > 0)
+                {
+                    _stateMachine.TransitionTo(_stateMachine.StateUpAir);
+                }   //上昇
+                else
+                {
+                    _stateMachine.TransitionTo(_stateMachine.StateDownAir);
+                }   //降下
+
+            }   //空中にいる場合
+            return;
+        }
+
+
         if (_stateMachine.PlayerController.InputManager.IsAttack && _stateMachine.PlayerController.Attack.IsCanAttack)
         {
             _stateMachine.TransitionTo(_stateMachine.AttackState);
+            return;
         }   //攻撃
 
         //各動作のクールタイム
@@ -61,26 +85,6 @@ public class SetUpState : PlayerStateBase
             return;
         }
 
-        //左トリガーが離れるか0になった時
-        if (_stateMachine.PlayerController.InputManager.IsSetUp == 0)
-        {
-            if (_stateMachine.PlayerController.GroundCheck.IsHit())
-            {
-                _stateMachine.TransitionTo(_stateMachine.StateIdle);
-            }   //地面にいる場合
-            else
-            {
-                if (_stateMachine.PlayerController.Rb.velocity.y > 0)
-                {
-                    _stateMachine.TransitionTo(_stateMachine.StateUpAir);
-                }   //上昇
-                else
-                {
-                    _stateMachine.TransitionTo(_stateMachine.StateDownAir);
-                }   //降下
 
-            }   //空中にいる場合
-
-        }
     }
 }

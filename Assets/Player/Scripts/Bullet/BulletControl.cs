@@ -35,13 +35,17 @@ public class BulletControl : MonoBehaviour
 
     public void Init(GameObject player, GameObject enemy, Vector3 dir)
     {
-        _isInit= true;
         _rb = gameObject.GetComponent<Rigidbody>();
         _rb.useGravity = false;
 
         _player = player;
 
         _bulletMove.Init(this, enemy, dir, _speed);
+    }
+
+    public void StartMove()
+    {
+        _isInit = true;
     }
 
     void Update()

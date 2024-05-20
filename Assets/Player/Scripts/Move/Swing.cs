@@ -110,7 +110,18 @@ public class Swing
     /// <summary>Swingの速度制限</summary>
     public void SetSpeedSwing()
     {
-        _playerControl.VelocityLimit.SetLimit(_limitSpeed.x, _limitSpeed.y, -50, _limitSpeed.z);
+        if (_playerControl.Rb.velocity.y < -25)
+        {
+            _playerControl.VelocityLimit.SetLimit(_limitSpeed.x, _limitSpeed.y, -50, _limitSpeed.z);
+        }
+        else if (_playerControl.Rb.velocity.y < -10)
+        {
+            _playerControl.VelocityLimit.SetLimit(_limitSpeed.x, _limitSpeed.y, -40, _limitSpeed.z);
+        }
+        else
+        {
+            _playerControl.VelocityLimit.SetLimit(_limitSpeed.x, _limitSpeed.y, -30, _limitSpeed.z);
+        }
     }
 
 
@@ -162,13 +173,14 @@ public class Swing
 
         if (y < _playerControl.SearchSwingPoint.MinWireLong)
         {
+            Debug.Log("再設定");
             _playerControl.SearchSwingPoint.RealSwingPoint = new Vector3(_playerControl.SearchSwingPoint.RealSwingPoint.x, _playerControl.PlayerT.transform.position.y + _playerControl.SearchSwingPoint.MinWireLong, _playerControl.SearchSwingPoint.RealSwingPoint.y);
         }
 
 
         swingPoint = _playerControl.SearchSwingPoint.RealSwingPoint;
 
-
+        Debug.Log("ポイント:P_" + _playerControl.gameObject.transform.position + "R:" + swingPoint);
 
 
         Vector3 loapPoint = _playerControl.SearchSwingPoint.SwingPos;
@@ -263,6 +275,7 @@ public class Swing
                 _swingJoint.SetJointDistance(_distanceFromPoint, _distanceFromPoint);
 
                 _isDown = true;
+                Debug.Log("近い");
             }
         }
 
@@ -297,6 +310,7 @@ public class Swing
         }
         else if (_isDown)
         {
+            Debug.Log("あげ");
             _playerControl.Rb.AddForce(Vector3.up * _addUpPowerEndIsDown);
             speed += _addFrontPowerEndIsDown;
         }   //Swingの降下が終わっっていたら

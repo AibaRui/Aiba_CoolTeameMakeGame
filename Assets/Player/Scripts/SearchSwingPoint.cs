@@ -210,7 +210,7 @@ public class SearchSwingPoint : IPlayerAction
                     {
                         if (_playerControl.Rb.velocity.y < _playerControl.Swing.HighSpeedFallspeedY)
                         {
-                            _swingPosition.y = _playerControl.PlayerT.position.y + 10;
+                            _swingPosition.y = _playerControl.PlayerT.position.y + 6;
                         }
                         else
                         {
