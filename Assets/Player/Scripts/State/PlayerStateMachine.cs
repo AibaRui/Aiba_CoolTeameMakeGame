@@ -96,6 +96,7 @@ public class PlayerStateMachine : StateMachine
         else
         {
             Initialize(_stateIdle);
+            Debug.Log("Start_Idle");
         }
     }
 

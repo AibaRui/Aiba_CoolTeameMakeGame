@@ -164,8 +164,6 @@ public class InputManager : MonoBehaviour
         _horizontalInput = Input.GetAxisRaw("Horizontal");
         _verticalInput = Input.GetAxisRaw("Vertical");
 
-        //Debug.Log(_horizontalInput);
-
         //マウスの左クリック
         _isLeftMouseClickDown = Input.GetMouseButtonDown(0);
         _isLeftMouseClickUp = Input.GetMouseButtonUp(0);
@@ -213,5 +211,6 @@ public class InputManager : MonoBehaviour
         if (!_isCanInput) return;
 
         HandleInput();
-    }
+
+   }
 }

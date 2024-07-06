@@ -27,8 +27,6 @@ public class PlayerControl : MonoBehaviour, IDamageble, IReplaceble
     [Header("当たり判定")]
     [SerializeField] private CapsuleCollider _collider;
 
-    public bool IsBossButtle => _isBossButtle;
-    public CapsuleCollider PlayerCollider => _collider;
 
     [SerializeField] private Rigidbody _rb;
     [SerializeField] private InputManager _inputManager;
@@ -80,25 +78,31 @@ public class PlayerControl : MonoBehaviour, IDamageble, IReplaceble
     [SerializeField] private PlayerPostEffectSetting _playerPostEffectSetting;
     [SerializeField] private PlayerReplace _playerReplace;
     [SerializeField] private PlayerBossMovie _bossMovie;
+
+
+
+
+
+    [SerializeField] private CinemachineBrain _CameraBrain;
+    [SerializeField] private CinemachineVirtualCamera _cameraGrapple;
+
+    private CinemachineVirtualCamera _camera;
+    private SpringJoint _joint;
+
+
+    /// <summary>ボス戦のイベントタイプ</summary>
+    private PlayerBossEventType _eventType = PlayerBossEventType.BossMovie;
+
+
+    public bool IsBossButtle => _isBossButtle;
+    public CapsuleCollider PlayerCollider => _collider;
     public PlayerBossMovie BossMovie => _bossMovie;
     public PlayerBossHit PlayerBossHit => _bossHit;
     public PlayerReplace PlayerReplace => _playerReplace;
     public PlayerPostEffectSetting PlayerPostEffectSetting => _playerPostEffectSetting;
-
-
-    private PlayerBossEventType _eventType = PlayerBossEventType.BossMovie;
-
     public PlayerBossEventType EventType => _eventType;
-
     public SpecialHitStop SpecialHitStop => _specialHitStop;
     public PlayerStartMovieAndTutorial Tutorial => _tutorial;
-
-    [SerializeField] private CinemachineBrain _CameraBrain;
-    private CinemachineVirtualCamera _camera;
-    [SerializeField] private CinemachineVirtualCamera _cameraGrapple;
-
-    private SpringJoint _joint;
-
     public PlayerMaterial PlayerMaterial => _materialChange;
     public PlayerModelRotation PlayerModelRotation => _playerModelRotation;
     public Transform ModelTop => _modelTop;

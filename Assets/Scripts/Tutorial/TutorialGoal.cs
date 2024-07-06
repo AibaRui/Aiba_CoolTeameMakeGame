@@ -11,7 +11,16 @@ public class TutorialGoal : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         other.gameObject.TryGetComponent<IEnterTutorialGoalble>(out IEnterTutorialGoalble t);
-        t.EnterZone(_type);
+
+        if (t == null)
+        {
+            Debug.Log(other.gameObject.name + ":Null:" + t);
+        }
+        else
+        {
+            t.EnterZone(_type);
+        }
+
         Destroy(gameObject);
     }
 

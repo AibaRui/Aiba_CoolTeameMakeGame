@@ -4,13 +4,19 @@ using UnityEngine;
 
 public class BossWeakPoint : MonoBehaviour, IDamageble
 {
-    [SerializeField] private BossHitDirection _hit;
+    [Header("Žã“_‚ÌˆÊ’u")]
+    [SerializeField] private BossDamagePoint _damagePoint;
 
-    [SerializeField] private LayerMask _layer;
+     private BossHp _hp;
+
+    public void Init(BossHp bossHp)
+    {
+        _hp= bossHp;
+    }
 
     public void Damage(DamageType type)
     {
-        _hit.BossDamageStartDirection();
+        _hp.Damage(type,_damagePoint);
     }
 
 

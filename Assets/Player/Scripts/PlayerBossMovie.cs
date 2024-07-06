@@ -19,6 +19,8 @@ public class PlayerBossMovie : MonoBehaviour
 
     [Header("ボス")]
     [SerializeField] private Transform _boss;
+    [SerializeField] private BossControl _bossControl;
+
 
     [Header("プレイヤーとUIのみのレイヤー")]
     [SerializeField] private LayerMask _onlyLayer;
@@ -72,6 +74,7 @@ public class PlayerBossMovie : MonoBehaviour
     {
         _playerControl.InputManager.IsCanInput = false;
         _playerControl.Rb.isKinematic = true;
+        _bossControl.IsMovie = true;
     }
 
     /// <summary>ボス登場の映像が終わった</summary>

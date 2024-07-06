@@ -27,22 +27,31 @@ public class BulletMove
         {
             Vector3 dir = default;
 
-            if (_bulletControl.IsEnd)
+            if (_lockOnEnemy != null)
             {
-                Vector3 playerDir = _bulletControl.Player.transform.position - _bulletControl.gameObject.transform.position;
-                dir = playerDir.normalized;
+                dir = _lockOnEnemy.transform.position - _bulletControl.Bullet.transform.position;
             }
             else
             {
-                if (_lockOnEnemy != null)
-                {
-                    dir = _lockOnEnemy.transform.position - _bulletControl.Bullet.transform.position; 
-                }
-                else
-                {
-                    dir = _dir;
-                }
+                dir = _dir;
             }
+
+            //if (_bulletControl.IsEnd)
+            //{
+            //    Vector3 playerDir = _bulletControl.Player.transform.position - _bulletControl.gameObject.transform.position;
+            //    dir = playerDir.normalized;
+            //}
+            //else
+            //{
+            //    if (_lockOnEnemy != null)
+            //    {
+            //        dir = _lockOnEnemy.transform.position - _bulletControl.Bullet.transform.position; 
+            //    }
+            //    else
+            //    {
+            //        dir = _dir;
+            //    }
+            //}
 
             _bulletControl.Rb.velocity = dir * _speed;
         }

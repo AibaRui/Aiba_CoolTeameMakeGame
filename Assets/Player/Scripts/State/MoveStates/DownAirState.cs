@@ -24,6 +24,7 @@ public class DownAirState : PlayerStateBase
 
     public override void FixedUpdate()
     {
+
         if (_stateMachine.PlayerController.InputManager.HorizontalInput != 0 || _stateMachine.PlayerController.InputManager.VerticalInput != 0)
             _stateMachine.PlayerController.Move.AirMove();
 

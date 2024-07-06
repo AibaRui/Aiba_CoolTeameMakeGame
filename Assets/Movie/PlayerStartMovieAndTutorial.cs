@@ -7,6 +7,7 @@ using UnityEngine.Playables;
 public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
 {
     [SerializeField] private PlayerControl _playerControl;
+    [SerializeField] private CameraControl _cameraControl;
 
     [SerializeField] private PlayableDirector _movie;
 
@@ -73,13 +74,29 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
 
     void Start()
     {
+        if (_playerControl.IsBossButtle)
+        {
+            _isEndTutorial = true;
+            _isEnd = true;
+
+            _isEndSwingTutorial = true;
+
+
+            _playerControl.InputManager.IsCanInput = true;
+
+            //チュートリアル用のアニメーション
+            _playerControl.Anim.SetBool("IsTutorial", false);
+            _brain.m_BlendUpdateMethod = CinemachineBrain.BrainUpdateMethod.FixedUpdate;
+            _brain.m_UpdateMethod = CinemachineBrain.UpdateMethod.FixedUpdate;
+            return;
+        }
+
+
         if (_isTutorial)
         {
             _movie.Play();
             //チュートリアル用のアニメーション
             _playerControl.Anim.SetBool("IsTutorial", true);
-
-
 
             if (_isPlayMovie)
             {
@@ -92,6 +109,8 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
                 StartMovieEnterStartPosition();
                 _isEndTutorial = true;
             }
+
+            _cameraControl.IsTutorial = true;
         }
         else
         {
@@ -131,6 +150,7 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
         _brain.m_UpdateMethod = CinemachineBrain.UpdateMethod.FixedUpdate;
     }
 
+    /// <summary>ムービー再生終了後、プレイヤーを開始地点に移動させる</summary>
     public void StartMovieEnterStartPosition()
     {
         transform.position = _startPos.position;
@@ -177,6 +197,8 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
         //さらに1秒経ったら、操作可能にする
         if (_countEndMovieTimeToSwingTutorial > _showUITime && !_isEndSwingTutorial && !_playerControl.InputManager.IsCanInput)
         {
+            _playerControl.Rb.isKinematic = true;
+            _playerControl.Rb.velocity = Vector3.zero;
             _isEnd = true;
 
             //入力を可能にする
@@ -185,19 +207,25 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
             //チュートリアル用のアニメーション
             _playerControl.Anim.SetBool("IsTutorial", false);
 
-            _playerControl.Anim.speed = 0.2f;
+            _playerControl.Anim.speed = 0f;
         }
 
 
 
+        //初めて、スウィングのボタンを押した際の処理
         if (!_isInoutSwingButtun)
         {
             if (_playerControl.InputManager.IsSwing == 1)
             {
+                //カメラを動かせるようにする
+                _cameraControl.IsTutorial = false;
+
                 _isInoutSwingButtun = true;
                 _isEndTutorial = true;
+                _isEndSwingTutorial = true;
                 _playerControl.Anim.speed = 1f;
 
+                _playerControl.Rb.isKinematic = false;
                 Vector3 dir = transform.forward;
                 _playerControl.Rb.velocity = new Vector3(dir.x * 20, -10, dir.z * 20);
 
@@ -275,7 +303,6 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
         {
             CountEndMovieToSwingTutorial();
         }
-
     }
 
 
