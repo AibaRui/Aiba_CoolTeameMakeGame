@@ -91,7 +91,7 @@ Material:
     - _EnvironmentReflections: 1
     - _GlitchIntensity: 6.84
     - _GlitchScale: 10.4
-    - _GlitchSpeed: 29.8
+    - _GlitchSpeed: -21.5
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0

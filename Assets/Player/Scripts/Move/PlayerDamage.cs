@@ -102,6 +102,7 @@ public class PlayerDamage
     {
         if (_isLineRenderer)
         {
+            _lineRenderer.positionCount = 2;
             _lineRenderer.SetPosition(0, _medal.position);
             _lineRenderer.SetPosition(1, _armPos.position);
         }

@@ -104,7 +104,7 @@ public class SpecialHitStop : MonoBehaviour
             Time.timeScale = 1f;
             _playerControl.PlayerMaterial.ChangePlayerMaterial(ModelMaterialType.Nomal);
             _timeCount = 0;
-
+            _isHitStop = false;
         }
     }
 }

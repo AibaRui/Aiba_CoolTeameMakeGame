@@ -20,6 +20,8 @@ public class BulletControl : MonoBehaviour
 
     private Rigidbody _rb;
 
+    private Vector3 _startPos;
+
     private bool _isEnd;
 
     private GameObject _player;
@@ -39,6 +41,7 @@ public class BulletControl : MonoBehaviour
         _rb.useGravity = false;
 
         _player = player;
+        _startPos = _player.transform.position;
 
         _bulletMove.Init(this, enemy, dir, _speed);
     }
@@ -58,6 +61,7 @@ public class BulletControl : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         _isEnd = true;
+        Destroy(gameObject);
     }
 
 
@@ -76,23 +80,11 @@ public class BulletControl : MonoBehaviour
     /// <summary>飛距離を確認する </summary>
     public void CheckDis()
     {
-        if (!_isEnd)
-        {
-            float dis = Vector3.Distance(_player.transform.position, transform.position);
+        float dis = Vector3.Distance(_startPos, transform.position);
 
-            if (dis >= _maxLong)
-            {
-                _isEnd = true;
-            }
-        }   //最大飛距離まで飛んでいるかを確認
-        else
+        if (dis >= _maxLong)
         {
-            float dis = Vector3.Distance(_player.transform.position, transform.position);
-
-            if (dis < 1)
-            {
-                Destroy(gameObject);
-            }
+            Destroy(gameObject);
         }
     }
 }

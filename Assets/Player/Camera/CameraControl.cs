@@ -74,10 +74,9 @@ public class CameraControl : MonoBehaviour
 
     private CinemachinePOV _swingCinemachinePOV;
     private CinemachineFramingTransposer _swingCameraFraming;
-    public CinemachineVirtualCamera WallRunCameraController => _wallRunControllerCamera;
-    public CinemachinePOV _groundCameraPOV;
-    public CinemachinePOV GroundCameraPOV => _groundCameraPOV;
-    public CinemachineVirtualCamera PointZipVirtualCamera => _pointZipControllerCamera; 
+
+    private bool _isTutorial = false;
+    public bool IsTutorial { get => _isTutorial; set => _isTutorial = value; }
 
     private bool _isUpEnd = false;
 
@@ -97,21 +96,21 @@ public class CameraControl : MonoBehaviour
     public ZipCameraControl ZipCameraControl => _zipCameraControl;
     /// <summary>WallRun時のカメラの挙動に関する処理をまとめたクラス</summary>
     public WallRunCameraControl WallRunCameraControl => _wallRunCamera;
-
-
     /// <summary>一定時間カメラ操作をコントローラーでしていないかどうか</summary>
     public bool IsDontCameraMove => _isDontCameraMove;
-
-
-
     public CinemachineVirtualCamera SwingCamera => _swingControllerCamera;
     public CinemachinePOV SwingCinemachinePOV => _swingCinemachinePOV;
     public CinemachineFramingTransposer SwingCameraFraming { get => _swingCameraFraming; set => _swingCameraFraming = value; }
 
     public PlayerControl PlayerControl => _playerControl;
     public float SwingEndPlayerRotateY { get => _swingEndPlayerRotateY; set => _swingEndPlayerRotateY = value; }
-
+    public CinemachineVirtualCamera WallRunCameraController => _wallRunControllerCamera;
+    public CinemachinePOV _groundCameraPOV;
+    public CinemachinePOV GroundCameraPOV => _groundCameraPOV;
+    public CinemachineVirtualCamera PointZipVirtualCamera => _pointZipControllerCamera;
     public bool IsEndAutpFollow { get => _isEndAutoFollow; set => _isEndAutoFollow = value; }
+
+
     void Awake()
     {
         UpdateCameraSettings();
@@ -126,6 +125,8 @@ public class CameraControl : MonoBehaviour
 
     void Update()
     {
+        if (_isTutorial) return;
+
         if (allowRuntimeCameraSettingsChanges)
         {
             UpdateCameraSettings();
