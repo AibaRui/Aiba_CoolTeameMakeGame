@@ -30,6 +30,8 @@ public class SetUp
     {
         _playerControl.AnimControl.SetUpSetBool(true);
 
+        _playerControl.VelocityLimit.SetLimit(10, 10, -10, 10);
+
         //コントローラーを振動させる
       //  _playerControl.ControllerVibrationManager.StartVibration(VivrationPower.SetUp);
     }
