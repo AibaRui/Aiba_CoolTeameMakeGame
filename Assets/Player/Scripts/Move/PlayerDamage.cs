@@ -23,10 +23,12 @@ public class PlayerDamage
     [Header("ボスの中心座標")]
     [SerializeField] private Transform _bossCenterPos;
 
-    [Header("ダメージのムービー")]
-    [SerializeField] private PlayableDirector _movie1;
+    [Header("固定のムービーを再生するかどうか")]
+    [SerializeField] private bool _isSetPlayMovie = false;
+    [Header("どの固定のムービーを再生するか")]
+    [SerializeField] private int _setPlayMovieNum = 1;
 
-   // [SerializeField] private List<GameObject> _camera;
+    // [SerializeField] private List<GameObject> _camera;
 
 
     [SerializeField] private LineRenderer _lineRenderer;
@@ -72,15 +74,36 @@ public class PlayerDamage
         {
             _isBossBigDamgeEnd = false;
             CheckMoveDirection();
-            _movie1?.Play();
+
+
+            if (_isSetPlayMovie)
+            {
+                //ダメージムービーを再生
+                _playerControl.SpecialHitStop.SpecialHitStopInfos[_setPlayMovieNum-1].Movie?.Play();
+                //アニメーションを再生
+                _playerControl.AnimControl.BigDamageAnim(_playerControl.SpecialHitStop.SpecialHitStopInfos[_setPlayMovieNum - 1].AnimationName);
+                //HitStopを再生
+                _playerControl.SpecialHitStop.SetHitStopInfo(_setPlayMovieNum-1, true);
+            }
+            else
+            {
+                //どのダメージムービーを再生するか決定
+                var r = Random.Range(1, _playerControl.SpecialHitStop.SpecialHitStopInfos.Count + 1);
+                //ダメージムービーを再生
+                _playerControl.SpecialHitStop.SpecialHitStopInfos[r].Movie?.Play();
+                //アニメーションを再生
+                _playerControl.AnimControl.BigDamageAnim(_playerControl.SpecialHitStop.SpecialHitStopInfos[r].AnimationName);
+                //HitStopを再生
+                _playerControl.SpecialHitStop.SetHitStopInfo(r - 1, true);
+            }
+
 
             var impulseSource = _playerControl.gameObject.GetComponent<CinemachineImpulseSource>();
             impulseSource.GenerateImpulse();
 
             //int i = Random.Range(0, 2);
 
-            _playerControl.AnimControl.BigDamageAnim(0);
-            _playerControl.SpecialHitStop.SetHitStopInfo(0,true);
+
         }
     }
 
@@ -110,14 +133,14 @@ public class PlayerDamage
 
     public void OnLine(bool isOn)
     {
-        if(isOn)
+        if (isOn)
         {
-            _isLineRenderer= true;
+            _isLineRenderer = true;
         }
         else
         {
-            _isLineRenderer= false;
-            _lineRenderer.positionCount= 0;
+            _isLineRenderer = false;
+            _lineRenderer.positionCount = 0;
         }
     }
 
@@ -135,7 +158,7 @@ public class PlayerDamage
 
             var rayHit = Physics.SphereCast(_playerControl.transform.position, _sphyerHalfSize, dir, out RaycastHit hit, Vector3.Distance(_playerControl.transform.position, r.position), _layer);
 
-            //あたった場合は移動不可
+            //障害物にあたった場合は移動不可
             if (rayHit) continue;
 
             //距離の近い方に飛ぶ
@@ -147,6 +170,26 @@ public class PlayerDamage
                 _bigDamageMovePos = r;
             }
         }
+
+        if(_bigDamageMovePos == null)
+        {
+            foreach (var r in _damageMovePoss)
+            {
+                //各移動場所へのベクトル
+                Vector3 dir = r.position - _playerControl.transform.position;
+
+                var rayHit = Physics.SphereCast(_playerControl.transform.position, _sphyerHalfSize, dir, out RaycastHit hit, Vector3.Distance(_playerControl.transform.position, r.position), _layer);
+                //距離の近い方に飛ぶ
+                float d = Vector3.Distance(_playerControl.transform.position, r.position);
+
+                if (dis == 0 || dis > d)
+                {
+                    dis = d;
+                    _bigDamageMovePos = r;
+                }
+            }
+        }
+
 
         Vector3 moveDir = _bigDamageMovePos.position - _playerControl.transform.position;
         _playerControl.Rb.velocity = moveDir.normalized * _bigDamageMoveSpeed;

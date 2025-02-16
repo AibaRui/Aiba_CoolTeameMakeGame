@@ -263,5 +263,12 @@ public class SwingState : PlayerStateBase
             if (_stateMachine.PlayerController.Rb.velocity.y > 0) _stateMachine.TransitionTo(_stateMachine.StateUpAir);
             else _stateMachine.TransitionTo(_stateMachine.StateDownAir);
         }
+
+        //Eventî≠ê∂
+        if (_stateMachine.PlayerController.IsEvent)
+        {
+            _stateMachine.TransitionTo(_stateMachine.EventState);
+            return;
+        }
     }
 }

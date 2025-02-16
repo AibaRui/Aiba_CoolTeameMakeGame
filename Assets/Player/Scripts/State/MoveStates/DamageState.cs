@@ -7,7 +7,7 @@ public class DamageState : PlayerStateBase
 {
     public override void Enter()
     {
-
+        _stateMachine.PlayerController.VantanConnectNexusEvent.KnockWindow();
     }
 
     public override void Exit()

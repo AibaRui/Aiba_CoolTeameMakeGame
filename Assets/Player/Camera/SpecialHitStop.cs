@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Playables;
 
 public class SpecialHitStop : MonoBehaviour
 {
@@ -33,6 +34,8 @@ public class SpecialHitStop : MonoBehaviour
 
     private bool _isDoStopTime = false;
 
+    public List<SpecialHitStopInfo> SpecialHitStopInfos => _specialHitStopInfos;
+         
     /// <summary>HitStopの情報を設定</summary>
     /// <param name="i"></param>
     public void SetHitStopInfo(int i, bool isDoStopTime)
@@ -117,6 +120,8 @@ public class SpecialHitStopInfo
     [Header("識別番号")]
     [SerializeField] private int _number;
 
+    [SerializeField] private PlayableDirector _movie;
+
     [Header("描画するレイヤー")]
     [SerializeField] private LayerMask _layer;
 
@@ -129,6 +134,11 @@ public class SpecialHitStopInfo
     [Header("ヒットストップの実行時間")]
     [SerializeField] private float _hitStopTime = 0.7f;
 
+    [Header("Animation名")]
+    [SerializeField] private string _animeationName;
+
+    public string AnimationName => _animeationName;
+    public PlayableDirector Movie => _movie;
     public int Number => _number;
     public LayerMask Layer => _layer;
     public GameObject UI => _UI;

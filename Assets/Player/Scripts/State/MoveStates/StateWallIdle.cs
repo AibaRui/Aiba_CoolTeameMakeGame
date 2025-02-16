@@ -89,5 +89,12 @@ public class StateWallIdle : PlayerStateBase
 
         }
 
+        //Eventî≠ê∂
+        if (_stateMachine.PlayerController.IsEvent)
+        {
+            _stateMachine.TransitionTo(_stateMachine.EventState);
+            return;
+        }
+
     }
 }

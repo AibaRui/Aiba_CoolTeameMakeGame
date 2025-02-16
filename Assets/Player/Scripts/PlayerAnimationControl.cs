@@ -126,9 +126,9 @@ public class PlayerAnimationControl
         _playerControl.Anim.SetTrigger("IsPointZipJump");
     }
 
-    public void BigDamageAnim(int i)
+    public void BigDamageAnim(string name)
     {
-        _playerControl.Anim.Play("Player_Damage_Big_KnockBack" + (i + 1));
+        _playerControl.Anim.Play(name);
     }
 
     public void RePlace1(bool isStart)

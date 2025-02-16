@@ -92,6 +92,13 @@ public class DownAirState : PlayerStateBase
             return;
         }
 
+        //Eventî≠ê∂
+        if(_stateMachine.PlayerController.IsEvent)
+        {
+            _stateMachine.TransitionTo(_stateMachine.EventState);
+            return;
+        }
+
         //à íuí≤êÆ
         if (_stateMachine.PlayerController.PlayerReplace.IsRemove)
         {

@@ -12,6 +12,10 @@
 /[Aa]ssets/AssetStoreTools/
 /[Bb]uild/
 /[Bb]uilds/
+/[Aa]ssets/Scripts/BaseSystem
+/[Aa]ssets/Scripts/VantanConnect
+/[Aa]ssets/ThirdParty
+/[Aa]ssets/VCSampleScene
 
 # Asset meta data should only be ignored when the corresponding asset is also ignored
 !/[Aa]ssets/**/*.meta

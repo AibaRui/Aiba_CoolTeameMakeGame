@@ -79,8 +79,12 @@ public class PlayerControl : MonoBehaviour, IDamageble, IReplaceble
     [SerializeField] private PlayerReplace _playerReplace;
     [SerializeField] private PlayerBossMovie _bossMovie;
 
+    [SerializeField] private VantanConnectNexusEvent _vantanConnectNexusEvent;
 
+    public VantanConnectNexusEvent VantanConnectNexusEvent=> _vantanConnectNexusEvent;
 
+    private bool _isEvent = false;
+    public bool IsEvent => _isEvent;
 
 
     [SerializeField] private CinemachineBrain _CameraBrain;
@@ -91,7 +95,7 @@ public class PlayerControl : MonoBehaviour, IDamageble, IReplaceble
 
 
     /// <summary>ボス戦のイベントタイプ</summary>
-    private PlayerBossEventType _eventType = PlayerBossEventType.BossMovie;
+    private PlayerEventType _eventType = PlayerEventType.BossMovie;
 
 
     public bool IsBossButtle => _isBossButtle;
@@ -100,7 +104,7 @@ public class PlayerControl : MonoBehaviour, IDamageble, IReplaceble
     public PlayerBossHit PlayerBossHit => _bossHit;
     public PlayerReplace PlayerReplace => _playerReplace;
     public PlayerPostEffectSetting PlayerPostEffectSetting => _playerPostEffectSetting;
-    public PlayerBossEventType EventType => _eventType;
+    public PlayerEventType EventType => _eventType;
     public SpecialHitStop SpecialHitStop => _specialHitStop;
     public PlayerStartMovieAndTutorial Tutorial => _tutorial;
     public PlayerMaterial PlayerMaterial => _materialChange;
@@ -239,7 +243,7 @@ public class PlayerControl : MonoBehaviour, IDamageble, IReplaceble
     public void EnterReplaceZone(ReplceType replceType)
     {
         _playerReplace.EnterReplaceZone(replceType);
-        SetEventType(PlayerBossEventType.BossStage_Replace);
+        SetEventType(PlayerEventType.BossStage_Replace);
     }
 
     public void ExitReplaceZone(ReplceType replceType)
@@ -247,14 +251,27 @@ public class PlayerControl : MonoBehaviour, IDamageble, IReplaceble
         _playerReplace.ExitReplaceZone();
     }
 
-    public void SetEventType(PlayerBossEventType eventType)
+    public void SetEventType(PlayerEventType eventType)
     {
         _eventType = eventType;
     }
 
+    public void StartEvent()
+    {
+        _eventType = PlayerEventType.Movie;
+        _isEvent = true;
+        _inputManager.IsCanInput = false;
+    }
+
+    public void EndEvent()
+    {
+        _isEvent = false;
+        _inputManager.IsCanInput =true;
+    }
+
 }
 
-public enum PlayerBossEventType
+public enum PlayerEventType
 {
     /// <summary>ボス登場ムービー再生</summary>
     BossMovie,
@@ -263,7 +280,9 @@ public enum PlayerBossEventType
     BossStage_Replace,
 
     /// <summary>ボスの攻撃に辺り</summary>
-    BossStage_HitBoss
+    BossStage_HitBoss,
 
+    //Play Movie
+    Movie,
 
 }

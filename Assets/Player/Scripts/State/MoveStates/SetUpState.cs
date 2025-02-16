@@ -23,7 +23,7 @@ public class SetUpState : PlayerStateBase
 
     public override void FixedUpdate()
     {
-
+        _stateMachine.PlayerController.SetUp.FallSpeedDown();
     }
 
     public override void LateUpdate()
@@ -82,6 +82,13 @@ public class SetUpState : PlayerStateBase
         if (_stateMachine.PlayerController.PlayerDamage.IsDamage)
         {
             _stateMachine.TransitionTo(_stateMachine.DamageState);
+            return;
+        }
+
+        //Eventî≠ê∂
+        if (_stateMachine.PlayerController.IsEvent)
+        {
+            _stateMachine.TransitionTo(_stateMachine.EventState);
             return;
         }
 
