@@ -99,5 +99,12 @@ public class StateWallRun : PlayerStateBase
             _stateMachine.TransitionTo(_stateMachine.StateUpAir);
 
         }    //WallRun‚ÖˆÚs
+
+        //Event”­¶
+        if (_stateMachine.PlayerController.IsEvent)
+        {
+            _stateMachine.TransitionTo(_stateMachine.EventState);
+            return;
+        }
     }
 }

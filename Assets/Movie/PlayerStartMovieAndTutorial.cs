@@ -45,6 +45,9 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
     [SerializeField] private GameObject _moveCameraTutorialUI;
 
 
+    [SerializeField] private TaskManager _taskManager;
+
+
     private bool _isFirstTimeScaleDown = false;
     private float _countEndMovieTimeToSwingTutorial = 0;
 
@@ -126,6 +129,9 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
             _playerControl.Anim.SetBool("IsTutorial", false);
             _brain.m_BlendUpdateMethod = CinemachineBrain.BrainUpdateMethod.FixedUpdate;
             _brain.m_UpdateMethod = CinemachineBrain.UpdateMethod.FixedUpdate;
+
+            //タスク開始
+            _taskManager.TaskStart();
         }
     }
 
@@ -133,14 +139,11 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
     /// <summary>初回のムービー。プレイヤーを登場させる </summary>
     public void StartMoviePlayerActive()
     {
-
         transform.position = _startPos.position;
         _playerControl.gameObject.transform.rotation = Quaternion.Euler(0, 270, 0);
 
         _playerControl.Rb.isKinematic = false;
         _isStart = true;
-
-
     }
 
     public void ChengeCamera()
@@ -232,6 +235,9 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
                 //SwingのチュートリアルUIを表示
                 // _swingTutorialUI.SetBool("On", false);
                 _swingTutorialUI.gameObject.SetActive(false);
+
+                //タスク開始
+                _taskManager.TaskStart();
             }
         }
         else

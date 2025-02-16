@@ -56,7 +56,7 @@ public class PlayerBossHit : MonoBehaviour
             if (_countTime > _downHittingTime)
             {
                 _hitType = PlayerBossHitType.Sliding;
-                _playerControl.SetEventType(PlayerBossEventType.BossStage_HitBoss);
+                _playerControl.SetEventType(PlayerEventType.BossStage_HitBoss);
                 _isHitBoss = true;
             }
             return;
@@ -67,7 +67,7 @@ public class PlayerBossHit : MonoBehaviour
             if (_countTime > _frontHittingTime)
             {
                 _hitType = PlayerBossHitType.Front;
-                _playerControl.SetEventType(PlayerBossEventType.BossStage_HitBoss);
+                _playerControl.SetEventType(PlayerEventType.BossStage_HitBoss);
                 _isHitBoss = true;
             }
             return;
@@ -78,7 +78,7 @@ public class PlayerBossHit : MonoBehaviour
             if (_countTime > _upHittingTime)
             {
                 _hitType = PlayerBossHitType.Up;
-                _playerControl.SetEventType(PlayerBossEventType.BossStage_HitBoss);
+                _playerControl.SetEventType(PlayerEventType.BossStage_HitBoss);
                 _isHitBoss = true;
             }
             return;

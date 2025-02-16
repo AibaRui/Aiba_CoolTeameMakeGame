@@ -2,10 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using UnityEngine.Playables;
 public class PlayerBossMovie : MonoBehaviour
 {
     [Header("ムービーを再生するかどうか")]
     [SerializeField]private bool _isPlayMovie = false;
+
+    [Header("ムービー")]
+    [SerializeField] private PlayableDirector _movie;
+
+    [SerializeField] private GameObject _movieFirstCamera;
 
     [Header("プレイヤーの開始地点")]
     [SerializeField] private Transform _playerStartPos;
@@ -35,6 +41,7 @@ public class PlayerBossMovie : MonoBehaviour
 
     [SerializeField] private PlayerControl _playerControl;
 
+    [SerializeField] private VantanConnectNexusEvent _nexusEvent;
 
 
     private bool _isEndMovie = false;
@@ -44,7 +51,25 @@ public class PlayerBossMovie : MonoBehaviour
 
     void Start()
     {
-        
+        if(!_playerControl.IsBossButtle)
+        {
+            return;
+        }
+
+        if(_isPlayMovie)
+        {
+            _movieFirstCamera.SetActive(true);
+            _movie.Play();
+        }
+        else
+        {
+            EndMovie();
+            ExitState();
+        }
+
+        //バンコネ用の特殊コード
+        _nexusEvent.SummonEnemy();
+        _nexusEvent.DarkRoom();
     }
 
     void Update()

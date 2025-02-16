@@ -47,12 +47,12 @@ public class PlayerStateMachine : StateMachine
     [SerializeField]
     private DamageState _damageState = default;
     [SerializeField]
-    private BossEventState _eventState = default;
+    private EventState _eventState = default;
 
 
     private PlayerControl _playerController = null;
 
-    public BossEventState EventState => _eventState;
+    public EventState EventState => _eventState;
     public PointZipState PointZipState => _statePointZip;
     public IdleState StateIdle => _stateIdle;
     public WalkState StateWalk => _stateWalk;

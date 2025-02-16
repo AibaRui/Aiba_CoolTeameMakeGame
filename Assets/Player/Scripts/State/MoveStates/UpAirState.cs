@@ -162,5 +162,13 @@ public class UpAirState : PlayerStateBase
         //        _stateMachine.TransitionTo(_stateMachine.StateWallIdle);
         //    } Å@//WallIdleÇ÷à⁄çs
         ////}
+        ///
+
+        //Eventî≠ê∂
+        if (_stateMachine.PlayerController.IsEvent)
+        {
+            _stateMachine.TransitionTo(_stateMachine.EventState);
+            return;
+        }
     }
 }

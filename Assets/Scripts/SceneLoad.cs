@@ -6,20 +6,17 @@ using UnityEngine.InputSystem;
 
 public class SceneLoad : MonoBehaviour
 {
-    [Header("タイトル名")]
-    [SerializeField] private string _tgameSceneName = "Game";
+    [Header("シーン名")]
+    [SerializeField] private string _tgameSceneName = "";
 
-    public void GameScene()
+    public void LodeScene()
     {
         SceneManager.LoadScene(_tgameSceneName);
     }
 
     private void Update()
     {
-        if (Input.GetButtonDown("Jump"))
-        {
-            GameScene();
-        }
+
     }
 
 }

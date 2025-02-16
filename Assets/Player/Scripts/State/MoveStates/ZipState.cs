@@ -102,5 +102,12 @@ public class ZipState : PlayerStateBase
             //‹ó’†‚Å‘O•û‚É‰Á‘¬‚·‚éA‚Æ‚¢‚¤‚±‚Æ‚ğ“`‚¦‚é
             _stateMachine.PlayerController.VelocityLimit.DoSpeedUp();
         }
+
+        //Event”­¶
+        if (_stateMachine.PlayerController.IsEvent)
+        {
+            _stateMachine.TransitionTo(_stateMachine.EventState);
+            return;
+        }
     }
 }
