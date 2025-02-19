@@ -42,11 +42,11 @@ public class VantanConnectNexusEvent : MonoBehaviour, IVantanConnectEventReceive
                 }
                 break;
 
-            case EventDefine.GetArtifact:
-                {
-                    GetArtifact();
-                }
-                break;
+            //case EventDefine.GetArtifact:
+            //    {
+            //        GetArtifact();
+            //    }
+            //    break;
 
             //case EventDefine.Ga:
             //    {

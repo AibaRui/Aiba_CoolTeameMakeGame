@@ -88,7 +88,7 @@ public class BossHp
 
             if (_armHP <= 0)
             {
-                _bossControl.HitDirection.BossDamageStartDirection(BossDirectionType.Breake, true, 0);
+                _bossControl.HitDirection.BossDamageStartDirection(BossDirectionType.Breake, false, 0);
                 BreakeArmWeakPoint();
             }
             else
@@ -103,7 +103,7 @@ public class BossHp
 
             if (_armHP <= 0)
             {
-                _bossControl.HitDirection.BossDamageStartDirection(BossDirectionType.Breake, true, 0);
+                _bossControl.HitDirection.BossDamageStartDirection(BossDirectionType.Breake, false, 0);
                 BreakeArmWeakPoint();
             }
             else
@@ -117,12 +117,12 @@ public class BossHp
 
             if (_bodyHP <= 0)
             {
-                _bossControl.HitDirection.BossDamageStartDirection(BossDirectionType.Breake, true, 0);
+                _bossControl.HitDirection.BossDamageStartDirection(BossDirectionType.Breake, false, 1);
                 _isAllBrake= true;
             }
             else
             {
-                _bossControl.HitDirection.BossDamageStartDirection(BossDirectionType.Hit, true, 0);
+                _bossControl.HitDirection.BossDamageStartDirection(BossDirectionType.Hit, false, 0);
             }
         }
 

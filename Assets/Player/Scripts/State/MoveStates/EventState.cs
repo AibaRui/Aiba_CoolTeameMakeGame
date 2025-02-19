@@ -44,17 +44,12 @@ public class EventState : PlayerStateBase
         }
         else if (_stateMachine.PlayerController.EventType == PlayerEventType.Movie)
         {
-
+            _stateMachine.PlayerController.Anim.Play("AvoidGroundFront");
         }
     }
 
     public override void FixedUpdate()
     {
-
-
-
-
-
         if (_stateMachine.PlayerController.EventType == PlayerEventType.BossMovie)
         {
 

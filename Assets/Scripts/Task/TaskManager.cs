@@ -35,6 +35,7 @@ public class TaskManager : MonoBehaviour
     {
         _lastRoot.gameObject.SetActive(true);
         _player.EndEvent();
+        _player.transform.position = _position.position;
     }
 
     /// <summary>

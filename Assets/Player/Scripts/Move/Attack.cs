@@ -139,7 +139,7 @@ public class Attack : IPlayerAction
 
     public void AttackEnemy()
     {
-        _spownBullet.GetComponent<BulletControl>().StartMove();
+        _spownBullet.GetComponent<BulletControl>()?.StartMove();
 
         _isCanAttack = false;
         _spownBullet = null;
