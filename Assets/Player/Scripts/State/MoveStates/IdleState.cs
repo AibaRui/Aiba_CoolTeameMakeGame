@@ -35,10 +35,6 @@ public class IdleState : PlayerStateBase
     {
         _stateMachine.PlayerController.CoolTimes();
 
-
-
-
-
         //if (_stateMachine.PlayerController.InputManager.IsSetUp > 0)
         //{
         //    _stateMachine.TransitionTo(_stateMachine.StateGrappleSetUp);
