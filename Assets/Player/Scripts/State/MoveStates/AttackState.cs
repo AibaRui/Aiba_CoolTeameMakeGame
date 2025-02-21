@@ -13,6 +13,7 @@ public class AttackState : PlayerStateBase
     public override void Exit()
     {
         _stateMachine.PlayerController.Attack.AttackExit();
+        _stateMachine.PlayerController.AimAssist.ResetLockOn();
     }
 
     public override void FixedUpdate()

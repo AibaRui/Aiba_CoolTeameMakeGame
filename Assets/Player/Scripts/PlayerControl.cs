@@ -204,7 +204,6 @@ public class PlayerControl : MonoBehaviour, IDamageble, IReplaceble
         _playerAudioManager.LoopAudio.SettingLoopAudio();
         _effectControl.ConcentrationLineEffect();
         _assist.Targetting();
-        _assist.AssistUISetting();
     }
 
     private void FixedUpdate()

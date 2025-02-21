@@ -7,12 +7,12 @@ public class DamageState : PlayerStateBase
 {
     public override void Enter()
     {
-        _stateMachine.PlayerController.VantanConnectNexusEvent.KnockWindow();
+        //_stateMachine.PlayerController.VantanConnectNexusEvent.KnockWindow();
     }
 
     public override void Exit()
     {
-
+        _stateMachine.PlayerController.AimAssist.LockOnUIOnOff(true);
     }
 
     public override void FixedUpdate()

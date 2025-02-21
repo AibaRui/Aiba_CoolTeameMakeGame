@@ -59,6 +59,7 @@ public class SpecialHitStop : MonoBehaviour
     /// <summary>HitStooŠJŽn</summary>
     public void StartHitStop()
     {
+        _playerControl.AimAssist.LockOnUIOnOff(false);
         if (_isDoStopTime)
         {
             Time.timeScale = 0f;  

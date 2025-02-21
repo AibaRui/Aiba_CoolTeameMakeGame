@@ -31,7 +31,7 @@ public class PlayerStateMachine : StateMachine
     [SerializeField]
     private GrappleState _stateGrapple = default;
     [SerializeField]
-    private SetUpState _stateGrappleSetUp = default;
+    private SetUpState _stateAttackSetUp = default;
     [SerializeField]
     private AttackState _stateAttack = default;
     [SerializeField]
@@ -68,7 +68,7 @@ public class PlayerStateMachine : StateMachine
     public StateWallIdle StateWallIdle => _stateWallIdle;
     public StateWallRun StateWallRun => _stateWallRun;
     public GrappleState StateGrapple => _stateGrapple;
-    public SetUpState StateGrappleSetUp => _stateGrappleSetUp;
+    public SetUpState StateAttackSetUp => _stateAttackSetUp;
     public AttackState AttackState => _stateAttack;
     public AvoidState AvoidState => _stateAvoid;
     public WallRunUpZipState WallRunUpZipState => _stateWallRunUpZip;
@@ -113,7 +113,7 @@ public class PlayerStateMachine : StateMachine
         _stateWallIdle.Init(this);
         _stateWallRun.Init(this);
         _stateGrapple.Init(this);
-        _stateGrappleSetUp.Init(this);
+        _stateAttackSetUp.Init(this);
         _stateAttack.Init(this);
         _stateAvoid.Init(this);
         _stateWallRunUpZip.Init(this);
