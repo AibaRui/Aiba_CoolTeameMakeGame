@@ -6,7 +6,9 @@ using UnityEngine.Playables;
 public class PlayerBossMovie : MonoBehaviour
 {
     [Header("ムービーを再生するかどうか")]
-    [SerializeField]private bool _isPlayMovie = false;
+    [SerializeField] private bool _isPlayMovie = false;
+
+    [SerializeField] private CinemachineBrain _brain;
 
     [Header("ムービー")]
     [SerializeField] private PlayableDirector _movie;
@@ -37,7 +39,7 @@ public class PlayerBossMovie : MonoBehaviour
     [Header("全てのレイヤー")]
     [SerializeField] private LayerMask _layerAll;
 
-    [SerializeField] private CinemachineVirtualCamera _camera; 
+    [SerializeField] private CinemachineVirtualCamera _camera;
 
     [SerializeField] private PlayerControl _playerControl;
 
@@ -51,18 +53,26 @@ public class PlayerBossMovie : MonoBehaviour
 
     void Start()
     {
-        if(!_playerControl.IsBossButtle)
+        if (!_playerControl.IsBossButtle)
         {
             return;
         }
 
-        if(_isPlayMovie)
+        _playerControl.AimAssist.LockOnUIOnOff(false);
+
+        if (_isPlayMovie)
         {
             _movieFirstCamera.SetActive(true);
+            _brain.m_BlendUpdateMethod = CinemachineBrain.BrainUpdateMethod.LateUpdate;
+            _brain.m_UpdateMethod = CinemachineBrain.UpdateMethod.LateUpdate;
+
+
             _movie.Play();
         }
         else
         {
+            _playerControl.AimAssist.LockOnUIOnOff(true);
+
             EndMovie();
             ExitState();
         }
@@ -74,7 +84,7 @@ public class PlayerBossMovie : MonoBehaviour
 
     void Update()
     {
-        
+
     }
 
     public void SetLayerOnlyUI()
@@ -105,6 +115,9 @@ public class PlayerBossMovie : MonoBehaviour
     /// <summary>ボス登場の映像が終わった</summary>
     public void EndMovie()
     {
+        _brain.m_BlendUpdateMethod = CinemachineBrain.BrainUpdateMethod.FixedUpdate;
+        _brain.m_UpdateMethod = CinemachineBrain.UpdateMethod.FixedUpdate;
+
         //プレイヤーの位置調整
         _playerControl.transform.position = _playerStartPos.position;
 
@@ -113,15 +126,16 @@ public class PlayerBossMovie : MonoBehaviour
         //速度を加えて飛び出させる
         Vector3 dir = _boss.position - _playerStartPos.position;
         dir.y = _playerAddDirY;
-        _playerControl.Rb.velocity= dir.normalized*_playerAddPower;
+        _playerControl.Rb.velocity = dir.normalized * _playerAddPower;
 
         _playerControl.AnimControl.BossMovieJump();
-        _isEndMovie =true;
+        _isEndMovie = true;
     }
 
     public void ExitState()
     {
         _playerControl.InputManager.IsCanInput = true;
+        _playerControl.AimAssist.LockOnUIOnOff(true);
     }
 
 }

@@ -16,14 +16,23 @@ public class AimAssist
     [SerializeField] private LayerMask _enemyLayer;
 
     [Header("======UI=====")]
+    [Header("ロックオンの外円のUI")]
+    [SerializeField] private Image _lockOnPanel;
+    [Header("補足中の色")]
+    [SerializeField] private Color _holdingColor;
+    [Header("ロックオン完了時の色")]
+    [SerializeField] private Color _lockOnColor;
+
+
     [Header("射程圏内に無し、を示すパネル")]
     [SerializeField] private GameObject _noTargetInAreaPanel;
-
-    [Header("ロックオンをするパネル")]
-    [SerializeField] private GameObject _lockOnPanel;
-
+    [Header("補足中、を示すパネル")]
+    [SerializeField] private GameObject _holdingPanel;
     [Header("ロックオン完了時のパネル")]
     [SerializeField] private GameObject _lockOnSuccsecPanel;
+
+    [Header("クールダウン中のパネル")]
+    [SerializeField] private GameObject _coolDownPanel;
 
     [Header("Canvus")]
     [SerializeField] private RectTransform _parentUI;
@@ -32,6 +41,8 @@ public class AimAssist
     private bool _isTargetting;
 
     private bool _isSuccsesTarget;
+
+    public bool IsScuccsesTarget => _isTargetting;
 
     /// <summary>現在探知している敵の弱点 </summary>
     private GameObject _targettingObj;
@@ -43,7 +54,7 @@ public class AimAssist
     private float _countTargettingTime = 0;
 
 
-
+    private bool _isNoAssist = false;
 
     private PlayerControl _playerControl;
 
@@ -52,38 +63,120 @@ public class AimAssist
         _playerControl = playerControl;
     }
 
+
+    /// <summary>
+    /// 攻撃Hit時などに呼ぶ
+    /// </summary>
+    public void LockOnUIOnOff(bool isOn)
+    {
+        if (isOn)
+        {
+            _isNoAssist = false;
+        }
+        else
+        {
+            _isNoAssist = true;
+        }
+    }
+
+    public void OffAllUI()
+    {
+        if (_lockOnPanel.gameObject.activeSelf) _lockOnPanel.gameObject.SetActive(false);
+        if (_lockOnSuccsecPanel.activeSelf) _lockOnSuccsecPanel.SetActive(false);
+        if (_noTargetInAreaPanel.activeSelf) _noTargetInAreaPanel.SetActive(false);
+        if (_holdingPanel.activeSelf) _holdingPanel.SetActive(false);
+    }
+
+    public void ResetLockOn()
+    {
+        _isSuccsesTarget = false;
+        _isTargetting = false;
+        _countTargettingTime = 0;
+    }
+
     public void Targetting()
     {
+
+        if (!_playerControl.Attack.IsCanAttack && !_coolDownPanel.activeSelf && !_isNoAssist && _playerControl.InputManager.IsSetUp <= 0)
+        {
+            _coolDownPanel.SetActive(true);
+        }   //クールダウンを表す画像  
+        else if (_playerControl.Attack.IsCanAttack && _coolDownPanel.activeSelf)
+        {
+            _coolDownPanel.SetActive(false);
+        }   //クールダウンが終わったら消す
+
+
+        if (_isNoAssist)
+        {
+            OffAllUI();
+            _coolDownPanel.SetActive(false);
+            return;
+        }
+        else if(!_playerControl.Attack.IsCanAttack)
+        {
+            OffAllUI();
+            return;
+        }
+        //攻撃不可中は何もしない
+
         if (_playerControl.InputManager.IsSetUp <= 0)
         {
-            _isSuccsesTarget = false;
-            _isTargetting = false;
+            ResetLockOn();
+
+            OffAllUI();
+            _lockOnPanel.color = _lockOnColor;
+
             return;
         }   //左トリガーを押していないなら何もしない
+
+
+
 
         //弱点を探知
         if (SearchWeakPoints())
         {
             if (_targettingObj != _targettedObj)
             {
-                if (_lockOnPanel.activeSelf) _lockOnPanel.SetActive(false);
                 if (_lockOnSuccsecPanel.activeSelf) _lockOnSuccsecPanel.SetActive(false);
+
                 _isSuccsesTarget = false;
                 _countTargettingTime = 0;
             }
             Debug.Log("敵を確認");
-            if (_noTargetInAreaPanel.activeSelf) _noTargetInAreaPanel.SetActive(false);
+
             CountTargettingTime();
             _targettedObj = _targettingObj;
+
+            if (!_isSuccsesTarget)
+            {
+                //_holdingPanel.SetActive(true);
+                _lockOnPanel.color = _holdingColor;
+            }   //ターゲット補足中のUI
+
         }
         else
         {
-           // Debug.Log("敵がいない");
+            // Debug.Log("敵がいない");
             _isTargetting = false;
             _targettedObj = null;
         }
 
+        //ターゲットがいる場合、いない場合
+        if (!_isTargetting)
+        {
+            if (_lockOnSuccsecPanel.activeSelf) _lockOnSuccsecPanel.SetActive(false);
+            if (_lockOnPanel.gameObject.activeSelf) _lockOnPanel.gameObject.SetActive(false);
+            if (_holdingPanel.activeSelf) _holdingPanel.SetActive(false);
+            if (!_noTargetInAreaPanel.activeSelf) _noTargetInAreaPanel.SetActive(true);
+            return;
+        }   //ターゲットを探知できていない
+        else
+        {
+            if (_noTargetInAreaPanel.activeSelf) _noTargetInAreaPanel.SetActive(false);
+        }
 
+        AssistUISetting();
     }
 
     private void CountTargettingTime()
@@ -94,6 +187,8 @@ public class AimAssist
         {
             _isSuccsesTarget = true;
             _lockOnSuccsecPanel.SetActive(true);
+            _holdingPanel.SetActive(false);
+            _lockOnPanel.color = _lockOnColor;
         }
     }
 
@@ -190,22 +285,8 @@ public class AimAssist
     /// </summary>
     public void AssistUISetting()
     {
-        if (_playerControl.InputManager.IsSetUp <= 0)
-        {
-            if (_lockOnPanel.activeSelf) _lockOnPanel.SetActive(false);
-            if (_lockOnSuccsecPanel.activeSelf) _lockOnSuccsecPanel.SetActive(false);
-            if (_noTargetInAreaPanel.activeSelf) _noTargetInAreaPanel.SetActive(false);
-            return;
-        }   //アシスト機能を使っていないを時は全てのパネルを非表示にする
-
-
-        if (!_isTargetting)
-        {
-            if (_lockOnPanel.activeSelf) _lockOnPanel.SetActive(false);
-            if (_lockOnSuccsecPanel.activeSelf) _lockOnSuccsecPanel.SetActive(false);
-            if (!_noTargetInAreaPanel.activeSelf) _noTargetInAreaPanel.SetActive(true);
-            return;
-        }   //ターゲットを探知できていない
+        //ターゲットがいなくて、描写するものがないなら何もしない
+        if (_targettedObj == null) return;
 
         //マーカーの位置をスクリーン画面に変換して表示する
         var targetWorldPos = _targettingObj.transform.position;
@@ -217,7 +298,8 @@ public class AimAssist
         var targetDir = targetWorldPos - Camera.main.transform.position;
 
         var isFront = Vector3.Dot(targetDir, cameraDir) > 0;
-        _lockOnPanel.SetActive(isFront);
+        _lockOnPanel.gameObject.SetActive(isFront);
+
 
         //var cameraTransform = Camera.main.transform;
 

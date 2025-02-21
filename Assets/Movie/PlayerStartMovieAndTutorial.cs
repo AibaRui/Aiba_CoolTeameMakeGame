@@ -89,8 +89,6 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
 
             //チュートリアル用のアニメーション
             _playerControl.Anim.SetBool("IsTutorial", false);
-            _brain.m_BlendUpdateMethod = CinemachineBrain.BrainUpdateMethod.FixedUpdate;
-            _brain.m_UpdateMethod = CinemachineBrain.UpdateMethod.FixedUpdate;
             return;
         }
 

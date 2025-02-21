@@ -59,7 +59,7 @@ public class SetUpState : PlayerStateBase
         }
 
 
-        if (_stateMachine.PlayerController.InputManager.IsAttack && _stateMachine.PlayerController.Attack.IsCanAttack)
+        if (_stateMachine.PlayerController.InputManager.IsSwing > 0 && _stateMachine.PlayerController.AimAssist.IsScuccsesTarget)
         {
             _stateMachine.TransitionTo(_stateMachine.AttackState);
             return;

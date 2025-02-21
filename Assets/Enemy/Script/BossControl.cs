@@ -80,6 +80,6 @@ public class BossControl : MonoBehaviour
     public void MoveStart()
     {
         _isMovie = false;
-
+        _anim.Play("Idle");
     }
 }

@@ -138,9 +138,9 @@ public class UpAirState : PlayerStateBase
 
         if (_stateMachine.PlayerController.IsBossButtle)
         {
-            if (_stateMachine.PlayerController.InputManager.IsSetUp > 0)
+            if (_stateMachine.PlayerController.InputManager.IsSetUp > 0 && _stateMachine.PlayerController.Attack.IsCanAttack)
             {
-                _stateMachine.TransitionTo(_stateMachine.StateGrappleSetUp);
+                _stateMachine.TransitionTo(_stateMachine.StateAttackSetUp);
                 return;
             }
         }   //ç\Ç¶
