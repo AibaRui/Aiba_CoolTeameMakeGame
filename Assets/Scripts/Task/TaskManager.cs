@@ -14,13 +14,18 @@ public class TaskManager : MonoBehaviour
     [Header("塔の上を見るムービー")]
     [SerializeField] private PlayableDirector _playableDirector;
 
+    [Header("塔の上を見るムービー")]
+    [SerializeField] private PlayableDirector _bossShowMovie;
+
     [Header("セリフ")]
     [SerializeField] private List<GameObject> _serihu = new List<GameObject>();
 
     [SerializeField] private PlayerControl _player;
+    [SerializeField] private BGMControl _bgmControl;
 
     [SerializeField] private Transform _position;
 
+    private bool _isEndAlltask = false;
 
     private int _rootTaskCount = 0;
 
@@ -52,20 +57,32 @@ public class TaskManager : MonoBehaviour
     /// </summary>
     public void EndRootTask()
     {
+        if (_isEndAlltask)
+        {
+            _bgmControl.EndBGM();
+            _bossShowMovie.Play();
+        }
+
         if (_rootTaskCount < 3)
         {
             if (_rootTaskCount < _serihu.Count)
             {
                 _serihu[_rootTaskCount].SetActive(true);
             }
-
         }
-        _root4Tower[_rootTaskCount].gameObject.SetActive(false);
+
+        if (_rootTaskCount < _root4Tower.Count)
+        {
+            _root4Tower[_rootTaskCount].gameObject.SetActive(false);
+        }
+
+
         _rootTaskCount++;
 
-        if (_rootTaskCount == _root4Tower.Count)
+        if (_rootTaskCount >= _root4Tower.Count)
         {
             SetLastRoot();
+            _isEndAlltask = true;
         }
         else
         {

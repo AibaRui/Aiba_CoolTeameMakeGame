@@ -17,7 +17,7 @@ public class BossIdleState : BossStateBase
 
     public override void FixedUpdate()
     {
-        Debug.Log("idle");
+       // Debug.Log("Boss_idle");
     }
 
     public override void LateUpdate()

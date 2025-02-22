@@ -29,6 +29,9 @@ public class BossStartMovie : MonoBehaviour
     [Header("å≥ÇÃÉåÉCÉÑÅ[")]
     [SerializeField] private LayerMask _defultLayerMask;
 
+    [SerializeField] private AudioSource _audioSource;
+    [SerializeField] private AudioSource _mainBGM;
+
     private bool _isStop = false;
 
     private bool _isFirst = false;
@@ -49,6 +52,15 @@ public class BossStartMovie : MonoBehaviour
         _bossControl.MaterialChange.ChangeBossMaterial(ModelMaterialType.Nomal);
     }
 
+    public void BGMStop()
+    {
+        _audioSource.Stop();
+    }
+
+    public void BGMStart()
+    {
+        _mainBGM.Play();
+    }
 
     public void MovieStop()
     {

@@ -11,6 +11,7 @@ public class SpecialHitStop : MonoBehaviour
     [Header("Œ³‚ÌƒŒƒCƒ„[")]
     [SerializeField] private LayerMask _defultLayerMask;
 
+    [SerializeField] private AudioSource _audioSource;
 
     [SerializeField] private PlayerControl _playerControl;
 
@@ -34,8 +35,17 @@ public class SpecialHitStop : MonoBehaviour
 
     private bool _isDoStopTime = false;
 
+    private int _setSoundNum = 0;
+
     public List<SpecialHitStopInfo> SpecialHitStopInfos => _specialHitStopInfos;
-         
+
+    private void Awake()
+    {
+        if (!_playerControl.IsBossButtle) return;
+        //TimeScale0‚Å‚àÄ¶‰Â”\
+        _audioSource.ignoreListenerPause = true;
+    }
+
     /// <summary>HitStop‚Ìî•ñ‚ğİ’è</summary>
     /// <param name="i"></param>
     public void SetHitStopInfo(int i, bool isDoStopTime)
@@ -62,7 +72,8 @@ public class SpecialHitStop : MonoBehaviour
         _playerControl.AimAssist.LockOnUIOnOff(false);
         if (_isDoStopTime)
         {
-            Time.timeScale = 0f;  
+            Time.timeScale = 0f;
+            PlaySpecialSound(_setSoundNum);
             _isHitStop = true;
         }
 
@@ -75,6 +86,15 @@ public class SpecialHitStop : MonoBehaviour
         }
 
         _playerControl.PlayerMaterial.ChangePlayerMaterial(ModelMaterialType.GrayScal);
+    }
+    public void SetSoundNum(int i)
+    {
+        _setSoundNum = i;
+    }
+
+    public void PlaySpecialSound(int i)
+    {
+        _audioSource.PlayOneShot(_specialHitStopInfos[i].Sound);
     }
 
     public void EndHitStop()
@@ -138,6 +158,10 @@ public class SpecialHitStopInfo
     [Header("Animation–¼")]
     [SerializeField] private string _animeationName;
 
+    [Header("“Áê‰¹")]
+    [SerializeField] private AudioClip _sound;
+
+    public AudioClip Sound => _sound;
     public string AnimationName => _animeationName;
     public PlayableDirector Movie => _movie;
     public int Number => _number;

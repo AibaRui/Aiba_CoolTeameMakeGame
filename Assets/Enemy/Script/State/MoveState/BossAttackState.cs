@@ -19,7 +19,7 @@ public class BossAttackState : BossStateBase
 
     public override void FixedUpdate()
     {
-        Debug.Log("attack");
+       // Debug.Log("attack");
     }
 
     public override void LateUpdate()

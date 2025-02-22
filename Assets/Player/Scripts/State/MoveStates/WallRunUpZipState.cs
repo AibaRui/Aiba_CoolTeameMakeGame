@@ -86,7 +86,9 @@ public class WallRunUpZipState : PlayerStateBase
 
         //Event”­¶
         if (_stateMachine.PlayerController.IsEvent)
-        {
+        {           
+            //WallRun‚ÌAnimator‚ğİ’è
+            _stateMachine.PlayerController.AnimControl.WallRunSet(false);
             _stateMachine.TransitionTo(_stateMachine.EventState);
             return;
         }
