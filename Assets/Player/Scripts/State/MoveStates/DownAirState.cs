@@ -66,6 +66,15 @@ public class DownAirState : PlayerStateBase
 
     public override void Update()
     {
+        if (_stateMachine.PlayerController.Rb.velocity.y < -20)
+        {
+            _stateMachine.PlayerController.Tutorial.ShowSwingInfoPress(true);  
+            _stateMachine.PlayerController.Tutorial.ZipInfo(true);
+        }   //Swing
+
+
+
+
         //各動作のクールタイム
         _stateMachine.PlayerController.CoolTimes();
 
@@ -93,7 +102,7 @@ public class DownAirState : PlayerStateBase
         }
 
         //Event発生
-        if(_stateMachine.PlayerController.IsEvent)
+        if (_stateMachine.PlayerController.IsEvent)
         {
             _stateMachine.TransitionTo(_stateMachine.EventState);
             return;
@@ -137,7 +146,7 @@ public class DownAirState : PlayerStateBase
         {
             //風の音の設定
             _stateMachine.PlayerController.PlayerAudioManager.LoopAudio.PlayWindAudio(false);
-
+            _stateMachine.PlayerController.Tutorial.ZipInfo(false);
             _stateMachine.TransitionTo(_stateMachine.StateZip);
             return;
         }
@@ -148,6 +157,11 @@ public class DownAirState : PlayerStateBase
                 _stateMachine.PlayerController.Swing.SwingLimit.IsCanSwing &&
                 _stateMachine.PlayerController.InputManager.IsSwing == 1)
             {
+                if (_stateMachine.PlayerController.Rb.velocity.y < -10)
+                {
+                    _stateMachine.PlayerController.Tutorial.ShowSwingInfoPress(false);
+                }   //Swing
+
                 _stateMachine.TransitionTo(_stateMachine.StateSwing);
                 return;
             }

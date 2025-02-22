@@ -45,6 +45,7 @@ public class PlayerBossMovie : MonoBehaviour
 
     [SerializeField] private PlayerControl _playerControl;
 
+    [SerializeField] private OperationInfoUI _operationInfoUI;
     [SerializeField] private VantanConnectNexusEvent _nexusEvent;
 
 
@@ -70,9 +71,13 @@ public class PlayerBossMovie : MonoBehaviour
 
             _audioSource.Play();
             _movie.Play();
+
+            _operationInfoUI.UISetOnOff(false);
         }
         else
         {
+
+            _operationInfoUI.UISetOnOff(true);
             _playerControl.AimAssist.LockOnUIOnOff(true);
 
             EndMovie();
@@ -132,6 +137,8 @@ public class PlayerBossMovie : MonoBehaviour
 
         _playerControl.AnimControl.BossMovieJump();
         _isEndMovie = true;
+
+        _operationInfoUI.UISetOnOff(true);
     }
 
     public void ExitState()

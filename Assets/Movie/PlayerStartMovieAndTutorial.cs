@@ -40,10 +40,18 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
     [Header("ムービー終了からスウィングチュートリアルのUIを出すまでの時間")]
     [SerializeField] private float _showUITime = 2f;
 
-
     [Header("移動、カメラのチュートリアルUI")]
     [SerializeField] private GameObject _moveCameraTutorialUI;
 
+
+    [SerializeField] private GameObject _opeParentUI;
+    [SerializeField] private GameObject _swingPress;
+    [SerializeField] private GameObject _swingRerese;
+    [SerializeField] private GameObject _zipInfo;
+    [SerializeField] private GameObject _groundInfo;
+
+
+    [SerializeField] private OperationInfoUI _operationInfoUI;
     [SerializeField] private TaskManager _taskManager;
 
 
@@ -69,9 +77,16 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
 
     /// <summary>Swingのチュートリアル中、地面に近くなっているかどうか</summary>
     private bool _isStopSwingY = false;
+
     private Vector3 _saveStopSwingPos;
 
     private bool _isEndTutorial = false;
+
+    private bool _isChangeZip = false;
+
+    private bool _isCanUI = false;
+
+
     public bool IsEndTutorial => _isEndTutorial;
 
     void Start()
@@ -103,6 +118,7 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
                 //プレイヤーが動かないようにする
                 _playerControl.Rb.isKinematic = true;
                 _playerControl.InputManager.IsCanInput = false;
+                IsCanUI(false);
             }
             else
             {
@@ -128,6 +144,11 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
 
             //タスク開始
             _taskManager.TaskStart();
+
+            //操作説明のUIを表示
+            _operationInfoUI.UISetOnOff(true);
+
+            IsCanUI(true);
         }
     }
 
@@ -152,6 +173,10 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
     /// <summary>ムービー再生終了後、プレイヤーを開始地点に移動させる</summary>
     public void StartMovieEnterStartPosition()
     {
+        //操作説明のUIを表示
+        _operationInfoUI.UISetOnOff(true);
+        IsCanUI(true);
+
         transform.position = _startPos.position;
         //チュートリアル用のアニメーション
         _playerControl.Anim.SetBool("IsTutorial", false);
@@ -174,7 +199,9 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
 
         //登場から1秒経ったら、操作説明のUIを表示する
         if (_countEndMovieTimeToSwingTutorial > 1 && !_isFirstTimeScaleDown)
-        {
+        {        //操作説明のUIを表示
+            _operationInfoUI.UISetOnOff(true);
+            IsCanUI(true);
             _isFirstTimeScaleDown = true;
 
             //アニメーション速度の変更
@@ -322,7 +349,91 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
         }
     }
 
+    public void EndFirstTask()
+    {
+        _isChangeZip = true;
+    }
 
+    public void IsCanUI(bool isOn)
+    {
+        _isCanUI = isOn;
+        _opeParentUI.gameObject.SetActive(isOn);
+        if (isOn == false)
+        {
+            _swingPress.SetActive(false);
+            _swingRerese.SetActive(false);
+            _zipInfo.SetActive(false);
+            _groundInfo.SetActive(false);
+        }
+
+    }
+
+    /// <summary>Swingについて説明する_押す</summary>
+    public void ShowSwingInfoPress(bool isOn)
+    {
+        if (_playerControl.IsBossButtle) return;
+
+        if (isOn == true)
+        {
+            if (_isCanUI == false || _isChangeZip) return;
+            _swingPress.SetActive(true);
+        }
+        else
+        {
+            _swingPress.SetActive(false);
+        }
+
+
+        _swingPress.SetActive(isOn);
+    }
+
+    /// <summary>Swingについて説明する_離す</summary>
+    public void ShowSwingInfoRelese(bool isOn)
+    {
+        if (_playerControl.IsBossButtle) return;
+
+        if (isOn == true)
+        {
+            if (_isCanUI == false || _isChangeZip) return;
+            _swingRerese.SetActive(true);
+        }
+        else
+        {
+            _swingRerese.SetActive(false);
+        }
+    }
+
+    public void ZipInfo(bool isOn)
+    {
+        if (_playerControl.IsBossButtle) return;
+
+        if (isOn)
+        {
+            if (_isCanUI == false || !_playerControl.ZipMove.IsCanZip || !_isChangeZip) return;
+            _zipInfo.SetActive(true);
+        }
+        else
+        {
+            _zipInfo.SetActive(false);
+        }
+    }
+
+
+    /// <summary>地面についたら</summary>
+    public void GroundJumpInfo(bool isOn)
+    {
+        if (_playerControl.IsBossButtle) return;
+
+        if (isOn)
+        {
+            if (_isCanUI == false) return;
+            _groundInfo.SetActive(true);
+        }
+        else
+        {
+            _groundInfo.SetActive(false);
+        }
+    }
 
 }
 
