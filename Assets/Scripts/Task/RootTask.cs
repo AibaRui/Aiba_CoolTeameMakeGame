@@ -34,6 +34,7 @@ public class RootTask : MonoBehaviour
     public void TaskClear()
     {
         _manager.EndRootTask();
+        _targetUI.gameObject.SetActive(false);
     }
 
     private void Awake()

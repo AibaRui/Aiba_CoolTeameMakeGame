@@ -6,15 +6,24 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/NewBoss.unity
-    guid: e56ec24bd202396429fd710c70654f4d
+    path: Assets/Scenes/Title.unity
+    guid: 4d1dff9d621345d4e879ff1fd6b10bce
   - enabled: 1
+    path: Assets/Scenes/GameScene.unity
+    guid: e56ec24bd202396429fd710c70654f4d
+  - enabled: 0
+    path: Assets/Scenes/SampleScene.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 0
+    path: Assets/Scenes/BossMap.unity
+    guid: 5f935d0fb6c6091428643f3a7815c545
+  - enabled: 0
     path: Assets/Scenes/Game.unity
     guid: a1ef5241737720c4db56108d55aabe39
   - enabled: 1
-    path: Assets/Scenes/BossMap.unity
-    guid: 5f935d0fb6c6091428643f3a7815c545
+    path: Assets/Scenes/GameScene_TestView.unity
+    guid: 3a25854f59add914f965caefcb59ca4c
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
+    path: Assets/Scenes/GameScene_TestView_EndMovie.unity
+    guid: c47d1df60a11aee47bdb2f74f21e5e5d
   m_configObjects: {}

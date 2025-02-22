@@ -66,6 +66,7 @@ public class TitleSystem : MonoBehaviour
     /// <summary>ƒ€[ƒr[‚ğÄ¶</summary>
     public void MovieStart()
     {
+        Debug.Log("P");
         _movie.Play();
         _isMovieStart = true;
     }

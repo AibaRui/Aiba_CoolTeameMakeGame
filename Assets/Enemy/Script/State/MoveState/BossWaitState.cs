@@ -17,7 +17,7 @@ public class BossWaitState : BossStateBase
 
     public override void FixedUpdate()
     {
-
+       //Debug.Log("Boss_Wait");
     }
 
     public override void LateUpdate()

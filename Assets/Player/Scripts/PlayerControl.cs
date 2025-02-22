@@ -203,6 +203,9 @@ public class PlayerControl : MonoBehaviour, IDamageble, IReplaceble
 
         _playerAudioManager.LoopAudio.SettingLoopAudio();
         _effectControl.ConcentrationLineEffect();
+
+
+        if (!_isBossButtle) return;
         _assist.Targetting();
     }
 

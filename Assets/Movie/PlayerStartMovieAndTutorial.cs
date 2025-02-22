@@ -44,7 +44,6 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
     [Header("移動、カメラのチュートリアルUI")]
     [SerializeField] private GameObject _moveCameraTutorialUI;
 
-
     [SerializeField] private TaskManager _taskManager;
 
 
@@ -119,7 +118,6 @@ public class PlayerStartMovieAndTutorial : MonoBehaviour, IEnterTutorialGoalble
             _isEnd = true;
 
             _isEndSwingTutorial = true;
-
 
             _playerControl.InputManager.IsCanInput = true;
 

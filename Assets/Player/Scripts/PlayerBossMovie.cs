@@ -39,6 +39,8 @@ public class PlayerBossMovie : MonoBehaviour
     [Header("ëSÇƒÇÃÉåÉCÉÑÅ[")]
     [SerializeField] private LayerMask _layerAll;
 
+    [SerializeField] private AudioSource _audioSource;
+
     [SerializeField] private CinemachineVirtualCamera _camera;
 
     [SerializeField] private PlayerControl _playerControl;
@@ -66,7 +68,7 @@ public class PlayerBossMovie : MonoBehaviour
             _brain.m_BlendUpdateMethod = CinemachineBrain.BrainUpdateMethod.LateUpdate;
             _brain.m_UpdateMethod = CinemachineBrain.UpdateMethod.LateUpdate;
 
-
+            _audioSource.Play();
             _movie.Play();
         }
         else

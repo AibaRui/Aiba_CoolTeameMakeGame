@@ -40,9 +40,9 @@ public class AimAssist
     /// <summary>敵の弱点を探知できているかどうか</summary>
     private bool _isTargetting;
 
-    private bool _isSuccsesTarget;
+    private bool _isSuccsesTarget = false;
 
-    public bool IsScuccsesTarget => _isTargetting;
+    public bool IsScuccsesTarget => _isSuccsesTarget;
 
     /// <summary>現在探知している敵の弱点 </summary>
     private GameObject _targettingObj;
@@ -96,7 +96,6 @@ public class AimAssist
 
     public void Targetting()
     {
-
         if (!_playerControl.Attack.IsCanAttack && !_coolDownPanel.activeSelf && !_isNoAssist && _playerControl.InputManager.IsSetUp <= 0)
         {
             _coolDownPanel.SetActive(true);
@@ -110,12 +109,14 @@ public class AimAssist
         if (_isNoAssist)
         {
             OffAllUI();
+            ResetLockOn();
             _coolDownPanel.SetActive(false);
             return;
         }
         else if(!_playerControl.Attack.IsCanAttack)
         {
             OffAllUI();
+            ResetLockOn();
             return;
         }
         //攻撃不可中は何もしない
@@ -143,7 +144,7 @@ public class AimAssist
                 _isSuccsesTarget = false;
                 _countTargettingTime = 0;
             }
-            Debug.Log("敵を確認");
+            //Debug.Log("敵を確認");
 
             CountTargettingTime();
             _targettedObj = _targettingObj;
@@ -160,6 +161,7 @@ public class AimAssist
             // Debug.Log("敵がいない");
             _isTargetting = false;
             _targettedObj = null;
+            _isSuccsesTarget = false;
         }
 
         //ターゲットがいる場合、いない場合

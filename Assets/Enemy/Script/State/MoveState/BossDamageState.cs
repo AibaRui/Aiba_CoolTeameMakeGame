@@ -17,7 +17,7 @@ public class BossDamageState : BossStateBase
 
     public override void FixedUpdate()
     {
-
+        Debug.Log("Boss_Damage");
     }
 
     public override void LateUpdate()

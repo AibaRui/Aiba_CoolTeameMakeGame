@@ -66,6 +66,8 @@ public class PlayerDamage
     /// <param name="type"></param>
     public void Damage(DamageType type)
     {
+        if (_isDamage) return;
+
         _damageType = type;
 
         _isDamage = true;
@@ -80,6 +82,7 @@ public class PlayerDamage
             {
                 //ダメージムービーを再生
                 _playerControl.SpecialHitStop.SpecialHitStopInfos[_setPlayMovieNum-1].Movie?.Play();
+                _playerControl.SpecialHitStop.SetSoundNum(_setPlayMovieNum-1);
                 //アニメーションを再生
                 _playerControl.AnimControl.BigDamageAnim(_playerControl.SpecialHitStop.SpecialHitStopInfos[_setPlayMovieNum - 1].AnimationName);
                 //HitStopを再生
@@ -88,13 +91,13 @@ public class PlayerDamage
             else
             {
                 //どのダメージムービーを再生するか決定
-                var r = Random.Range(1, _playerControl.SpecialHitStop.SpecialHitStopInfos.Count + 1);
+                var r = Random.Range(0, _playerControl.SpecialHitStop.SpecialHitStopInfos.Count);
                 //ダメージムービーを再生
                 _playerControl.SpecialHitStop.SpecialHitStopInfos[r].Movie?.Play();
                 //アニメーションを再生
                 _playerControl.AnimControl.BigDamageAnim(_playerControl.SpecialHitStop.SpecialHitStopInfos[r].AnimationName);
                 //HitStopを再生
-                _playerControl.SpecialHitStop.SetHitStopInfo(r - 1, true);
+                _playerControl.SpecialHitStop.SetHitStopInfo(r, true);
             }
 
 
