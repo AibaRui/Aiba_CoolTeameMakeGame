@@ -1069,7 +1069,7 @@ MonoBehaviour:
   m_Muted: 0
   m_CustomPlayableFullTypename: 
   m_Curves: {fileID: 0}
-  m_Parent: {fileID: 4991689577524552865}
+  m_Parent: {fileID: 11400000}
   m_Children:
   - {fileID: -4638765640888382493}
   - {fileID: -6341834974120329100}
@@ -3319,6 +3319,7 @@ MonoBehaviour:
   - {fileID: -6941527071672499208}
   - {fileID: -6126414225691281666}
   - {fileID: -2131361912723317439}
+  - {fileID: -6039349232721402873}
   - {fileID: 4991689577524552865}
   m_FixedDuration: 0
   m_EditorSettings:
@@ -3661,49 +3662,13 @@ MonoBehaviour:
     m_BlendOutDuration: 1.3666666666666671
     m_MixInCurve:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
     m_MixOutCurve:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -3919,25 +3884,7 @@ MonoBehaviour:
     m_BlendOutDuration: -1
     m_MixInCurve:
       serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
+      m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
@@ -4887,7 +4834,6 @@ MonoBehaviour:
   - {fileID: 7784472137211365998}
   - {fileID: 2442974027556311203}
   - {fileID: -3003071638314129312}
-  - {fileID: -6039349232721402873}
   m_Clips: []
   m_Markers:
     m_Objects: []
