@@ -13,6 +13,8 @@ public class IdleState : PlayerStateBase
 
         //モデルの左右回転をリセット
         _stateMachine.PlayerController.PlayerModelRotation.ResetModelRotate();
+
+        _stateMachine.PlayerController.Tutorial.GroundJumpInfo(true);
     }
 
     public override void Exit()
@@ -57,8 +59,8 @@ public class IdleState : PlayerStateBase
                 _stateMachine.TransitionTo(_stateMachine.AvoidState);
             }   //回避
 
-            
-            if(_stateMachine.PlayerController.InputManager.IsAttack && _stateMachine.PlayerController.Attack.IsCanAttack)
+
+            if (_stateMachine.PlayerController.InputManager.IsAttack && _stateMachine.PlayerController.Attack.IsCanAttack)
             {
                 _stateMachine.TransitionTo(_stateMachine.AttackState);
             }   //攻撃

@@ -25,10 +25,14 @@ public class SwingState : PlayerStateBase
 
         //風の音の設定
         _stateMachine.PlayerController.PlayerAudioManager.LoopAudio.PlayWindAudio(true);
+
+        _stateMachine.PlayerController.Tutorial.GroundJumpInfo(false);
     }
 
     public override void Exit()
     {
+        _stateMachine.PlayerController.Tutorial.ShowSwingInfoRelese(false);
+
         //アニメーションの設定
         _stateMachine.PlayerController.AnimControl.SwingAnim.Swing(false);
         _stateMachine.PlayerController.AnimControl.SwingAnim.SetHighFallType();
@@ -85,6 +89,11 @@ public class SwingState : PlayerStateBase
 
     public override void Update()
     {
+        if (_stateMachine.PlayerController.Rb.velocity.y >30)
+        {
+            _stateMachine.PlayerController.Tutorial.ShowSwingInfoRelese(true);
+        }   //Swing
+
         //各動作のクールタイムを計測
         _stateMachine.PlayerController.CoolTimes();
 
@@ -194,6 +203,9 @@ public class SwingState : PlayerStateBase
         //Swingのボタンを離したら
         if (_stateMachine.PlayerController.InputManager.IsSwing < 0.6f)
         {
+            //FrontZipを実行可能にする
+            _stateMachine.PlayerController.ZipMove.SetCanZip();
+
             //アニメーション設定(Swing終了ジャンプのタイプ分け)
             _stateMachine.PlayerController.AnimControl.SwingAnim.SetSwingEndType(0);
 

@@ -176,6 +176,12 @@ public class AimAssist
         else
         {
             if (_noTargetInAreaPanel.activeSelf) _noTargetInAreaPanel.SetActive(false);
+
+            if(!_isSuccsesTarget)
+            {
+                _holdingPanel.SetActive(true);
+            }
+
         }
 
         AssistUISetting();

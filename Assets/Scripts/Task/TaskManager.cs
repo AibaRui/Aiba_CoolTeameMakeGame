@@ -22,6 +22,8 @@ public class TaskManager : MonoBehaviour
 
     [SerializeField] private PlayerControl _player;
     [SerializeField] private BGMControl _bgmControl;
+    [SerializeField] private OperationInfoUI _operationInfoUI;
+
 
     [SerializeField] private Transform _position;
 
@@ -38,9 +40,13 @@ public class TaskManager : MonoBehaviour
 
     public void EndMovie()
     {
+        //‘€ìà–¾‚ÌUI‚ğ•\¦
+        _operationInfoUI.UISetOnOff(true);
+
         _lastRoot.gameObject.SetActive(true);
         _player.EndEvent();
         _player.transform.position = _position.position;
+        
     }
 
     /// <summary>
@@ -48,6 +54,10 @@ public class TaskManager : MonoBehaviour
     /// </summary>
     public void SetLastRoot()
     {
+        //‘€ìà–¾‚ÌUI‚ğ•\¦
+        _operationInfoUI.UISetOnOff(false);
+        _player.Tutorial.IsCanUI(false);
+
         _playableDirector.Play();
         _player.StartEvent();
     }
@@ -59,11 +69,14 @@ public class TaskManager : MonoBehaviour
     {
         if (_isEndAlltask)
         {
+            //‘€ìà–¾‚ÌUI‚ğ•\¦
+            _operationInfoUI.UISetOnOff(false);
+
             _bgmControl.EndBGM();
             _bossShowMovie.Play();
         }
 
-        if (_rootTaskCount < 3)
+        if (_rootTaskCount < 2)
         {
             if (_rootTaskCount < _serihu.Count)
             {
@@ -87,6 +100,11 @@ public class TaskManager : MonoBehaviour
         else
         {
             _root4Tower[_rootTaskCount].gameObject.SetActive(true);
+        }
+
+        if(_rootTaskCount == 2)
+        {
+            _player.Tutorial.EndFirstTask();
         }
     }
 
